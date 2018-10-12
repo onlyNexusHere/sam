@@ -1,3 +1,8 @@
-# This has the main function for controling camera, arduino, and stdin
+"""
+
+This has the main function for controling camera, arduino, and stdin
+
+
+"""
 
 
