@@ -5,22 +5,27 @@ import serial
 
 import datetime
 
+from modules import *
+
 """
 
 This has the main function for controlling camera, arduino, and stdin
 
 
 """
-# Open ports and files
-arduino = None
-log_file = None
+
 
 
 class SamControl:
 
+    # Open ports and files
+    arduino = None
+    log_file = None
+
     # This is the dictionary that holds modules.
     # Modules need...
-    modules = {}
+    local_modules = {}
+    arduino_modules = {}
 
 
     def main(self):
@@ -44,11 +49,23 @@ class SamControl:
 
             # for n in responded:
 
+    def exit(self):
+        """
+        And of program functions, like closing ports.
+        :return: None
+        """
+        if self.log_file is not None:
+            self.log_file.close()
+        if self.arduino is not None:
+            self.arduino.close()
+
+
     def init_mods(self):
         """
         Imports files in the modules folder and initiates them.
         :return: None
         """
+
 
     def send(self):
         """
@@ -63,8 +80,11 @@ class SamControl:
         :return:
         """
         while log_file is None:
-            file_name_uncleansed = sys.raw_input("Enter Filename: ")
+            file_name_uncleansed = sys.raw_input("Enter Filename(or quit): ")
             file_name = file_name_uncleansed.strip()
+
+            if file_name == "quit":
+                return
 
             log_file = open(file_name, 'a')
 
@@ -91,10 +111,9 @@ class SamControl:
 
 
 if __name__ == "__main__":
+    sam = SamControl()
     try:
-        SamControl.main()
-
+        sam.main()
     except Exception:
-        log_file.close()
-        arduino.close()
+        sam.exit()
 

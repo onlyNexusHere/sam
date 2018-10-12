@@ -8,6 +8,8 @@ class SamModule:
     arduino = None
     sam: SamControl = None
     name = None
+    identifier = None
+    is_arduino_mod = False
 
     def __init__(self, module_name="", SamControl=None, arduino_object=None):
 
