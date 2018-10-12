@@ -15,6 +15,9 @@ class SamModule:
         self.sam = SamControl
         self.name = module_name
 
+    def run(self):
+        pass
+
     def write_to_stdout(self, string_to_write):
         self.sam.write_to_stdout(mod_name=self.name, msg=string_to_write)
 

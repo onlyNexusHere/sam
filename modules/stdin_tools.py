@@ -10,3 +10,5 @@ class StdinTools(SamModule):
     def __init__(self, sam=None):
         super().__init__("StdinTools", SamControl=sam)
 
+    def run(self):
+        pass
