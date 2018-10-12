@@ -1,4 +1,4 @@
-
+import SamControl
 
 class SamModule:
 
@@ -6,7 +6,7 @@ class SamModule:
     Modules will inherit from this class.
     """
     arduino = None
-    sam = None
+    sam: SamControl = None
     name = None
 
     def __init__(self, module_name="", SamControl=None, arduino_object=None):
@@ -18,6 +18,9 @@ class SamModule:
     def run(self):
         pass
 
+    def on_wait(self):
+        pass
+
     def write_to_stdout(self, string_to_write):
         self.sam.write_to_stdout(mod_name=self.name, msg=string_to_write)
 
@@ -26,3 +29,7 @@ class SamModule:
 
     def send(self, msg):
         self.sam.send(msg)
+
+    class ModuleException(sam.Sam_Control_Error):
+        # TODO: message include module name.
+        pass
