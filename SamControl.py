@@ -5,7 +5,7 @@ import serial
 
 import datetime
 
-from modules import *
+from modules import StdinTools
 
 """
 
@@ -28,6 +28,7 @@ class SamControl:
     arduino_modules = {}
 
 
+
     def main(self):
         """
 
@@ -38,16 +39,43 @@ class SamControl:
         # Array of filenumbers for
         listening_to = []
 
-        arduino = serial.Serial('/dev/ttyUSB0')
+        import serial.tools.list_ports
+        ports = list(serial.tools.list_ports.comports())
+        for p in ports:
+            if p[1] == 'Arduino Uno':
+                self.arduino = serial.Serial(p[0])
 
         listening_to.append(sys.stdin)
-        listening_to.append(arduino)
+        listening_to.append(self.arduino)
+
+        # Todo:
+        # Make dictionary where if it is local, it will run the local module.
+        # If it received arduino, it will get the first string and run that arduino module.
+
+        run_mod = {}
 
         while True:
 
             responded = select.select(listening_to, [], [], .5)
 
-            # for n in responded:
+            quit_program = False
+
+            for response in responded:
+                if response == sys.stdin:
+                    str_rsv: str = sys.stdin.readline()
+                    quit_program = self.local_modules.get(">").run(str_rsv)
+
+                # Add here for camera --
+                #elif camera:
+                # quit_program = self.local_modules.get("camera_id").run(str_rsv)
+
+                elif response == self.arduino:
+                    quit_program = self.arduino_modules.get(str_rsv.strip().split(" ")).run(str_rsv)
+                else:
+                    print("ERROR")
+
+                if quit_program:
+                    return
 
     def exit(self):
         """
@@ -65,14 +93,33 @@ class SamControl:
         Imports files in the modules folder and initiates them.
         :return: None
         """
+        args_for_mods = {
+            "sam": self,
+            "arduino_object": self.arduino
+        }
 
+        mods = [StdinTools.StdinTools(**args_for_mods)]
 
-    def send(self):
+        for mod in mods:
+            if mod.is_local_to_pi:
+                if mod.identifier in self.local_modules.keys():
+                    print("Identifier " + mod.identifier +
+                          " is used twice in local modules. Overwriting the first instance.")
+                self.local_modules[mod.identifier] = mod
+            else:
+                if mod.identifier in self.arduino_modules.keys():
+                    print("Identifier " + mod.identifier +
+                          " is used twice in arduino modules. Overwriting the first instance.")
+
+                self.arduino_modules[mod.identifier] = mod
+
+    def send(self, message):
         """
         Use this function to send messages to the arduino.
 
         :return:
         """
+        self.arduino.write(message)
 
     def log_to_file(self, msg, mod_name="UNK"):
         """
