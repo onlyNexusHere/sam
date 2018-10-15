@@ -64,9 +64,3 @@ class SamModule:
         """
         self.sam.send(msg)
 
-    class ModuleException(sam.Sam_Control_Error):
-        """
-        Dont use this. One day this will just work.
-        """
-        # TODO: message include module name.
-        pass
