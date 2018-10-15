@@ -27,7 +27,7 @@ class SamControl:
     local_modules = {}
     arduino_modules = {}
 
-
+    quit_program = False
 
     def main(self):
         """
@@ -39,26 +39,29 @@ class SamControl:
         # Array of filenumbers for
         listening_to = []
 
-        # TODO: make this part resistant to the usb not existing for testing on personal computers.
+        self.init_mods()
+
+        print("Finding Arduino USB")
         import serial.tools.list_ports
         ports = list(serial.tools.list_ports.comports())
         for p in ports:
             if p[1] == 'Arduino Uno':
                 self.arduino = serial.Serial(p[0])
 
+        if self.arduino is not None:
+            listening_to.append(self.arduino)
+        else:
+            print("Arduino USB was not found.")
+
         listening_to.append(sys.stdin)
-        listening_to.append(self.arduino)
 
-        while True:
-
-            responded = select.select(listening_to, [], [], .5)
-
-            quit_program = False
-
+        while self.quit_program is False:
+            responded = select.select(listening_to, [], [], .5)[0]
             for response in responded:
                 if response == sys.stdin:
                     str_rsv: str = sys.stdin.readline()
-                    quit_program = self.local_modules.get(">").run(str_rsv)
+                    # print("got message: " + str_rsv)
+                    self.local_modules.get(">").run(str_rsv)
 
                 # Add here for camera module --
                 #elif camera:
@@ -66,13 +69,15 @@ class SamControl:
                 # quit_program = self.local_modules.get("camera_id").run(str_rsv)
 
                 elif response == self.arduino:
-                    str_rsv = self.arduino.read() # This will read one byte. We can change it as needed.
-                    quit_program = self.arduino_modules.get(str_rsv.strip().split(" ")).run(str_rsv)
+                    str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
+                    self.arduino_modules.get(str_rsv.strip().split(" "), None).run(str_rsv)
                 else:
                     print("ERROR")
 
-                if quit_program:
+                if self.quit_program:
+                    print("Goodbye!")
                     return
+            [mod.on_wait() for _, mod in {**self.local_modules, **self.arduino_modules}.items()]
 
     def exit(self):
         """
@@ -148,6 +153,10 @@ class SamControl:
         """
         print(mod_name + " " + msg)
 
+    def request_quit(self):
+        """Use this function to kill the robot's program. Any mod can do this if needed."""
+        self.quit_program = True
+
     class Sam_Control_Error(Exception):
         """Base error class"""
         pass
@@ -159,6 +168,7 @@ class SamControl:
 if __name__ == "__main__":
     sam = SamControl()
     try:
+        print("Running main")
         sam.main()
     except Exception:
         sam.exit()
