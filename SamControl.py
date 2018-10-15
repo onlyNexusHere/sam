@@ -39,6 +39,7 @@ class SamControl:
         # Array of filenumbers for
         listening_to = []
 
+        # TODO: make this part resistant to the usb not existing for testing on personal computers.
         import serial.tools.list_ports
         ports = list(serial.tools.list_ports.comports())
         for p in ports:
@@ -48,11 +49,6 @@ class SamControl:
         listening_to.append(sys.stdin)
         listening_to.append(self.arduino)
 
-        # Todo:
-        # Make dictionary where if it is local, it will run the local module.
-        # If it received arduino, it will get the first string and run that arduino module.
-
-        run_mod = {}
 
         while True:
 
@@ -65,7 +61,7 @@ class SamControl:
                     str_rsv: str = sys.stdin.readline()
                     quit_program = self.local_modules.get(">").run(str_rsv)
 
-                # Add here for camera --
+                # Add here for camera module --
                 #elif camera:
                 # quit_program = self.local_modules.get("camera_id").run(str_rsv)
 
