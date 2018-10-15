@@ -49,7 +49,6 @@ class SamControl:
         listening_to.append(sys.stdin)
         listening_to.append(self.arduino)
 
-
         while True:
 
             responded = select.select(listening_to, [], [], .5)
@@ -63,9 +62,11 @@ class SamControl:
 
                 # Add here for camera module --
                 #elif camera:
+                # str_rsv = camera.read
                 # quit_program = self.local_modules.get("camera_id").run(str_rsv)
 
                 elif response == self.arduino:
+                    str_rsv = self.arduino.read() # This will read one byte. We can change it as needed.
                     quit_program = self.arduino_modules.get(str_rsv.strip().split(" ")).run(str_rsv)
                 else:
                     print("ERROR")
@@ -94,6 +95,8 @@ class SamControl:
             "arduino_object": self.arduino
         }
 
+        # This is where we add the new mods for proper initialization.
+        # Remember to use **args for mods as the parameter to initialize the mod.
         mods = [StdinTools.StdinTools(**args_for_mods)]
 
         for mod in mods:
@@ -122,18 +125,18 @@ class SamControl:
         Logging to a file
         :return:
         """
-        while log_file is None:
+        while self.log_file is None:
             file_name_uncleansed = sys.raw_input("Enter Filename(or quit): ")
             file_name = file_name_uncleansed.strip()
 
             if file_name == "quit":
                 return
 
-            log_file = open(file_name, 'a')
+            self.log_file = open(file_name, 'a')
 
         log_message = "\n" + str(datetime.datetime.now()) + " " + mod_name + ": " + msg
 
-        log_file.write(log_message)
+        self.log_file.write(log_message)
 
 
     def write_to_stdout(self, mod_name="Default", msg=""):
