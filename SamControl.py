@@ -21,6 +21,7 @@ class SamControl:
     # Open ports and files
     arduino = None
     log_file = None
+    camera = None
 
     # This is the dictionary that holds modules.
     # Modules need...
@@ -48,12 +49,24 @@ class SamControl:
             if p[1] == 'Arduino Uno':
                 self.arduino = serial.Serial(p[0])
 
+                # Adding listeners to the list
+
         if self.arduino is not None:
             listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
 
         listening_to.append(sys.stdin)
+
+        # CAMERA MODULE PART 1 - add the camera interface object
+        #self.camera = ...
+
+        if self.camera is not None:
+            listening_to.append(self.camera)
+        else:
+            print("Camera was not found.")
+
+                # This is the heart of the program. Select is non-blocking.
 
         while self.quit_program is False:
             responded = select.select(listening_to, [], [], .5)[0]
@@ -63,10 +76,12 @@ class SamControl:
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").run(str_rsv)
 
-                # Add here for camera module --
-                #elif camera:
-                # str_rsv = camera.read
-                # quit_program = self.local_modules.get("camera_id").run(str_rsv)
+                # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
+                # Please add code like the stuff below.
+                elif response == self.camera:
+                    # str_rsv = camera.read
+                    # self.local_modules.get("camera_id").run(str_rsv)
+                    pass
 
                 elif response == self.arduino:
                     str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
