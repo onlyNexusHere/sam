@@ -23,6 +23,11 @@ class StdinTools(SamModule):
                                        "Use this command to see the help text"),
                            "h": (lambda str_args: self.show_help(),
                                     "Same as 'help'"),
+                           "status": (lambda str_args: self.show_status(),
+                                    "Get the status of the Arduino"),
+                           "send": (lambda str_args: self.send_message(str_args),
+                                    "Send a string to the arduino"),
+
                            "quit": (lambda str_args: self.sam.request_quit(),
                                     "Quit the program")
                            }
@@ -55,6 +60,8 @@ class StdinTools(SamModule):
         else:
             self.write_to_stdout("Arduino is not detected.")
 
+    def send_message(self, message):
+        self.sam.send(message)
 
     def request_module(self, str_args):
 
