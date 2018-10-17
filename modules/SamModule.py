@@ -25,16 +25,16 @@ class SamModule:
         self.identifier = identi
         self.is_local_to_pi = is_local
 
-    def run(self, message):
+    def message_received(self, message: str):
         """
-        This function is run when the arduino sends a message from the module to the pi.
+        This function is message_received when the arduino sends a message from the module to the pi.
         Message should include the identifier in the front.
         """
         pass
 
     def stdin_request(self, message):
         """
-        This function is run when the terminal is used to request a specific module to do something.
+        This function is message_received when the terminal is used to request a specific module to do something.
         This string removes the 'request mod_name' from the front.
         """
         pass

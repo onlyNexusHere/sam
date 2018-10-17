@@ -52,6 +52,7 @@ class SamControl:
                 # Adding listeners to the list
 
         if self.arduino is not None:
+
             listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
@@ -74,18 +75,18 @@ class SamControl:
                 if response == sys.stdin:
                     str_rsv: str = sys.stdin.readline()
                     # print("got message: " + str_rsv)
-                    self.local_modules.get(">").run(str_rsv)
+                    self.local_modules.get(">").message_received(str_rsv)
 
                 # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
                 # Please add code like the stuff below.
                 elif response == self.camera:
                     # str_rsv = camera.read
-                    # self.local_modules.get("camera_id").run(str_rsv)
+                    # self.local_modules.get("camera_id").message_received(str_rsv)
                     pass
 
                 elif response == self.arduino:
                     str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
-                    self.arduino_modules.get(str_rsv.strip().split(" "), None).run(str_rsv)
+                    self.arduino_modules.get(str_rsv.strip().split(" "), None).message_received(str_rsv)
                 else:
                     print("ERROR")
 

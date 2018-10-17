@@ -27,7 +27,7 @@ class StdinTools(SamModule):
                                     "Quit the program")
                            }
 
-    def run(self, message: str):
+    def message_received(self, message: str):
         message_arg = message.strip().split(" ")
         print("Function requested: " + message_arg[0])
 
@@ -47,6 +47,14 @@ class StdinTools(SamModule):
     def show_help(self):
 
         print("\n".join([cmd + " --> \n\t" + comment for cmd, (_, comment) in self.stdin_cmds.items()]))
+
+    def show_status(self):
+
+        if self.sam.arduino is not None:
+            self.write_to_stdout("Arduino is: " + self.sam.arduino.port)
+        else:
+            self.write_to_stdout("Arduino is not detected.")
+
 
     def request_module(self, str_args):
 
