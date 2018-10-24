@@ -87,7 +87,7 @@ class SamControl:
                     str_rsv: str = sys.stdin.readline()
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
-                print("13")
+                    print("13")
                 # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
                 # Please add code like the stuff below.
                 elif response == self.camera:
