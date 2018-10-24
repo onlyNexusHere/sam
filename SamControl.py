@@ -7,7 +7,7 @@ import datetime
 
 from modules import StdinTools
 
-from pycamera import PiCamera
+from picamera import PiCamera
 
 """
 
