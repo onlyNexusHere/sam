@@ -1,13 +1,16 @@
 import sys
 
 import select
-import serial
-
+import serial.tools.list_ports
 import datetime
-
 from modules import StdinTools
 
-from picamera import PiCamera
+import os.path
+if os.path.isfile("/proc/cpuinfo"):
+    from picamera import PiCamera
+else:
+    sys.path.append('~/sam/pi_libraries/')
+    from pi_libraries import PiCamera
 
 """
 
@@ -15,7 +18,6 @@ This has the main function for controlling camera, arduino, and stdin
 
 
 """
-
 
 
 class SamControl:
@@ -39,13 +41,13 @@ class SamControl:
 
         """
 
-        # Array of filenumbers for
+        # Array of file numbers for
         listening_to = []
 
         self.init_mods()
 
         print("Finding Arduino USB")
-        import serial.tools.list_ports
+
         print("1")
         ports = list(serial.tools.list_ports.comports())
         print("2")
