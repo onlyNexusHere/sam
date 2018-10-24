@@ -44,19 +44,24 @@ class SamControl:
 
         print("Finding Arduino USB")
         import serial.tools.list_ports
+        print("1")
         ports = list(serial.tools.list_ports.comports())
+        print("2")
         for p in ports:
+            print("3")
             if p[1] == 'Arduino Uno':
+                print("4")
                 self.arduino = serial.Serial(p[0])
                 print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
-
+            print("7")
+        print("6")
         if self.arduino is not None:
             listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
-
+        print("7")
         listening_to.append(sys.stdin)
 
         # CAMERA MODULE PART 1 - add the camera interface object
