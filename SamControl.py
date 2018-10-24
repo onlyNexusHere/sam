@@ -48,11 +48,11 @@ class SamControl:
         for p in ports:
             if p[1] == 'Arduino Uno':
                 self.arduino = serial.Serial(p[0])
+                print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
 
         if self.arduino is not None:
-
             listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
@@ -139,7 +139,10 @@ class SamControl:
 
         :return:
         """
-        self.arduino.write(message)
+        if self.arduino is not None:
+            self.arduino.write(message)
+        else:
+            print("Arduino is not connected!")
 
     def log_to_file(self, msg, mod_name="UNK"):
         """
