@@ -7,6 +7,8 @@ import datetime
 
 from modules import StdinTools
 
+from pycamera import PiCamera
+
 """
 
 This has the main function for controlling camera, arduino, and stdin
@@ -49,7 +51,7 @@ class SamControl:
         print("2")
         for p in ports:
             print("3")
-            if p[1] == 'Arduino Uno':
+            if "Arduino" in p[1]:
                 print("4")
                 self.arduino = serial.Serial(p[0])
                 print("Arduino USB was found at " + p[0])
@@ -73,15 +75,19 @@ class SamControl:
             print("Camera was not found.")
 
                 # This is the heart of the program. Select is non-blocking.
-
+        print("8")
         while self.quit_program is False:
+            print("9")
             responded = select.select(listening_to, [], [], .5)[0]
+            print("10")
             for response in responded:
+                print("11")
                 if response == sys.stdin:
+                    print("12")
                     str_rsv: str = sys.stdin.readline()
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
-
+                print("13")
                 # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
                 # Please add code like the stuff below.
                 elif response == self.camera:
@@ -90,11 +96,14 @@ class SamControl:
                     pass
 
                 elif response == self.arduino:
+                    print("15")
                     str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
+                    print("16)
                     self.arduino_modules.get(str_rsv.strip().split(" "), None).message_received(str_rsv)
+                    print("17")
                 else:
                     print("ERROR")
-
+                print("14")
                 if self.quit_program:
                     print("Goodbye!")
                     return
