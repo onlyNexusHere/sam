@@ -82,7 +82,6 @@ class SamControl:
             responded = select.select(listening_to, [], [], .5)[0]
             print("Debug 10")
             for response in responded:
-                print("Debug 11 response: " + str(response))
                 if response == sys.stdin:
                     print("Debug 12")
                     str_rsv = sys.stdin.readline()
@@ -97,16 +96,17 @@ class SamControl:
                     pass
 
                 elif response == self.arduino:
-                    print("Debug 15 Arduino says " + response)
-                    str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
-                    print("Debug 16")
-                    print("Debug module is... "+str_rsv.strip().split(" "))
-                    module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
-                    if module_to_use is not None:
-                        module_to_use.message_received(str_rsv)
-                    else:
-                        print("Received command for the module " + str_rsv.strip().split(" "))
-                    print("Debug 17")
+                    print("Arduino sent a message.")
+                    # print("Debug 15 Arduino says " + response)
+                    # str_rsv = self.arduino.readline()   # This will read one byte. We can change it as needed.
+                    # print("Debug 16")
+                    # print("Debug module is... "+str_rsv.strip().split(" "))
+                    # module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
+                    # if module_to_use is not None:
+                    #     module_to_use.message_received(str_rsv)
+                    # else:
+                    #     print("Received command for the module " + str_rsv.strip().split(" "))
+                    # print("Debug 17")
                 else:
                     print("ERROR")
                 print("Debug 14")
