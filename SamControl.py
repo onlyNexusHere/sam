@@ -97,7 +97,7 @@ class SamControl:
                     pass
 
                 elif response == self.arduino:
-                    print("15")
+                    print("15 Arduino says " + response)
                     str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
                     print("16")
                     print("debug: module is... "+str_rsv.strip().split(" "))
