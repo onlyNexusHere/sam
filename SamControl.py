@@ -9,8 +9,7 @@ import os.path
 if os.path.isfile("/proc/cpuinfo"):
     from picamera import PiCamera
 else:
-    sys.path.append('~/sam/pi_libraries/')
-    from pi_libraries import PiCamera
+    PiCamera = None
 
 """
 
