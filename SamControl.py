@@ -100,9 +100,11 @@ class SamControl:
                     print("15")
                     str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
                     print("16")
-                    module_to_use = self.arduino_modules.get(str_rsv.strip().strip().split(" "), None)
-                    if module_to_use.strip() is not None:
+                    module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
+                    if module_to_use is not None:
                         module_to_use.message_received(str_rsv)
+                    else:
+                        print("Received command for the module " + str_rsv.strip().split(" "))
                     print("17")
                 else:
                     print("ERROR")
