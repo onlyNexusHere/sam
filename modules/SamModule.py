@@ -7,7 +7,7 @@ class SamModule:
     Modules will inherit from this class.
     """
     arduino = None
-    sam: SamControl = None
+    sam = None
     name = None
     identifier = None
     is_local_to_pi = False

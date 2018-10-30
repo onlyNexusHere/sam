@@ -65,7 +65,7 @@ class StdinTools(SamModule):
 
     def request_module(self, str_args):
 
-        get_mod: SamModule = {**self.sam.arduino_modules, **self.sam.local_modules}.get(str_args[0])
+        get_mod = {**self.sam.arduino_modules, **self.sam.local_modules}.get(str_args[0])
         if get_mod is None:
             self.write_to_stdout("Cannot retrieve module named " + str_args[0])
 

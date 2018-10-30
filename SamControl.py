@@ -85,7 +85,7 @@ class SamControl:
                 print("11")
                 if response == sys.stdin:
                     print("12")
-                    str_rsv: str = sys.stdin.readline()
+                    str_rsv = sys.stdin.readline()
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
                     print("13")
