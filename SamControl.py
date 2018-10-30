@@ -47,24 +47,24 @@ class SamControl:
 
         print("Finding Arduino USB")
 
-        print("1")
+        print("Debug 1")
         ports = list(serial.tools.list_ports.comports())
-        print("2")
+        print("Debug 2")
         for p in ports:
-            print("3")
+            print("Debug 3")
             if "Arduino" in p[1]:
-                print("4")
+                print("Debug 4")
                 self.arduino = serial.Serial(p[0])
                 print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
-            print("7")
-        print("6")
+            print("Debug 7")
+        print("Debug 6")
         if self.arduino is not None:
             listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
-        print("7")
+        print("Debug 7")
         listening_to.append(sys.stdin)
 
         # CAMERA MODULE PART 1 - add the camera interface object
@@ -76,19 +76,19 @@ class SamControl:
             print("Camera was not found.")
 
                 # This is the heart of the program. Select is non-blocking.
-        print("8")
+        print("Debug 8")
         while self.quit_program is False:
-            print("9")
+            print("Debug 9")
             responded = select.select(listening_to, [], [], .5)[0]
-            print("10")
+            print("Debug 10")
             for response in responded:
-                print("11")
+                print("Debug 11 response: " + str(response))
                 if response == sys.stdin:
-                    print("12")
+                    print("Debug 12")
                     str_rsv = sys.stdin.readline()
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
-                    print("13")
+                    print("Debug 13")
                 # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
                 # Please add code like the stuff below.
                 elif response == self.camera:
@@ -97,19 +97,19 @@ class SamControl:
                     pass
 
                 elif response == self.arduino:
-                    print("15 Arduino says " + response)
+                    print("Debug 15 Arduino says " + response)
                     str_rsv = self.arduino.readline() # This will read one byte. We can change it as needed.
-                    print("16")
-                    print("debug: module is... "+str_rsv.strip().split(" "))
+                    print("Debug 16")
+                    print("Debug module is... "+str_rsv.strip().split(" "))
                     module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
                     if module_to_use is not None:
                         module_to_use.message_received(str_rsv)
                     else:
                         print("Received command for the module " + str_rsv.strip().split(" "))
-                    print("17")
+                    print("Debug 17")
                 else:
                     print("ERROR")
-                print("14")
+                print("Debug 14")
                 if self.quit_program:
                     print("Goodbye!")
                     return
