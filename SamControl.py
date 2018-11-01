@@ -59,24 +59,19 @@ class SamControl:
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
                     if self.debug: print("Debug 13")
-                # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
-                # Please add code like the stuff below.
-                elif response == self.camera:
-                    # str_rsv = camera.read
-                    # self.local_modules.get("camera_id").message_received(str_rsv)
-                    pass
 
                 elif response == self.arduino:
                     print("Arduino sent a message.")
-                    # if self.debug: print("Debug 15 Arduino says " + response)
-                    # str_rsv = self.arduino.readline()   # This will read one byte. We can change it as needed.
+                    arduino_says = response.readline()
+                    print(str(arduino_says.decode("utf-8")).strip())
                     # print("Debug 16")
-                    # print("Debug module is... "+str_rsv.strip().split(" "))
-                    # module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
-                    # if module_to_use is not None:
-                    #     module_to_use.message_received(str_rsv)
-                    # else:
-                    #     print("Received command for the module " + str_rsv.strip().split(" "))
+                    # print("Debug module is... "+arduino_says.strip().split(" "))
+                    module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
+
+                    if module_to_use is not None:
+                        module_to_use.message_received(str_rsv)
+                    else:
+                        print("Received command for the module " + str_rsv.strip().split(" "))
                     # if self.debug: print("Debug 17")
                 else:
                     print("ERROR")
