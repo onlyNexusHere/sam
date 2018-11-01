@@ -8,10 +8,12 @@ class StdinTools(SamModule):
     """
 
     stdin_cmds = {}
-
+    debug = None
 
     def __init__(self, **kargs):
         super().__init__("StdinTools", is_local=True, identi=">", **kargs)
+
+        self.debug = kargs.get("debug")
 
         self.stdin_cmds = {"modules": (lambda str_args: self.show_mods(),
                                        "View the modules"),
@@ -27,12 +29,15 @@ class StdinTools(SamModule):
                                     "Get the status of the Arduino"),
                            "send": (lambda str_args: self.send_message(str_args),
                                     "Send a string to the arduino"),
-
+                           "findarduino": (lambda str_args: self.find_arduino(),
+                                    "Re-find the arduino"),
+                           "debug": (lambda str_args: self.toggle_debug(str_args),
+                                    "Change debugging to true or false"),
                            "quit": (lambda str_args: self.sam.request_quit(),
                                     "Quit the program")
                            }
 
-    def message_received(self, message: str):
+    def message_received(self, message):
         message_arg = message.strip().split(" ")
         print("Function requested: " + message_arg[0])
 
@@ -42,6 +47,17 @@ class StdinTools(SamModule):
             self.write_to_stdout("Cannot find command " + message_arg[0] + ". Use help to get help.")
         else:
             func_to_run(message_arg[1:])
+
+    def find_arduino(self):
+        self.sam.find_arduino()
+
+    def toggle_debug(self, msg):
+        if msg.strip() == "true":
+            self.sam.debug = True
+        elif msg.strip() == "false":
+            self.sam.debug = False
+        else:
+            self.write_to_stdout("Cannot change debugging to "+str(msg))
 
     def show_mods(self):
         self.write_to_stdout(str([n for n in {**self.sam.arduino_modules, **self.sam.local_modules}.keys()]))
@@ -56,7 +72,7 @@ class StdinTools(SamModule):
     def show_status(self):
 
         if self.sam.arduino is not None:
-            self.write_to_stdout("Arduino is: " + self.sam.arduino.port)
+            self.write_to_stdout("Arduino is: " + self.sam.arduino.port + "\nDebugging is " + str(self.sam.debug))
         else:
             self.write_to_stdout("Arduino is not detected.")
 

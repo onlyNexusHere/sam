@@ -25,7 +25,7 @@ class SamModule:
         self.identifier = identi
         self.is_local_to_pi = is_local
 
-    def message_received(self, message: str):
+    def message_received(self, message):
         """
         This function is message_received when the arduino sends a message from the module to the pi.
         Message should include the identifier in the front.

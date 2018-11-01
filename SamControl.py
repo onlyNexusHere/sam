@@ -3,7 +3,7 @@ import sys
 import select
 import serial.tools.list_ports
 import datetime
-from modules import StdinTools
+from modules import StdinTools, CameraProcessing
 
 import os.path
 if os.path.isfile("/proc/cpuinfo"):
@@ -25,6 +25,7 @@ class SamControl:
     arduino = None
     log_file = None
     camera = None
+    debug = False
 
     # This is the dictionary that holds modules.
     # Modules need...
@@ -33,6 +34,9 @@ class SamControl:
 
     quit_program = False
 
+    # Array of file numbers for
+    listening_to = []
+
     def main(self):
         """
 
@@ -40,54 +44,24 @@ class SamControl:
 
         """
 
-        # Array of file numbers for
-        listening_to = []
-
         self.init_mods()
 
-        print("Finding Arduino USB")
+        self.find_arduino()
 
-        print("Debug 1")
-        ports = list(serial.tools.list_ports.comports())
-        print("Debug 2")
-        for p in ports:
-            print("Debug 3")
-            if "Arduino" in p[1]:
-                print("Debug 4")
-                self.arduino = serial.Serial(p[0])
-                print("Arduino USB was found at " + p[0])
-
-                # Adding listeners to the list
-            print("Debug 7")
-        print("Debug 6")
-        if self.arduino is not None:
-            listening_to.append(self.arduino)
-        else:
-            print("Arduino USB was not found.")
-        print("Debug 7")
-        listening_to.append(sys.stdin)
-
-        # CAMERA MODULE PART 1 - add the camera interface object
-        #self.camera = ...
-
-        if self.camera is not None:
-            listening_to.append(self.camera)
-        else:
-            print("Camera was not found.")
 
                 # This is the heart of the program. Select is non-blocking.
-        print("Debug 8")
+        if self.debug: print("Debug 8")
         while self.quit_program is False:
-            print("Debug 9")
-            responded = select.select(listening_to, [], [], .5)[0]
-            print("Debug 10")
+            if self.debug: print("Debug 9")
+            responded = select.select(self.listening_to, [], [], .5)[0]
+            if self.debug: print("Debug 10")
             for response in responded:
                 if response == sys.stdin:
-                    print("Debug 12")
+                    if self.debug: print("Debug 12")
                     str_rsv = sys.stdin.readline()
                     # print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
-                    print("Debug 13")
+                    if self.debug: print("Debug 13")
                 # CAMERA MODULE PART 2 - code commented out below is not correct, but has the general idea.
                 # Please add code like the stuff below.
                 elif response == self.camera:
@@ -97,7 +71,7 @@ class SamControl:
 
                 elif response == self.arduino:
                     print("Arduino sent a message.")
-                    # print("Debug 15 Arduino says " + response)
+                    # if self.debug: print("Debug 15 Arduino says " + response)
                     # str_rsv = self.arduino.readline()   # This will read one byte. We can change it as needed.
                     # print("Debug 16")
                     # print("Debug module is... "+str_rsv.strip().split(" "))
@@ -106,10 +80,12 @@ class SamControl:
                     #     module_to_use.message_received(str_rsv)
                     # else:
                     #     print("Received command for the module " + str_rsv.strip().split(" "))
-                    # print("Debug 17")
+                    # if self.debug: print("Debug 17")
                 else:
                     print("ERROR")
-                print("Debug 14")
+
+                if self.debug: print("Debug 14")
+
                 if self.quit_program:
                     print("Goodbye!")
                     return
@@ -133,12 +109,14 @@ class SamControl:
         """
         args_for_mods = {
             "sam": self,
-            "arduino_object": self.arduino
+            "arduino_object": self.arduino,
+            "debug": self.debug
         }
 
         # This is where we add the new mods for proper initialization.
         # Remember to use **args for mods as the parameter to initialize the mod.
-        mods = [StdinTools.StdinTools(**args_for_mods)]
+        mods = [StdinTools.StdinTools(**args_for_mods),
+                CameraProcessing.CameraProcessing(**args_for_mods)]
 
         for mod in mods:
             if mod.is_local_to_pi:
@@ -152,6 +130,31 @@ class SamControl:
                           " is used twice in arduino modules. Overwriting the first instance.")
 
                 self.arduino_modules[mod.identifier] = mod
+
+    def find_arduino(self):
+        print("Finding Arduino USB")
+
+        if self.debug: print("Debug 1")
+
+        ports = list(serial.tools.list_ports.comports())
+        print("Debug 2")
+        for p in ports:
+            if self.debug: print("Debug 3")
+            if "Arduino" in p[1]:
+                if self.debug: print("Debug 4")
+                self.arduino = serial.Serial(p[0])
+                if self.debug: print("Arduino USB was found at " + p[0])
+
+                # Adding listeners to the list
+            if self.debug: print("Debug 7")
+        if self.debug: print("Debug 6")
+        if self.arduino is not None:
+            self.listening_to.append(self.arduino)
+        else:
+            print("Arduino USB was not found.")
+        if self.debug: print("Debug 7")
+        self.listening_to.append(sys.stdin)
+
 
     def send(self, message):
         """
