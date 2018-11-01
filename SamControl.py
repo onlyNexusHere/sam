@@ -3,13 +3,13 @@ import sys
 import select
 import serial.tools.list_ports
 import datetime
-from modules import StdinTools, CameraProcessing
+from modules import StdinTools, CameraProcessing, ArduinoDebug
 
-import os.path
-if os.path.isfile("/proc/cpuinfo"):
-    from picamera import PiCamera
-else:
-    PiCamera = None
+# import os.path
+# if os.path.isfile("/proc/cpuinfo"):
+#     from picamera import PiCamera
+# else:
+#     PiCamera = None
 
 """
 
@@ -25,7 +25,7 @@ class SamControl:
     arduino = None
     log_file = None
     camera = None
-    debug = False
+    debug = True
 
     # This is the dictionary that holds modules.
     # Modules need...
@@ -43,11 +43,8 @@ class SamControl:
         Main method for running robot.
 
         """
-
-        self.init_mods()
-
         self.find_arduino()
-
+        self.init_mods()
 
                 # This is the heart of the program. Select is non-blocking.
         if self.debug: print("Debug 8")
@@ -107,18 +104,22 @@ class SamControl:
         Imports files in the modules folder and initiates them.
         :return: None
         """
+        if self.debug: print("Debug getting modules")
+
         args_for_mods = {
             "sam": self,
-            "arduino_object": self.arduino,
-            "debug": self.debug
+            "arduino_object": self.arduino
         }
-
+        if self.debug: print("mods 1")
         # This is where we add the new mods for proper initialization.
         # Remember to use **args for mods as the parameter to initialize the mod.
-        mods = [StdinTools.StdinTools(**args_for_mods),
-                CameraProcessing.CameraProcessing(**args_for_mods)]
-
+        mods = [StdinTools.StdinTools(args_for_mods),
+                CameraProcessing.CameraProcessing(args_for_mods),
+                ArduinoDebug.ArduinoDebug(args_for_mods)]
+        if self.debug: print("mods 2")
         for mod in mods:
+            if self.debug: print("initializing " + mod.identifier)
+
             if mod.is_local_to_pi:
                 if mod.identifier in self.local_modules.keys():
                     print("Identifier " + mod.identifier +
@@ -131,6 +132,8 @@ class SamControl:
 
                 self.arduino_modules[mod.identifier] = mod
 
+        if self.debug: print("Debug imported modules")
+
     def find_arduino(self):
         print("Finding Arduino USB")
 
@@ -142,7 +145,10 @@ class SamControl:
             if self.debug: print("Debug 3")
             if "Arduino" in p[1]:
                 if self.debug: print("Debug 4")
-                self.arduino = serial.Serial(p[0])
+                try:
+                    self.arduino = serial.Serial(p[0])
+                except serial.serialutil.SerialException:
+                    print("Could not connect to Arduino, either permissions or its busy")
                 if self.debug: print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list

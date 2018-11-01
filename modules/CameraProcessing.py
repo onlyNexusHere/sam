@@ -13,9 +13,9 @@ if os.path.isfile("/proc/cpuinfo"):
 else:
     picamera = None
 
-class CameraProcessing:
-    def __init__(self, **kargs):
-        super().__init__("CameraProcessing", is_local=True, identi="camera", **kargs)
+class CameraProcessing(SamModule):
+    def __init__(self, kargs):
+        super().__init__(module_name="CameraProcessing", is_local=True, identi="camera", **kargs)
 
         # Here: add the thing to upload an image
 

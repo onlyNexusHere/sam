@@ -1,4 +1,4 @@
-import SamControl
+# import SamControl
 import serial
 
 class SamModule:
@@ -13,11 +13,13 @@ class SamModule:
     is_local_to_pi = False
 
     def __init__(self,
-                 module_name: str = "",
-                 sam: SamControl = None,
+                 module_name="",
+                 sam=None,
                  arduino_object=None,
-                 identi: str = "",
-                 is_local: bool = False) -> object:
+                 identi="",
+                 is_local=False):
+
+        print("Setting up " + module_name)
 
         self.arduino = arduino_object
         self.sam = sam
