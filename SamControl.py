@@ -2,8 +2,7 @@ import sys
 
 import select
 import serial.tools.list_ports
-import datetime
-from modules import StdinTools, CameraProcessing, ArduinoDebug
+from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors
 
 # import os.path
 # if os.path.isfile("/proc/cpuinfo"):
@@ -25,7 +24,7 @@ class SamControl:
     arduino = None
     log_file = None
     camera = None
-    debug = True
+    debug = False
 
     # This is the dictionary that holds modules.
     # Modules need...
@@ -46,41 +45,38 @@ class SamControl:
         self.find_arduino()
         self.init_mods()
 
-                # This is the heart of the program. Select is non-blocking.
-        if self.debug: print("Debug 8")
+        if self.debug: print("Everything has been initialized")
+
         while self.quit_program is False:
-            if self.debug: print("Debug 9")
+
+            if self.debug: print("Starting to listen")
+
             responded = select.select(self.listening_to, [], [], .5)[0]
-            if self.debug: print("Debug 10")
+
+            if self.debug: print("Select started")
+
             for response in responded:
                 if response == sys.stdin:
-                    if self.debug: print("Debug 12")
                     str_rsv = sys.stdin.readline()
-                    # print("got message: " + str_rsv)
+                    if self.debug: print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
-                    if self.debug: print("Debug 13")
 
                 elif response == self.arduino:
-                    print("Arduino sent a message.")
+                    if self.debug: print("Arduino sent a message.")
                     arduino_says = response.readline()
-                    print(str(arduino_says.decode("utf-8")).strip())
-                    # print("Debug 16")
-                    # print("Debug module is... "+arduino_says.strip().split(" "))
-                    module_to_use = self.arduino_modules.get(str_rsv.strip().split(" "), None)
-
+                    if self.debug: print(arduino_says.decode("utf-8")).strip()
+                    module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0], None)
                     if module_to_use is not None:
-                        module_to_use.message_received(str_rsv)
+                        module_to_use.message_received(arduino_says.decode("utf-8").strip())
                     else:
-                        print("Received command for the module " + str_rsv.strip().split(" "))
-                    # if self.debug: print("Debug 17")
+                        if self.debug: print("Received incorrect module " + arduino_says.decode("utf-8").strip().split(" ")[0])
                 else:
                     print("ERROR")
-
-                if self.debug: print("Debug 14")
 
                 if self.quit_program:
                     print("Goodbye!")
                     return
+
             [mod.on_wait() for _, mod in {**self.local_modules, **self.arduino_modules}.items()]
 
     def exit(self):
@@ -103,15 +99,20 @@ class SamControl:
 
         args_for_mods = {
             "sam": self,
-            "arduino_object": self.arduino
+            "arduino_object": self.arduino,
+            "log_file": self.log_file
         }
-        if self.debug: print("mods 1")
-        # This is where we add the new mods for proper initialization.
-        # Remember to use **args for mods as the parameter to initialize the mod.
+
+        if self.debug: print("About to initialize mods")
+
         mods = [StdinTools.StdinTools(args_for_mods),
                 CameraProcessing.CameraProcessing(args_for_mods),
-                ArduinoDebug.ArduinoDebug(args_for_mods)]
-        if self.debug: print("mods 2")
+                ArduinoDebug.ArduinoDebug(args_for_mods),
+                Ping.Ping(args_for_mods),
+                Motors.Motors(args_for_mods)]
+
+        if self.debug: print("mods initialized")
+
         for mod in mods:
             if self.debug: print("initializing " + mod.identifier)
 
@@ -135,11 +136,10 @@ class SamControl:
         if self.debug: print("Debug 1")
 
         ports = list(serial.tools.list_ports.comports())
-        print("Debug 2")
+        print("Looking at all ports")
         for p in ports:
-            if self.debug: print("Debug 3")
+            if self.debug: print("Going to next port")
             if "Arduino" in p[1]:
-                if self.debug: print("Debug 4")
                 try:
                     self.arduino = serial.Serial(p[0])
                 except serial.serialutil.SerialException:
@@ -147,13 +147,11 @@ class SamControl:
                 if self.debug: print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
-            if self.debug: print("Debug 7")
-        if self.debug: print("Debug 6")
+        if self.debug: print("Done looking through ports")
         if self.arduino is not None:
             self.listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
-        if self.debug: print("Debug 7")
         self.listening_to.append(sys.stdin)
 
 
@@ -167,25 +165,6 @@ class SamControl:
             self.arduino.write(message)
         else:
             print("Arduino is not connected!")
-
-    def log_to_file(self, msg, mod_name="UNK"):
-        """
-        Logging to a file
-        :return:
-        """
-        while self.log_file is None:
-            file_name_uncleansed = sys.raw_input("Enter Filename(or quit): ")
-            file_name = file_name_uncleansed.strip()
-
-            if file_name == "quit":
-                return
-
-            self.log_file = open(file_name, 'a')
-
-        log_message = "\n" + str(datetime.datetime.now()) + " " + mod_name + ": " + msg
-
-        self.log_file.write(log_message)
-
 
     def write_to_stdout(self, mod_name="Default", msg=""):
         """

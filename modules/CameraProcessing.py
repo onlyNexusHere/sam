@@ -25,10 +25,6 @@ class CameraProcessing(SamModule):
             pass
 
     def on_wait(self):
-        # with picamera.PiCamera() as camera:
-        #     camera.resolution = (1024, 768)
-        #     camera.start_preview()
-
         pass
 
     def write_to_stdout(self, string_to_write):

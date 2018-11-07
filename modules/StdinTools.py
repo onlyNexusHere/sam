@@ -43,7 +43,8 @@ class StdinTools(SamModule):
 
     def message_received(self, message):
         message_arg = message.strip().split(" ")
-        print("Function requested: " + message_arg[0])
+
+        if self.sam.debug: print("Function requested: " + message_arg[0])
 
         func_to_run, _ = self.stdin_cmds.get(message_arg[0], (None, None))
 

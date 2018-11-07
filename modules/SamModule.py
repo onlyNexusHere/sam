@@ -1,5 +1,7 @@
 # import SamControl
 import serial
+import sys
+import datetime
 
 class SamModule:
 
@@ -11,13 +13,15 @@ class SamModule:
     name = None
     identifier = None
     is_local_to_pi = False
+    log_file = None
 
     def __init__(self,
                  module_name="",
                  sam=None,
                  arduino_object=None,
                  identi="",
-                 is_local=False):
+                 is_local=False,
+                 log_file=None):
 
         print("Setting up " + module_name)
 
@@ -26,6 +30,7 @@ class SamModule:
         self.name = module_name
         self.identifier = identi
         self.is_local_to_pi = is_local
+        self.log_file = log_file
 
     def message_received(self, message):
         """
@@ -58,7 +63,14 @@ class SamModule:
         """
         Use this to write to the logging file.
         """
-        self.sam.log_to_file(string_to_log, module_name=self.name)
+        while self.log_file is None:
+            file_name_uncleansed = sys.raw_input("Enter Filename(or quit): ")
+            file_name = file_name_uncleansed.strip()
+            if file_name == "quit":
+                return
+            self.log_file = open(file_name, 'a')
+        log_message = "\n" + str(datetime.datetime.now()) + " " + self.name + ": " + string_to_log
+        self.log_file.write(log_message)
 
     def send(self, msg):
         """
