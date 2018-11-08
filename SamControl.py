@@ -163,7 +163,7 @@ class SamControl:
         :return:
         """
         if self.arduino is not None:
-            if self.debug: print("Sending arduino message")
+            if self.debug: print("Sending arduino message" + message)
             self.arduino.write(message + "\n")
             if self.debug: print("sent arduino message")
         else:
