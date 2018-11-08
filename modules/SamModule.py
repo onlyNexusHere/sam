@@ -28,7 +28,7 @@ class SamModule:
         self.arduino = arduino_object
         self.sam = sam
         self.name = module_name
-        self.identifier = identi
+        self.identifier = identi.lower()
         self.is_local_to_pi = is_local
         self.log_file = log_file
 

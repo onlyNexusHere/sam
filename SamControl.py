@@ -65,7 +65,7 @@ class SamControl:
                     if self.debug: print("Arduino sent a message.")
                     arduino_says = response.readline()
                     if self.debug: print("Messsage:" + arduino_says.decode("utf-8").strip())
-                    module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0], None)
+                    module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0].lower(), None)
                     if module_to_use is not None:
                         module_to_use.message_received(arduino_says.decode("utf-8").strip())
                     else:
