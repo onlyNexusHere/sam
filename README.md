@@ -17,6 +17,25 @@ Many of these files will be called automatically. More documentation is in SamMo
 
 SamModule API:
 
+You can define these functions in the module:   
+        
+    self.__init__(kargs)
+        Initialize the object! See other modules for how to use this.
+        
+    self.message_received(self, message)
+        This function is message_received when the arduino sends a message from the module to the pi.
+        Message does not include the identifier sent by the arduino
+        
+    self.stdin_request(self, message):
+        This function is message_received when the terminal is used to request a specific module to do something.
+        This string removes the 'request mod_name' from the front.
+        
+    self.on_wait(self):
+        This function is called very .2 seconds or faster.
+        This method can be used to request an update regularily.
+        
+You can use these functions and variables:
+
     self.arduino: Serial
         links to the serial object for the arduino. May be None if there is no arduino connected. Pl
      
@@ -41,21 +60,6 @@ SamModule API:
     self.log_file
         The log file!
         
-    self.__init__(kargs)
-        Initialize the object!
-        
-    self.message_received(self, message)
-        This function is message_received when the arduino sends a message from the module to the pi.
-        Message does not include the identifier sent by the arduino
-        
-    self.stdin_request(self, message):
-        This function is message_received when the terminal is used to request a specific module to do something.
-        This string removes the 'request mod_name' from the front.
-        
-    self.on_wait(self):
-        This runs at least every .5 seconds at least.
-        This method can be used to request an update regularily.
-        
     self.write_to_stdout(self, string_to_write):
         Use this method to print to the terminal running the program on the pi.
         Use this in place of print().
@@ -65,4 +69,7 @@ SamModule API:
        
     self.send(self, msg):
         Use this function to send a message to the arduino.
-        Adds the identifier
+        Adds the identifier   
+        
+
+   
