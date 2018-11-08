@@ -92,6 +92,9 @@ class StdinTools(SamModule):
             self.write_to_stdout("Cannot retrieve module named " + str_args[0])
 
         else:
-            get_mod.stdin_request(" ".join(str_args[1:]))
+            try:
+                get_mod.stdin_request(" ".join(str_args[1:]))
+            except Exception as e:
+                self.write_to_stdout("Cannot run request for module " + get_mod.name + "\n" + str(e))
 
 

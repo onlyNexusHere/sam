@@ -63,14 +63,7 @@ class SamModule:
         """
         Use this to write to the logging file.
         """
-        while self.log_file is None:
-            file_name_uncleansed = sys.raw_input("Enter Filename(or quit): ")
-            file_name = file_name_uncleansed.strip()
-            if file_name == "quit":
-                return
-            self.log_file = open(file_name, 'a')
-        log_message = "\n" + str(datetime.datetime.now()) + " " + self.name + ": " + string_to_log
-        self.log_file.write(log_message)
+        self.sam.log_to_file(self.identifier + " " + string_to_log)
 
     def send(self, msg):
         """

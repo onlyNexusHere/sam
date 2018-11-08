@@ -1,0 +1,2 @@
+2018-11-08 15:00:25.283616 StdinTools Cannot find command hi. Use help to get help.2018-11-08 15:00:26.752712 StdinTools Cannot find command jsjsj. Use help to get help.2018-11-08 15:00:34.107326 StdinTools Cannot find command quit(). Use help to get help.2018-11-08 15:01:05.927489 StdinTools Cannot find command hi. Use help to get help.
+2018-11-08 15:01:07.619285 StdinTools Arduino is not detected.

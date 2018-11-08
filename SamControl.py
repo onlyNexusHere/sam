@@ -1,8 +1,9 @@
 import sys
-
+import argparse
 import select
 import serial.tools.list_ports
 from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors
+from datetime import datetime
 
 # import os.path
 # if os.path.isfile("/proc/cpuinfo"):
@@ -36,13 +37,28 @@ class SamControl:
     # Array of file numbers for
     listening_to = []
 
+    def __init__(self, log_file, arduino_location):
+        if log_file is not None:
+            try:
+                self.log_file = open(log_file[0], "a")
+            except:
+                print("Cannot open log_file" + log_file)
+        if arduino_location is not None:
+            try:
+                self.arduino = serial.Serial(arduino_location[0])
+
+            except serial.serialutil.SerialException:
+                print("Could not connect to Arduino, either permissions or its busy")
+
     def main(self):
         """
 
         Main method for running robot.
 
         """
-        self.find_arduino()
+        if self.arduino is None:
+            self.find_arduino()
+
         self.init_mods()
 
         if self.debug: print("Everything has been initialized")
@@ -163,12 +179,12 @@ class SamControl:
         if self.debug: print("Debug imported modules")
 
     def find_arduino(self):
-        print("Finding Arduino USB")
+        if self.debug: print("Finding Arduino USB")
 
         if self.debug: print("Debug 1")
 
         ports = list(serial.tools.list_ports.comports())
-        print("Looking at all ports")
+        if self.debug: print("Looking at all ports")
         for p in ports:
             if self.debug: print("Going to next port")
             if "Arduino" in p[1]:
@@ -176,7 +192,7 @@ class SamControl:
                     self.arduino = serial.Serial(p[0])
                 except serial.serialutil.SerialException:
                     print("Could not connect to Arduino, either permissions or its busy")
-                if self.debug: print("Arduino USB was found at " + p[0])
+                print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
         if self.debug: print("Done looking through ports")
@@ -197,10 +213,16 @@ class SamControl:
             if self.debug: print("Sending arduino message: " + message)
 
             self.arduino.write(message.encode("utf-8"))
+            self.log_to_file("Sending to arduino: " + message)
 
             if self.debug: print("sent arduino message")
         else:
             print("Arduino is not connected!")
+
+    def log_to_file(self, string_to_write):
+
+        if self.log_file is not None:
+            self.log_file.write(str(datetime.now()) + " " + string_to_write + "\n")
 
     def write_to_stdout(self, mod_name="Default", msg=""):
         """
@@ -210,6 +232,7 @@ class SamControl:
         :return:
         """
         print(mod_name + " " + msg)
+        self.log_to_file(mod_name + " " + msg)
 
     def request_quit(self):
         """Use this function to kill the robot's program. Any mod can do this if needed."""
@@ -224,9 +247,18 @@ class SamControl:
 
 
 if __name__ == "__main__":
-    sam = SamControl()
+
+    parser = argparse.ArgumentParser(description="Run the SAM robot.")
+    parser.add_argument("--log-file", nargs=1, type=str,
+                        help="Use this variable to set a log file and start logging.")
+    parser.add_argument("--arduino", nargs=1, type=str,
+                        help="Set the location of the arduino. Useful if there are multiple arduinos connected.")
+
+    args = parser.parse_args()
+
+    sam = SamControl(args.log_file, args.arduino)
+
     try:
-        print("Running main")
         sam.main()
     except Exception:
         sam.exit()
