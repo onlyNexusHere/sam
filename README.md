@@ -58,7 +58,11 @@ You can use these functions and variables:
         If the socket goes to something on the pi, then it is true. If the module is for a device on the arduino, then it is false.
         
     self.log_file
-        The log file!
+        The log file! May be None.
+        
+    self.debug_run(func, func_args):
+        Use this method to run somthing only in debugging mode. One example:
+        "self.debug_run(self.write_to_stdout, "Failed!!")
         
     self.write_to_stdout(self, string_to_write):
         Use this method to print to the terminal running the program on the pi.
