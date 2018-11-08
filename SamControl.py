@@ -164,7 +164,9 @@ class SamControl:
         """
         if self.arduino is not None:
             if self.debug: print("Sending arduino message: " + message)
-            self.arduino.write(message)
+
+            self.arduino.write(message.encode("utf-8"))
+
             if self.debug: print("sent arduino message")
         else:
             print("Arduino is not connected!")
