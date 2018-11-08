@@ -26,6 +26,9 @@ SamModule API:
     self.sam.debug: Boolean
         If you want to print something only in debugging mode, then chcek this boolean.
         
+    self.sam.request_quit()
+        use this to request that the full program quit.
+        
     self.name: String
         This is the name of the module for debugging purposes.
         
