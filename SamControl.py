@@ -24,7 +24,7 @@ class SamControl:
     arduino = None
     log_file = None
     camera = None
-    debug = False
+    debug = True
 
     # This is the dictionary that holds modules.
     # Modules need...
