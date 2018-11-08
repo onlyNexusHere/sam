@@ -21,11 +21,18 @@ class CameraProcessing(SamModule):
 
 
     def stdin_request(self, message):
-        if message == "process":
-            pass
+        pass
 
     def on_wait(self):
-        pass
+        # Read camera?
+
+        # camera_say is list split by " "
+        camera_says = None
+
+        if camera_says[0] == "r":
+            if len(camera_says) > 1:
+                self.sam.motors.send("turn right " + camera_says[1])
+
 
     def write_to_stdout(self, string_to_write):
         pass

@@ -67,7 +67,7 @@ class SamControl:
                     if self.debug: print("Messsage:" + arduino_says.decode("utf-8").strip())
                     module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0].lower(), None)
                     if module_to_use is not None:
-                        module_to_use.message_received(arduino_says.decode("utf-8").strip())
+                        module_to_use.message_received(" ".join(arduino_says.decode("utf-8").strip().split(" ")[1:]))
                     else:
                         if self.debug: print("Received incorrect module " + arduino_says.decode("utf-8").strip().split(" ")[0])
                 else:
@@ -162,7 +162,7 @@ class SamControl:
         :return:
         """
         if self.arduino is not None:
-            self.arduino.write(message)
+            self.arduino.write(message + "\n")
         else:
             print("Arduino is not connected!")
 

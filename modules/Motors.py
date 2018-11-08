@@ -15,6 +15,12 @@ class Motors(SamModule):
         pass
 
     def stdin_request(self, message):
+        """
+        Module checks each word so we can easily adjust what is being sent
+
+        :param message:
+        :return:
+        """
 
         message_parts = message.strip().split(" ")
 
@@ -23,29 +29,36 @@ class Motors(SamModule):
             return
 
         if message_parts[0].lower() == "turn":
-            if len(message_parts)<2:
+
+            if len(message_parts) < 2:
                 self.write_to_stdout("Need direction to turn")
                 return
             elif message_parts[1].lower() == "right":
-                self.send("motor turn right")
+                self.send("turn right")
+
             elif message_parts[1].lower() == "left":
-                self.send("motor turn left")
+                self.send("turn left")
+
             else:
                 self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
         if message_parts[0].lower() == "adjust":
+
             if len(message_parts)<2:
                 self.write_to_stdout("Need direction to turn")
                 return
+
             elif message_parts[1].lower() == "right":
-                self.send("motor adjust right")
+                self.send("adjust right")
+
             elif message_parts[1].lower() == "left":
-                self.send("motor adjust left")
+                self.send("adjust left")
+
             else:
                 self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
         if message_parts[0].lower() == "stop":
-            self.send("motor stop")
+            self.send("stop")
 
         if message_parts[0].lower() == "start":
-            self.send("motor start")
+            self.send("start")

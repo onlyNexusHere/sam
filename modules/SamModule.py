@@ -35,7 +35,7 @@ class SamModule:
     def message_received(self, message):
         """
         This function is message_received when the arduino sends a message from the module to the pi.
-        Message should include the identifier in the front.
+        Message does not include the identifier sent by the arduino
         """
         pass
 
@@ -75,6 +75,8 @@ class SamModule:
     def send(self, msg):
         """
         Use this function to send a message to the arduino.
+
+        Adds the identifier
         """
-        self.sam.send(msg)
+        self.sam.send(self.identifier + " " + msg)
 
