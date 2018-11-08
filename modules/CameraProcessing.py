@@ -28,10 +28,10 @@ class CameraProcessing(SamModule):
 
         # camera_say is list split by " "
         camera_says = None
-
-        if camera_says[0] == "r":
-            if len(camera_says) > 1:
-                self.sam.motors.send("turn right " + camera_says[1])
+        if camera_says is not None:
+            if camera_says[0] == "r":
+                if len(camera_says) > 1:
+                    self.sam.motors.send("turn right " + camera_says[1])
 
 
     def write_to_stdout(self, string_to_write):

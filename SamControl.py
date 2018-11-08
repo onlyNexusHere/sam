@@ -24,7 +24,7 @@ class SamControl:
     arduino = None
     log_file = None
     camera = None
-    debug = True
+    debug = False
 
     # This is the dictionary that holds modules.
     # Modules need...
@@ -56,11 +56,12 @@ class SamControl:
             if self.debug: print("Select started")
 
             for response in responded:
+                if self.debug: print("stdin")
                 if response == sys.stdin:
+                    if self.debug: print("stdin2")
                     str_rsv = sys.stdin.readline()
                     if self.debug: print("got message: " + str_rsv)
                     self.local_modules.get(">").message_received(str_rsv)
-
                 elif response == self.arduino:
                     if self.debug: print("Arduino sent a message.")
                     arduino_says = response.readline()
@@ -76,7 +77,7 @@ class SamControl:
                 if self.quit_program:
                     print("Goodbye!")
                     return
-
+            if self.debug: print("One wait...")
             [mod.on_wait() for _, mod in {**self.local_modules, **self.arduino_modules}.items()]
 
     def exit(self):
@@ -162,7 +163,9 @@ class SamControl:
         :return:
         """
         if self.arduino is not None:
+            if self.debug: print("Sending arduino message")
             self.arduino.write(message + "\n")
+            if self.debug: print("sent arduino message")
         else:
             print("Arduino is not connected!")
 
