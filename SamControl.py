@@ -200,13 +200,13 @@ class SamControl:
             print(str(e))
             return
 
-        self.debug_run(print, "Messsage:" + arduino_says.decode("utf-8").strip())
+        self.debug_run(print, "Messsage:" + arduino_says.decode("utf-8", 'ignore').strip())
 
-        module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0].lower(), None)
+        module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8", 'ignore').strip().split(" ")[0].lower(), None)
 
         if module_to_use is not None:
             try:
-                module_to_use.message_received(" ".join(arduino_says.decode("utf-8").strip().split(" ")[1:]))
+                module_to_use.message_received(" ".join(arduino_says.decode("utf-8", 'ignore').strip().split(" ")[1:]))
             except Exception as e:
                 print("Exception found in module " + module_to_use.name + " for message received\n" + str(e))
         else:
@@ -288,8 +288,7 @@ if __name__ == "__main__":
     try:
         sam.main()
     except Exception as e:
-        print("Sam has failed.")
-        print(e.__doc__)
+        print("Sam has failed --> " + e.__doc__)
         print(str(e))
         sam.exit()
 

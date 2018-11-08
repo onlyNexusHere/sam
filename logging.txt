@@ -11,3 +11,13 @@
 2018-11-08 17:44:41.427718 ArduinoDebug I received:bug Starting up
 2018-11-08 17:45:37.437733 Sending to arduino: hi
 2018-11-08 17:45:37.475199 ArduinoDebug I received:bug Starting up
+2018-11-08 17:52:27.212712 StdinTools Cannot find command hi. Use help to get help.
+2018-11-08 17:52:28.866607 Sending to arduino: hi
+2018-11-08 17:55:00.995144 Sending to arduino: hi
+2018-11-08 17:56:06.855017 Sending to arduino: hu
+2018-11-08 17:56:06.892960 ArduinoDebug I received:bug Starting up
+2018-11-08 17:56:08.824723 ArduinoDebug I received:ved:ved:ved:ved:ved:ved:ved:ved:ved:ved:ved:ved:vedB_Vo;O߷}c޼xԿ[ݨ^7|3>VכoWv{?5C[ܳlnzWJ/瞫l3[+)G\Alo)w]|}Ocg`4덇k~00|kT{T-}/Q]?_ҟ_M姇Oo7w~ݷ)!'{՘GDyzgW';~4igwk>nwm9|UЛOo~)ox'7S=~;I{,ϿLϵ﬇l?iޏ˺^lb?޳[Bw/'-4+-3_ޙ|o~vh]IￇoűosdS3oIg3]yոj݆O~wВ0]-^h\*Woo4xM_g\CQugҟR߼mt{|3OnO'Ȼ翗6֫u>Xg{?l|2O>݇g,__￿k}{;뮊ߧm>]mG[Ի?tooK}n}sV객$O}-VYmNRG-?R5]xYN׼]*?v^Y>wX<t~o?/R[M8w%>.er^>ۙ[W鏷}_-^ϽߧUێbw ^}{廭~oMyNz8ʰ[]u˶=[{rO콁y/>so_?^<>걭xQd;;$KU,'7.i>9w	Zg~kL?Y}ix>/=$v?i]/w^gUCe޵=HqO/?➿O.W7n݁O7׿nҾjKOW|njXn_j~[oQ!?{x6{]_>MQ^h4O/x5a&z7GwGgKnqn{Veu5 pAG[M=}:>{/?}5`w5ɵ!ׯJ.zC^9Yvh}j3c=o^ܫ=;ػL5._ݱes<yZ>?7]ۿ7{:UǩWmh[!No?o6}r}oWv\'v~+>G}Ύy߳dZ{{r򹅦|,i?z]ε͹7zWQ͆^=[u
+2018-11-08 18:03:12.757111 Sending to arduino: hi
+2018-11-08 18:03:24.446157 Sending to arduino: hi
+2018-11-08 18:03:24.471480 ArduinoDebug I received: 104
+2018-11-08 18:03:24.496028 ArduinoDebug I received: 105
