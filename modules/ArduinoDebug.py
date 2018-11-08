@@ -13,4 +13,8 @@ class ArduinoDebug(SamModule):
         super().__init__(module_name="ArduinoDebug", is_local=False, identi="Debug", **kargs)
 
     def message_received(self, message):
-        if self.debug: self.write_to_stdout(message)
+        if self.sam.debug:
+            print("dbug mod")
+            self.write_to_stdout(message)
+        # self.write_to_stdout(message)
+
