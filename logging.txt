@@ -1,2 +1,13 @@
 2018-11-08 15:00:25.283616 StdinTools Cannot find command hi. Use help to get help.2018-11-08 15:00:26.752712 StdinTools Cannot find command jsjsj. Use help to get help.2018-11-08 15:00:34.107326 StdinTools Cannot find command quit(). Use help to get help.2018-11-08 15:01:05.927489 StdinTools Cannot find command hi. Use help to get help.
 2018-11-08 15:01:07.619285 StdinTools Arduino is not detected.
+2018-11-08 16:48:11.915400 Sending to arduino: hi
+2018-11-08 16:48:11.951707 ArduinoDebug I received:bug Starting up
+2018-11-08 17:10:40.916723 Sending to arduino: hi
+2018-11-08 17:10:40.954498 ArduinoDebug I received:bug Starting up
+2018-11-08 17:11:02.675414 Sending to arduino: hi
+2018-11-08 17:11:02.711660 ArduinoDebug I received:bug Starting up
+2018-11-08 17:40:07.203215 StdinTools Cannot find command hi. Use help to get help.
+2018-11-08 17:44:41.388245 Sending to arduino: hi
+2018-11-08 17:44:41.427718 ArduinoDebug I received:bug Starting up
+2018-11-08 17:45:37.437733 Sending to arduino: hi
+2018-11-08 17:45:37.475199 ArduinoDebug I received:bug Starting up

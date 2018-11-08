@@ -73,3 +73,13 @@ class SamModule:
         """
         self.sam.send(self.identifier + " " + msg)
 
+    def debug_run(self, func, func_args):
+        """
+        Use this command to run something only in debugging mode.
+
+        :param func:
+        :param func_args:
+        :return:
+        """
+        self.sam.debug_run(func, func_args)
+

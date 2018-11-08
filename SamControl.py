@@ -37,7 +37,7 @@ class SamControl:
     # Array of file numbers for
     listening_to = []
 
-    def __init__(self, log_file, arduino_location):
+    def __init__(self, log_file=None, arduino_location=None):
         if log_file is not None:
             try:
                 self.log_file = open(log_file[0], "a")
@@ -61,48 +61,28 @@ class SamControl:
 
         self.init_mods()
 
-        if self.debug: print("Everything has been initialized")
+        if self.debug:
+            print("Everything has been initialized")
 
         while self.quit_program is False:
 
-            if self.debug: print("Starting to listen")
+            if self.debug:
+                print("Starting to listen")
 
             responded = select.select(self.listening_to, [], [], .5)[0]
 
-            if self.debug: print("Select started")
+            if self.debug:
+                print("Select started")
 
             for response in responded:
 
                 if response == sys.stdin:
-
-                    if self.debug: print("stdin2")
-                    str_rsv = sys.stdin.readline()
-
-                    if self.debug: print("got message: " + str_rsv)
-
-                    try:
-                        self.local_modules.get(">").message_received(str_rsv)
-                    except Exception as e:
-                        print("Exception found in stdin module for message received\n" + str(e))
+                    self._process_stdin()
 
                 elif response == self.arduino:
-
-                    if self.debug: print("Arduino sent a message.")
-
-                    arduino_says = response.readline()
-
-                    if self.debug: print("Messsage:" + arduino_says.decode("utf-8").strip())
-
-                    module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0].lower(), None)
-                    if module_to_use is not None:
-                        try:
-                            module_to_use.message_received(" ".join(arduino_says.decode("utf-8").strip().split(" ")[1:]))
-
-                        except Exception as e:
-                            print("Exception found in module " + module_to_use.name + " for message received\n" + str(e))
-
-                    else:
-                        if self.debug: print("Received incorrect module " + arduino_says.decode("utf-8").strip().split(" ")[0])
+                    if self.debug:
+                        print("Arduino sent a message.")
+                    self._process_arduino_message(response)
 
                 else:
                     print("ERROR")
@@ -118,7 +98,6 @@ class SamControl:
                 except Exception as e:
                     print("Exception found in module " + mod.name + " for on wait\n" + str(e))
 
-
     def exit(self):
         """
         And of program functions, like closing ports.
@@ -129,13 +108,12 @@ class SamControl:
         if self.arduino is not None:
             self.arduino.close()
 
-
     def init_mods(self):
         """
         Imports files in the modules folder and initiates them.
         :return: None
         """
-        if self.debug: print("Debug getting modules")
+        self.debug_run(print, "Debug getting modules")
 
         args_for_mods = {
             "sam": self,
@@ -143,7 +121,7 @@ class SamControl:
             "log_file": self.log_file
         }
 
-        if self.debug: print("About to initialize mods")
+        self.debug_run(print, "About to initialize mods")
 
         mods = [StdinTools.StdinTools(args_for_mods),
                 CameraProcessing.CameraProcessing(args_for_mods),
@@ -151,10 +129,10 @@ class SamControl:
                 Ping.Ping(args_for_mods),
                 Motors.Motors(args_for_mods)]
 
-        if self.debug: print("mods initialized")
+        self.debug_run(print, "mods initialized")
 
         for mod in mods:
-            if self.debug: print("initializing " + mod.identifier)
+            self.debug_run(print, "initializing " + mod.identifier)
 
             if mod.identifier is "":
                 print("Cannot initialize a module. Module " + mod.name + " is missing an identifier.")
@@ -176,17 +154,17 @@ class SamControl:
 
                 self.arduino_modules[mod.identifier] = mod
 
-        if self.debug: print("Debug imported modules")
+        self.debug_run(print, "Debug imported modules")
 
     def find_arduino(self):
-        if self.debug: print("Finding Arduino USB")
+        self.debug_run(print, "Finding Arduino USB")
 
-        if self.debug: print("Debug 1")
+        self.debug_run(print, "Debug 1")
 
         ports = list(serial.tools.list_ports.comports())
-        if self.debug: print("Looking at all ports")
+        self.debug_run(print, "Looking at all ports")
         for p in ports:
-            if self.debug: print("Going to next port")
+            self.debug_run(print, "Going to next port")
             if "Arduino" in p[1]:
                 try:
                     self.arduino = serial.Serial(p[0])
@@ -195,13 +173,43 @@ class SamControl:
                 print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
-        if self.debug: print("Done looking through ports")
+        self.debug_run(print, "Done looking through ports")
         if self.arduino is not None:
             self.listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
         self.listening_to.append(sys.stdin)
 
+    def _process_stdin(self):
+
+        str_rsv = sys.stdin.readline()
+
+        self.debug_run(print, "got message: " + str_rsv)
+
+        try:
+            self.local_modules.get(">").message_received(str_rsv)
+        except Exception as e:
+            print("Exception found in stdin module for message received\n" + str(e))
+
+    def _process_arduino_message(self, response):
+
+        try:
+            arduino_says = response.readline()
+        except Exception as e:
+            print(str(e))
+            return
+
+        self.debug_run(print, "Messsage:" + arduino_says.decode("utf-8").strip())
+
+        module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0].lower(), None)
+
+        if module_to_use is not None:
+            try:
+                module_to_use.message_received(" ".join(arduino_says.decode("utf-8").strip().split(" ")[1:]))
+            except Exception as e:
+                print("Exception found in module " + module_to_use.name + " for message received\n" + str(e))
+        else:
+            self.debug_run(print, "Received incorrect module " + arduino_says.decode("utf-8").strip().split(" ")[0])
 
     def send(self, message):
         """
@@ -210,12 +218,12 @@ class SamControl:
         :return:
         """
         if self.arduino is not None:
-            if self.debug: print("Sending arduino message: " + message)
+            self.debug_run(print, "Sending arduino message: " + message)
 
             self.arduino.write(message.encode("utf-8"))
             self.log_to_file("Sending to arduino: " + message)
 
-            if self.debug: print("sent arduino message")
+            self.debug_run(print, "sent arduino message")
         else:
             print("Arduino is not connected!")
 
@@ -233,6 +241,24 @@ class SamControl:
         """
         print(mod_name + " " + msg)
         self.log_to_file(mod_name + " " + msg)
+
+    def debug_run(self, func, func_args):
+        """
+        Function for running a command only in debugging mode.
+        It takes a first order function and some type of argument,
+        so either list of argument, dictionary of names arguments, or a string/int.
+        :param func:
+        :param func_args:
+        :return:
+        """
+        if self.debug:
+            if type(func_args) is list:
+                func(*func_args)
+            elif type(func_args) is dict:
+                func(**func_args)
+            else:
+                func(func_args)
+
 
     def request_quit(self):
         """Use this function to kill the robot's program. Any mod can do this if needed."""
@@ -260,6 +286,8 @@ if __name__ == "__main__":
 
     try:
         sam.main()
-    except Exception:
+    except Exception as e:
+        print("Sam has failed.")
+        print(str(e))
         sam.exit()
 

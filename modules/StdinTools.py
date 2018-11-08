@@ -44,7 +44,7 @@ class StdinTools(SamModule):
     def message_received(self, message):
         message_arg = message.strip().split(" ")
 
-        if self.sam.debug: print("Function requested: " + message_arg[0])
+        self.debug_run(print, "Function requested: " + message_arg[0])
 
         func_to_run, _ = self.stdin_cmds.get(message_arg[0], (None, None))
 
@@ -57,7 +57,7 @@ class StdinTools(SamModule):
         self.sam.find_arduino()
 
     def toggle_debug(self, msg):
-        if self.sam.debug: print("Toggling debugging, msg is " + msg[0])
+        self.debug_run(print, "Toggling debugging, msg is " + msg[0])
         if msg[0].strip() == "true":
             self.sam.debug = True
         elif msg[0].strip() == "false":
