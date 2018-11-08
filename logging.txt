@@ -21,3 +21,55 @@
 2018-11-08 18:03:24.446157 Sending to arduino: hi
 2018-11-08 18:03:24.471480 ArduinoDebug I received: 104
 2018-11-08 18:03:24.496028 ArduinoDebug I received: 105
+2018-11-08 18:08:56.626932 Sending to arduino: hi
+2018-11-08 18:08:56.651389 ArduinoDebug I received: 104
+2018-11-08 18:08:56.680086 ArduinoDebug I received: 105
+2018-11-08 18:12:56.272699 StdinTools Cannot run request for module Motors
+'str' object has no attribute 'isDigit'
+2018-11-08 18:14:22.158474 StdinTools Cannot find command . Use help to get help.
+2018-11-08 18:18:35.608694 StdinTools Cannot retrieve module named 
+2018-11-08 18:18:55.555799 Motors Sending request to wait 2 straight
+2018-11-08 18:18:57.570733 Motors Sending request to 2 straight
+2018-11-08 18:19:00.213377 StdinTools Cannot find command exit. Use help to get help.
+2018-11-08 18:20:08.256046 Motors Sending 'wait 2 straight' to arduino
+2018-11-08 18:20:10.265514 Motors Sending '2 straight' to arduino
+2018-11-08 18:20:17.494835 StdinTools Cannot find command cexit. Use help to get help.
+2018-11-08 18:25:28.880188 StdinTools Cannot find command . Use help to get help.
+2018-11-08 18:27:07.473215 Motors Processing motor command
+2018-11-08 18:27:09.486547 Motors Processing motor command
+2018-11-08 18:28:05.930492 Motors Processing motor command
+2018-11-08 18:28:07.939097 Motors Processing motor command
+2018-11-08 18:29:28.306330 Motors Processing motor command
+2018-11-08 18:29:30.321718 Motors Processing motor command
+2018-11-08 18:32:35.344995 Motors Processing motor command wait 2 straight
+2018-11-08 18:32:35.345065 Motors Processing motor command wait 2 straight 
+ Command is :wait
+2018-11-08 18:32:35.345128 Motors In 2 2 straight will run.
+2018-11-08 18:32:37.352349 Motors Processing motor command 2 straight
+2018-11-08 18:32:37.352421 Motors Processing motor command 2 straight 
+ Command is :2
+2018-11-08 18:33:44.456130 Motors Processing motor command wait 2 straight
+2018-11-08 18:33:44.456187 Motors Processing motor command wait 2 straight 
+ Command is :wait
+2018-11-08 18:33:44.456240 Motors In 2 seconds straight will run.
+2018-11-08 18:33:46.466479 Motors Processing motor command straight
+2018-11-08 18:33:46.466545 Motors Processing motor command straight 
+ Command is :straight
+2018-11-08 18:33:46.466587 Motors Sending straight
+2018-11-08 18:33:46.466633 Motors Sending "1 200 200" to arduino
+2018-11-08 18:33:46.466773 Sending to arduino: motor 1 200 200
+2018-11-08 18:33:46.491978 ArduinoDebug I received: 109
+2018-11-08 18:33:46.520025 ArduinoDebug I received: 111
+2018-11-08 18:33:46.545048 ArduinoDebug I received: 116
+2018-11-08 18:33:46.569090 ArduinoDebug I received: 111
+2018-11-08 18:33:46.594021 ArduinoDebug I received: 114
+2018-11-08 18:33:46.618841 ArduinoDebug I received: 32
+2018-11-08 18:33:46.643397 ArduinoDebug I received: 49
+2018-11-08 18:33:46.663367 ArduinoDebug I received: 32
+2018-11-08 18:33:46.687956 ArduinoDebug I received: 50
+2018-11-08 18:33:46.712517 ArduinoDebug I received: 48
+2018-11-08 18:33:46.737065 ArduinoDebug I received: 48
+2018-11-08 18:33:46.761603 ArduinoDebug I received: 32
+2018-11-08 18:33:46.786212 ArduinoDebug I received: 50
+2018-11-08 18:33:46.806961 ArduinoDebug I received: 48
+2018-11-08 18:33:46.831471 ArduinoDebug I received: 48

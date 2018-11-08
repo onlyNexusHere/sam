@@ -30,8 +30,11 @@ class Motors(SamModule):
         :param message:
         :return:
         """
+        self.debug_run(self.write_to_stdout, "Processing motor command " + message)
 
         message_parts = message.strip().split(" ")
+
+        self.debug_run(self.write_to_stdout, "Processing motor command " + message + " \n Command is :" + message_parts[0])
 
         if message_parts is None or len(message_parts) == 0:
             self.write_to_stdout("Cannot send empty message to arduino: " + message)
@@ -70,18 +73,19 @@ class Motors(SamModule):
             self.send("0 0 0")
 
         elif message_parts[0].lower() == "start" or message_parts[0].lower() == "straight":
+            self.debug_run(self.write_to_stdout, "Sending straight")
             self.send("1 200 200")
 
         elif message_parts[0] == "wait" and len(message_parts) > 2:
-            if not message_parts[1].isDigit():
+            if not message_parts[1].isdigit():
                 if self.sam.debug: self.write_to_stdout("Cannot wait for non-digit seconds")
 
             seconds = int(message_parts[1])
-            command = message_parts[1:]
+            command = " ".join(message_parts[2:])
 
             now = datetime.now()
             future = now + timedelta(seconds=seconds)
-
+            self.debug_run(self.write_to_stdout, "In " + str(seconds) + " seconds " + command + " will run.")
             self.promise.append((future, command))
 
     def on_wait(self):
@@ -96,5 +100,6 @@ class Motors(SamModule):
 
         for time, cmd in to_delete:
             self.promise.remove((time, cmd))
+
 
 

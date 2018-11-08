@@ -67,13 +67,11 @@ class SamControl:
 
         while self.quit_program is False:
 
-            if self.debug:
-                print("Starting to listen")
+            # self.debug_run(print, "Starting to listen")
 
             responded = select.select(self.listening_to, [], [], .5)[0]
 
-            if self.debug:
-                print("Select started")
+            # self.debug_run(print, "Select started")
 
             for response in responded:
 
@@ -81,8 +79,7 @@ class SamControl:
                     self._process_stdin()
 
                 elif response == self.arduino:
-                    if self.debug:
-                        print("Arduino sent a message.")
+                    self.debug_run(print, "Arduino sent a message.")
                     self._process_arduino_message(response)
 
                 else:
@@ -92,7 +89,7 @@ class SamControl:
                     print("Goodbye!")
                     return
 
-            if self.debug: print("Running on wait commands.")
+            # self.debug_run(print, "Running on_wait commands.")
             for _, mod in {**self.local_modules, **self.arduino_modules}.items():
                 try:
                     mod.on_wait()
@@ -111,7 +108,7 @@ class SamControl:
 
     def init_mods(self):
         """
-        Imports files in the modules folder and initiates them.
+        Imports files in the modules folder and initializes them.
         :return: None
         """
         self.debug_run(print, "Debug getting modules")
@@ -200,17 +197,22 @@ class SamControl:
             print(str(e))
             return
 
-        self.debug_run(print, "Messsage:" + arduino_says.decode("utf-8", 'ignore').strip())
+        message_from_arduino = arduino_says.decode("utf-8", 'ignore').strip()
+        if message_from_arduino == "":
+            self.debug_run(print, "Received empty message from arduino")
+            return
 
-        module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8", 'ignore').strip().split(" ")[0].lower(), None)
+        self.debug_run(print, "Messsage:" + message_from_arduino)
+
+        module_to_use = self.arduino_modules.get(message_from_arduino.split(" ")[0].lower(), None)
 
         if module_to_use is not None:
             try:
-                module_to_use.message_received(" ".join(arduino_says.decode("utf-8", 'ignore').strip().split(" ")[1:]))
+                module_to_use.message_received(" ".join(message_from_arduino.split(" ")[1:]))
             except Exception as e:
                 print("Exception found in module " + module_to_use.name + " for message received\n" + str(e))
         else:
-            self.debug_run(print, "Received incorrect module " + arduino_says.decode("utf-8").strip().split(" ")[0])
+            self.debug_run(print, "Received incorrect module " +message_from_arduino.split(" ")[0])
 
     def send(self, message):
         """
