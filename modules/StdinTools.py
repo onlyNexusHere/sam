@@ -83,7 +83,7 @@ class StdinTools(SamModule):
             self.write_to_stdout("Arduino is not detected.")
 
     def send_message(self, message):
-        self.sam.send(message)
+        self.sam.send(" ".join(message))
 
     def request_module(self, str_args):
 
