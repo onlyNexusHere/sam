@@ -5,6 +5,7 @@ import serial.tools.list_ports
 from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors
 from datetime import datetime
 
+
 # import os.path
 # if os.path.isfile("/proc/cpuinfo"):
 #     from picamera import PiCamera
@@ -288,6 +289,7 @@ if __name__ == "__main__":
         sam.main()
     except Exception as e:
         print("Sam has failed.")
+        print(e.__doc__)
         print(str(e))
         sam.exit()
 
