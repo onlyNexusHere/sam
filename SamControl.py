@@ -56,29 +56,53 @@ class SamControl:
             if self.debug: print("Select started")
 
             for response in responded:
-                if self.debug: print("stdin")
+
                 if response == sys.stdin:
+
                     if self.debug: print("stdin2")
                     str_rsv = sys.stdin.readline()
+
                     if self.debug: print("got message: " + str_rsv)
-                    self.local_modules.get(">").message_received(str_rsv)
+
+                    try:
+                        self.local_modules.get(">").message_received(str_rsv)
+                    except Exception as e:
+                        print("Exception found in stdin module for message received\n" + str(e))
+
                 elif response == self.arduino:
+
                     if self.debug: print("Arduino sent a message.")
+
                     arduino_says = response.readline()
+
                     if self.debug: print("Messsage:" + arduino_says.decode("utf-8").strip())
+
                     module_to_use = self.arduino_modules.get(arduino_says.decode("utf-8").strip().split(" ")[0].lower(), None)
                     if module_to_use is not None:
-                        module_to_use.message_received(" ".join(arduino_says.decode("utf-8").strip().split(" ")[1:]))
+                        try:
+                            module_to_use.message_received(" ".join(arduino_says.decode("utf-8").strip().split(" ")[1:]))
+
+                        except Exception as e:
+                            print("Exception found in module " + module_to_use.name + " for message received\n" + str(e))
+
                     else:
                         if self.debug: print("Received incorrect module " + arduino_says.decode("utf-8").strip().split(" ")[0])
+
                 else:
                     print("ERROR")
 
                 if self.quit_program:
                     print("Goodbye!")
                     return
+
             if self.debug: print("One wait...")
-            [mod.on_wait() for _, mod in {**self.local_modules, **self.arduino_modules}.items()]
+            # [mod for _, mod in {**self.local_modules, **self.arduino_modules}.items()]
+            for _, mod in {**self.local_modules, **self.arduino_modules}.items():
+                try:
+                    mod.on_wait()
+                except Exception as e:
+                    print("Exception found in module " + mod.name + " for on wait\n" + str(e))
+
 
     def exit(self):
         """
@@ -116,6 +140,14 @@ class SamControl:
 
         for mod in mods:
             if self.debug: print("initializing " + mod.identifier)
+
+            if mod.identifier is "":
+                print("Cannot initialize a module. Module " + mod.name + " is missing an identifier.")
+                break
+
+            if mod.name is "":
+                print("Cannot initialize a module. Module is missing a name. Id: " + mod.identifier)
+                break
 
             if mod.is_local_to_pi:
                 if mod.identifier in self.local_modules.keys():

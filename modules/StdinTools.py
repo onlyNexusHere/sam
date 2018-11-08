@@ -77,7 +77,7 @@ class StdinTools(SamModule):
 
     def show_status(self):
 
-        if self.sam.arduino is not None:
+        if self.arduino is not None:
             self.write_to_stdout("Arduino is: " + self.sam.arduino.port + "\nDebugging is " + str(self.sam.debug))
         else:
             self.write_to_stdout("Arduino is not detected.")

@@ -1,5 +1,6 @@
 from .SamModule import SamModule
 
+from datetime import datetime, timedelta
 
 class Motors(SamModule):
     """
@@ -7,6 +8,9 @@ class Motors(SamModule):
     """
 
     stdin_cmds = {}
+
+    #send in some amount time, (exact_time, message)
+    promise = []
 
     def __init__(self, kargs):
         super().__init__(module_name="Motors", is_local=False, identi="motor", **kargs)
@@ -16,7 +20,12 @@ class Motors(SamModule):
 
     def stdin_request(self, message):
         """
-        Module checks each word so we can easily adjust what is being sent
+        Request the motors to do something, for example:
+
+        motor turn right
+        motor turn left
+        motor straight
+        motor wait 2 straight
 
         :param message:
         :return:
@@ -24,7 +33,7 @@ class Motors(SamModule):
 
         message_parts = message.strip().split(" ")
 
-        if message_parts is None:
+        if message_parts is None or len(message_parts) == 0:
             self.write_to_stdout("Cannot send empty message to arduino: " + message)
             return
 
@@ -42,7 +51,7 @@ class Motors(SamModule):
             else:
                 self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
-        if message_parts[0].lower() == "adjust":
+        elif message_parts[0].lower() == "adjust":
 
             if len(message_parts)<2:
                 self.write_to_stdout("Need direction to turn")
@@ -57,8 +66,35 @@ class Motors(SamModule):
             else:
                 self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
-        if message_parts[0].lower() == "stop":
-            self.send("stop")
+        elif message_parts[0].lower() == "stop":
+            self.send("0 0 0")
 
-        if message_parts[0].lower() == "start":
-            self.send("start")
+        elif message_parts[0].lower() == "start" or message_parts[0].lower() == "straight":
+            self.send("1 200 200")
+
+        elif message_parts[0] == "wait" and len(message_parts) > 2:
+            if not message_parts[1].isDigit():
+                if self.sam.debug: self.write_to_stdout("Cannot wait for non-digit seconds")
+
+            seconds = int(message_parts[1])
+            command = message_parts[1:]
+
+            now = datetime.now()
+            future = now + timedelta(seconds=seconds)
+
+            self.promise.append((future, command))
+
+    def on_wait(self):
+
+        now = datetime.now()
+        to_delete = []
+
+        for time, cmd in self.promise:
+            if time <= now:
+                to_delete.append((time, cmd))
+                self.stdin_request(cmd)
+
+        for time, cmd in to_delete:
+            self.promise.remove((time, cmd))
+
+

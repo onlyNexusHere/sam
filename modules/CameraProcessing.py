@@ -6,13 +6,6 @@ import datetime
 
 from .SamModule import SamModule
 
-import os.path
-
-if os.path.isfile("/proc/cpuinfo"):
-    import picamera
-else:
-    picamera = None
-
 class CameraProcessing(SamModule):
     def __init__(self, kargs):
         super().__init__(module_name="CameraProcessing", is_local=True, identi="camera", **kargs)
