@@ -95,8 +95,7 @@ class SamControl:
                     print("Goodbye!")
                     return
 
-            if self.debug: print("One wait...")
-            # [mod for _, mod in {**self.local_modules, **self.arduino_modules}.items()]
+            if self.debug: print("Running on wait commands.")
             for _, mod in {**self.local_modules, **self.arduino_modules}.items():
                 try:
                     mod.on_wait()
