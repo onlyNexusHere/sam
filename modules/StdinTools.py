@@ -1,5 +1,5 @@
-
 from .SamModule import SamModule
+import time
 
 
 class StdinTools(SamModule):
@@ -12,33 +12,39 @@ class StdinTools(SamModule):
     def __init__(self, kargs):
         super().__init__(module_name="StdinTools", is_local=True, identi=">", **kargs)
 
-
         self.stdin_cmds = {"modules": (lambda str_args: self.show_mods(),
                                        "View the modules"),
                            "set": (lambda str_args: self.set_var(str_args),
                                    "Use command to set certain SAM variables, such as 'set arduino /dev/usb000'"),
                            "request": (lambda str_args: self.request_module(str_args),
                                        "Use this command to talk to the modules. 'request <mod_name> txt'"),
+
                            "help": (lambda str_args: self.show_help(),
-                                       "Use this command to see the help text"),
+                                    "Use this command to see the help text"),
 
                            "h": (lambda str_args: self.show_help(),
-                                    "Same as 'help'"),
+                                 "Same as 'help'"),
 
                            "status": (lambda str_args: self.show_status(),
-                                    "Get the status of the Arduino"),
+                                      "Get the status of the Arduino"),
 
                            "send": (lambda str_args: self.send_message(str_args),
                                     "Send a string to the arduino"),
 
                            "findarduino": (lambda str_args: self.find_arduino(),
-                                    "Re-find the arduino"),
+                                           "Re-find the arduino"),
 
                            "debug": (lambda str_args: self.toggle_debug(str_args),
+                                     "Change debugging to true or false"),
+
+                           "wait": (lambda str_args: self.wait(str_args),
                                     "Change debugging to true or false"),
 
                            "quit": (lambda str_args: self.sam.request_quit(),
-                                    "Quit the program")
+                                    "Quit the program"),
+
+                           "exit": (lambda str_args: self.sam.request_quit(),
+                                    "Same as quit")
                            }
 
     def message_received(self, message):
@@ -56,14 +62,14 @@ class StdinTools(SamModule):
     def find_arduino(self):
         self.sam.find_arduino()
 
-    def toggle_debug(self, msg):
-        self.debug_run(print, "Toggling debugging, msg is " + msg[0])
-        if msg[0].strip() == "true":
+    def toggle_debug(self, str_args):
+        self.debug_run(print, "Toggling debugging, msg is " + str_args[0])
+        if str_args[0].strip() == "true":
             self.sam.debug = True
-        elif msg[0].strip() == "false":
+        elif str_args[0].strip() == "false":
             self.sam.debug = False
         else:
-            self.write_to_stdout("Cannot change debugging to "+str(msg[0]))
+            self.write_to_stdout("Cannot change debugging to " + str(str_args[0]))
 
     def show_mods(self):
         self.write_to_stdout(str([n for n in {**self.sam.arduino_modules, **self.sam.local_modules}.keys()]))
@@ -82,8 +88,8 @@ class StdinTools(SamModule):
         else:
             self.write_to_stdout("Arduino is not detected.")
 
-    def send_message(self, message):
-        self.sam.send(" ".join(message))
+    def send_message(self, str_args):
+        self.sam.send(" ".join(str_args))
 
     def request_module(self, str_args):
 
@@ -97,4 +103,6 @@ class StdinTools(SamModule):
             except Exception as e:
                 self.write_to_stdout("Cannot run request for module " + get_mod.name + "\n" + str(e))
 
-
+    def wait(self, str_args):
+        if str_args > 0 and str_args[1].isdigit():
+            time.sleep(int(str_args))
