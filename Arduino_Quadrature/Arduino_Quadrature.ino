@@ -28,12 +28,40 @@ void setup() {
     md.init();
     md.setM1Speed(0);
     md.setM2Speed(0);
+
 //    md.setM1Speed(200);
 //    md.setM2Speed(r_pwm_to_val(200));
 }
 
 void loop(){
-  do_right_turn();
+  if (Serial.available()) {
+    String string = Serial.readString();
+    char str[10];
+    string.toCharArray(str, 10);
+    char* ptr = strtok(str, " ");
+    while(ptr != NULL) {
+      Serial.println(ptr);
+      m[i] = ptr;
+      i = i + 1;
+      ptr = strtok(NULL, " ");
+     }
+   }
+   
+   if(m[0] == "0") {
+    md.setM1Speed(0);
+    md.setM2Speed(0);
+    Serial.println("left = 0");
+    Serial.println("right = 0");
+   } else if (m[0] == "1") {
+    md.setM1Speed(m[1].toInt());
+    md.setM2Speed(m[2].toInt());
+    Serial.println("left = " + String(m[1]));
+    Serial.println("right = " + String(m[2]));
+   }
+
+   i = 0;
+}
+//  do_right_turn();
 //  do_left_turn();
 //  print_posn();
 //  Serial.print("Left: ");
@@ -45,13 +73,30 @@ void loop(){
 }
 
 void do_right_turn() {
-  md.setM1Speed(360);
-  md.setM2Speed(r_pwm_to_val(120));
+  double dtheta = 0;
+  double theta0 = heading;
+  while (dtheta < 1.57) {
+    dtheta = theta0 - heading;
+    md.setM1Speed(360);
+    md.setM2Speed(r_pwm_to_val(120));
+  }
+  md.setM1Speed(0);
+  md.setM2Speed(0);
 }
 
 void do_left_turn() {
-  md.setM1Speed(200);
-  md.setM2Speed(r_pwm_to_val(300));
+  double dtheta = 0;
+  double theta0 = heading;
+  while(dtheta > -1.57) {
+    Serial.println("TURN");
+    dtheta = theta0 - heading;
+//    md.setM1Speed(200);
+//    md.setM2Speed(r_pwm_to_val(300));
+  }
+  Serial.println("STOP");
+  md.setM1Speed(0);
+  md.setM2Speed(0);
+
 }
 
 int r_pwm_to_val(int pwm) {
@@ -116,8 +161,6 @@ void encoder_isr_left() {
     heading += dt;
     posn[0] = posn[0] + dx*cos(heading);
     posn[1] = posn[1] + dx*sin(heading);
-//    Serial.print("Left:  ");
-//    Serial.println(enc_count_left);
 }
 
 void encoder_isr_right() {
@@ -136,6 +179,4 @@ void encoder_isr_right() {
     heading += dt;
     posn[0] = posn[0] + dx*cos(heading);
     posn[1] = posn[1] + dx*sin(heading);
-//    Serial.print("Right: ");
-//    Serial.println(enc_count_right);
 }
