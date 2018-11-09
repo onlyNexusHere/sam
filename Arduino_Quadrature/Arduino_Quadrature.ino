@@ -34,32 +34,7 @@ void setup() {
 }
 
 void loop(){
-  if (Serial.available()) {
-    String string = Serial.readString();
-    char str[10];
-    string.toCharArray(str, 10);
-    char* ptr = strtok(str, " ");
-    while(ptr != NULL) {
-      Serial.println(ptr);
-      m[i] = ptr;
-      i = i + 1;
-      ptr = strtok(NULL, " ");
-     }
-   }
-   
-   if(m[0] == "0") {
-    md.setM1Speed(0);
-    md.setM2Speed(0);
-    Serial.println("left = 0");
-    Serial.println("right = 0");
-   } else if (m[0] == "1") {
-    md.setM1Speed(m[1].toInt());
-    md.setM2Speed(m[2].toInt());
-    Serial.println("left = " + String(m[1]));
-    Serial.println("right = " + String(m[2]));
-   }
-
-   i = 0;
+  
 }
 //  do_right_turn();
 //  do_left_turn();
