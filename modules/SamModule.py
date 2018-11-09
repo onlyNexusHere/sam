@@ -71,7 +71,6 @@ class SamModule:
 
         Adds the identifier
         """
-        print("sending msg")
         self.debug_run(self.write_to_stdout, "Sending \"" +msg + "\" to arduino")
         self.sam.send(self.identifier + " " + msg)
 

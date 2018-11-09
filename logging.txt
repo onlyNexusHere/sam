@@ -73,3 +73,165 @@
 2018-11-08 18:33:46.786212 ArduinoDebug I received: 50
 2018-11-08 18:33:46.806961 ArduinoDebug I received: 48
 2018-11-08 18:33:46.831471 ArduinoDebug I received: 48
+2018-11-08 18:41:14.541742 StdinTools Cannot find command . Use help to get help.
+2018-11-08 18:41:14.744345 StdinTools Cannot find command . Use help to get help.
+2018-11-08 18:42:34.003576 Sending to arduino: motor 1 200 200
+2018-11-08 18:46:28.474553 StdinTools Cannot find command . Use help to get help.
+2018-11-08 18:50:14.394688 Motors Processing motor command wait 2 straight
+2018-11-08 18:50:14.394739 Motors Processing motor command wait 2 straight 
+ Command is :wait
+2018-11-08 18:50:14.394795 Motors In 2 seconds straight will run.
+2018-11-08 18:50:16.406927 Motors Processing motor command straight
+2018-11-08 18:50:16.407002 Motors Processing motor command straight 
+ Command is :straight
+2018-11-08 18:50:16.407053 Motors Sending straight
+2018-11-08 18:50:16.407090 Motors Sending "1 200 200" to arduino
+2018-11-08 18:50:16.407250 Sending to arduino: motor 1 200 200
+2018-11-08 18:50:16.432733 ArduinoDebug I received: 109
+2018-11-08 18:50:16.457187 ArduinoDebug I received: 111
+2018-11-08 18:50:16.482053 ArduinoDebug I received: 116
+2018-11-08 18:50:16.510514 ArduinoDebug I received: 111
+2018-11-08 18:50:16.535047 ArduinoDebug I received: 114
+2018-11-08 18:50:16.555611 ArduinoDebug I received: 32
+2018-11-08 18:50:16.580782 ArduinoDebug I received: 49
+2018-11-08 18:50:16.604725 ArduinoDebug I received: 32
+2018-11-08 18:50:16.629166 ArduinoDebug I received: 50
+2018-11-08 18:50:16.653974 ArduinoDebug I received: 48
+2018-11-08 18:50:16.678325 ArduinoDebug I received: 48
+2018-11-08 18:50:16.702912 ArduinoDebug I received: 32
+2018-11-08 18:50:16.723782 ArduinoDebug I received: 50
+2018-11-08 18:50:16.748737 ArduinoDebug I received: 48
+2018-11-08 18:50:16.773137 ArduinoDebug I received: 48
+2018-11-08 18:59:56.650272 StdinTools Cannot open file
+2018-11-08 19:01:20.185038 StdinTools Cannot open file
+2018-11-08 19:02:06.818031 StdinTools Cannot open file
+2018-11-08 19:03:18.798238 StdinTools Cannot open file
+2018-11-08 19:09:03.080697 Motors Processing motor command start
+2018-11-08 19:09:03.080761 Motors Processing motor command start 
+ Command is :start
+2018-11-08 19:09:03.080799 Motors Sending straight
+2018-11-08 19:09:03.080856 Motors Sending "1 200 200" to arduino
+2018-11-08 19:09:03.080968 Sending to arduino: motor 1 200 200
+2018-11-08 19:09:03.107161 ArduinoDebug I received: 109
+2018-11-08 19:09:03.107279 Motors Processing motor command wait 2 stop
+2018-11-08 19:09:03.107317 Motors Processing motor command wait 2 stop 
+ Command is :wait
+2018-11-08 19:09:03.107390 Motors In 2 seconds stop will run.
+2018-11-08 19:09:03.110862 StdinTools will move soon
+2018-11-08 19:09:03.131381 ArduinoDebug I received: 111
+2018-11-08 19:09:03.156045 ArduinoDebug I received: 116
+2018-11-08 19:09:03.180814 ArduinoDebug I received: 111
+2018-11-08 19:09:03.209367 ArduinoDebug I received: 114
+2018-11-08 19:09:03.229605 ArduinoDebug I received: 32
+2018-11-08 19:09:03.254434 ArduinoDebug I received: 49
+2018-11-08 19:09:03.278783 ArduinoDebug I received: 32
+2018-11-08 19:09:03.303265 ArduinoDebug I received: 50
+2018-11-08 19:09:03.327983 ArduinoDebug I received: 48
+2018-11-08 19:09:03.352979 ArduinoDebug I received: 48
+2018-11-08 19:09:03.372945 ArduinoDebug I received: 32
+2018-11-08 19:09:03.397551 ArduinoDebug I received: 50
+2018-11-08 19:09:03.422186 ArduinoDebug I received: 48
+2018-11-08 19:09:03.446766 ArduinoDebug I received: 48
+2018-11-08 19:09:05.460391 Motors Processing motor command stop
+2018-11-08 19:09:05.460456 Motors Processing motor command stop 
+ Command is :stop
+2018-11-08 19:09:05.460498 Motors Sending "0 0 0" to arduino
+2018-11-08 19:09:05.460601 Sending to arduino: motor 0 0 0
+2018-11-08 19:09:05.486509 ArduinoDebug I received: 109
+2018-11-08 19:09:05.510977 ArduinoDebug I received: 111
+2018-11-08 19:09:05.535584 ArduinoDebug I received: 116
+2018-11-08 19:09:05.560458 ArduinoDebug I received: 111
+2018-11-08 19:09:05.588884 ArduinoDebug I received: 114
+2018-11-08 19:09:05.609655 ArduinoDebug I received: 32
+2018-11-08 19:09:05.634590 ArduinoDebug I received: 48
+2018-11-08 19:09:05.659155 ArduinoDebug I received: 32
+2018-11-08 19:09:05.683766 ArduinoDebug I received: 48
+2018-11-08 19:09:05.708205 ArduinoDebug I received: 32
+2018-11-08 19:09:05.732661 ArduinoDebug I received: 48
+2018-11-08 19:17:26.847425 ArduinoDebug Starting up
+2018-11-08 19:17:40.222703 StdinTools Arduino is: /dev/cu.usbmodem146201
+Debugging is True
+2018-11-08 19:18:35.002017 ArduinoDebug Starting up
+2018-11-08 19:20:04.800046 ArduinoDebug Starting up
+2018-11-08 19:22:21.050461 Motors Processing motor command start 
+ Command is:start
+2018-11-08 19:22:21.050564 Motors Sending straight
+2018-11-08 19:22:21.050623 Motors Sending "1 200 200" to arduino
+2018-11-08 19:22:21.050742 Sending to arduino: motor 1 200 200
+2018-11-08 19:22:21.148179 ArduinoDebug Starting up
+2018-11-08 19:22:21.148326 Motors Processing motor command wait 2 stop 
+ Command is:wait
+2018-11-08 19:22:21.148422 Motors In 2 seconds stop will run.
+2018-11-08 19:22:21.650967 StdinTools will move soon
+2018-11-08 19:22:23.160909 Motors Processing motor command stop 
+ Command is:stop
+2018-11-08 19:22:23.160967 Motors Sending "0 0 0" to arduino
+2018-11-08 19:22:23.161072 Sending to arduino: motor 0 0 0
+2018-11-08 19:22:23.187550 ArduinoDebug I received: 109
+2018-11-08 19:22:23.212339 ArduinoDebug I received: 111
+2018-11-08 19:22:23.237591 ArduinoDebug I received: 116
+2018-11-08 19:22:23.261655 ArduinoDebug I received: 111
+2018-11-08 19:22:23.285843 ArduinoDebug I received: 114
+2018-11-08 19:22:23.310467 ArduinoDebug I received: 32
+2018-11-08 19:22:23.335042 ArduinoDebug I received: 48
+2018-11-08 19:22:23.359583 ArduinoDebug I received: 32
+2018-11-08 19:22:23.384177 ArduinoDebug I received: 48
+2018-11-08 19:22:23.408906 ArduinoDebug I received: 32
+2018-11-08 19:22:23.430062 ArduinoDebug I received: 48
+2018-11-08 19:24:16.764247 Motors Processing motor command start 
+ Command is: start
+2018-11-08 19:24:16.764334 Motors Sending straight
+2018-11-08 19:24:16.764369 Motors Sending "1 200 200" to arduino
+2018-11-08 19:24:16.764480 Sending to arduino: motor 1 200 200
+2018-11-08 19:24:16.787905 Motors Processing motor command wait 2 stop 
+ Command is: wait
+2018-11-08 19:24:16.788027 Motors In 2 seconds stop will run.
+2018-11-08 19:24:16.813049 StdinTools will move soon
+2018-11-08 19:24:18.285850 ArduinoDebug Starting up
+2018-11-08 19:24:18.809040 Motors Processing motor command stop 
+ Command is: stop
+2018-11-08 19:24:18.809073 Motors Sending "0 0 0" to arduino
+2018-11-08 19:24:18.809132 Sending to arduino: motor 0 0 0
+2018-11-08 19:24:18.834800 ArduinoDebug I received: 109
+2018-11-08 19:24:18.860037 ArduinoDebug I received: 111
+2018-11-08 19:24:18.884152 ArduinoDebug I received: 116
+2018-11-08 19:24:18.908479 ArduinoDebug I received: 111
+2018-11-08 19:24:18.937098 ArduinoDebug I received: 114
+2018-11-08 19:24:18.957681 ArduinoDebug I received: 32
+2018-11-08 19:24:18.982350 ArduinoDebug I received: 48
+2018-11-08 19:24:19.006904 ArduinoDebug I received: 32
+2018-11-08 19:24:19.032044 ArduinoDebug I received: 48
+2018-11-08 19:24:19.056234 ArduinoDebug I received: 32
+2018-11-08 19:24:19.080902 ArduinoDebug I received: 48
+2018-11-08 19:25:15.381719 Motors Processing motor command start 
+ Command is: start
+2018-11-08 19:25:15.381783 Motors Sending straight
+2018-11-08 19:25:15.381810 Motors Sending "1 200 200" to arduino
+2018-11-08 19:25:15.381883 Sending to arduino: motor 1 200 200
+2018-11-08 19:25:15.403507 Motors Processing motor command wait 2 stop 
+ Command is: wait
+2018-11-08 19:25:15.403563 Motors In 2 seconds stop will run.
+2018-11-08 19:25:15.427604 StdinTools will move soon
+2018-11-08 19:25:16.922823 ArduinoDebug Starting up
+2018-11-08 19:25:17.416949 Motors Processing motor command stop 
+ Command is: stop
+2018-11-08 19:25:17.417038 Motors Sending "0 0 0" to arduino
+2018-11-08 19:25:17.417174 Sending to arduino: motor 0 0 0
+2018-11-08 19:25:17.443472 ArduinoDebug I received: 109
+2018-11-08 19:25:17.467702 ArduinoDebug I received: 111
+2018-11-08 19:25:17.491831 ArduinoDebug I received: 116
+2018-11-08 19:25:17.521055 ArduinoDebug I received: 111
+2018-11-08 19:25:17.545051 ArduinoDebug I received: 114
+2018-11-08 19:25:17.565578 ArduinoDebug I received: 32
+2018-11-08 19:25:17.590139 ArduinoDebug I received: 48
+2018-11-08 19:25:17.614735 ArduinoDebug I received: 32
+2018-11-08 19:25:17.639236 ArduinoDebug I received: 48
+2018-11-08 19:25:17.663861 ArduinoDebug I received: 32
+2018-11-08 19:25:17.688579 ArduinoDebug I received: 48
+2018-11-08 19:25:26.930354 Sending to arduino: motor 1 200 200
+2018-11-08 19:25:26.975075 StdinTools will move soon
+2018-11-08 19:25:28.974255 Sending to arduino: motor 0 0 0
+2018-11-08 19:38:39.516071 StdinTools Starting robot
+2018-11-08 19:38:39.537778 Sending to arduino: motor 1 200 200
+2018-11-08 19:38:39.581074 StdinTools will move soon...
+2018-11-08 19:38:41.575761 Sending to arduino: motor 0 0 0

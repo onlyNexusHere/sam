@@ -11,6 +11,7 @@ class Motors(SamModule):
 
     #send in some amount time, (exact_time, message)
     promise = []
+    ready = True
 
     def __init__(self, kargs):
         super().__init__(module_name="Motors", is_local=False, identi="motor", **kargs)
@@ -30,11 +31,10 @@ class Motors(SamModule):
         :param message:
         :return:
         """
-        self.debug_run(self.write_to_stdout, "Processing motor command " + message)
 
         message_parts = message.strip().split(" ")
 
-        self.debug_run(self.write_to_stdout, "Processing motor command " + message + " \n Command is :" + message_parts[0])
+        self.debug_run(self.write_to_stdout, "Processing motor command " + message + " \n Command is: " + message_parts[0])
 
         if message_parts is None or len(message_parts) == 0:
             self.write_to_stdout("Cannot send empty message to arduino: " + message)
@@ -88,6 +88,14 @@ class Motors(SamModule):
             self.debug_run(self.write_to_stdout, "In " + str(seconds) + " seconds " + command + " will run.")
             self.promise.append((future, command))
 
+        elif len(message_parts) > 2 and message_parts[0] == 'then':
+            if len(self.promise) > 0:
+                next_time, cmd = self.promise[-1]
+
+                new_time = next_time + timedelta(milliseconds=100)
+
+                self.promise.append((new_time, " ".join(message_parts[1:])))
+
     def on_wait(self):
 
         now = datetime.now()
@@ -100,6 +108,8 @@ class Motors(SamModule):
 
         for time, cmd in to_delete:
             self.promise.remove((time, cmd))
+
+        self.ready = len(self.promise) < 1
 
 
 

@@ -26,7 +26,7 @@ class SamControl:
     arduino = None
     log_file = None
     camera = None
-    debug = False
+    debug = None
 
     # This is the dictionary that holds modules.
     # Modules need...
@@ -38,7 +38,7 @@ class SamControl:
     # Array of file numbers for
     listening_to = []
 
-    def __init__(self, log_file=None, arduino_location=None):
+    def __init__(self, log_file=None, arduino_location=None, debug=False):
         if log_file is not None:
             try:
                 self.log_file = open(log_file[0], "a")
@@ -51,7 +51,9 @@ class SamControl:
             except serial.serialutil.SerialException:
                 print("Could not connect to Arduino, either permissions or its busy")
 
-    def main(self):
+        self.debug = debug
+
+    def main(self, program=None):
         """
 
         Main method for running robot.
@@ -62,39 +64,14 @@ class SamControl:
 
         self.init_mods()
 
-        if self.debug:
-            print("Everything has been initialized")
+        self.debug_run(print, "Everything has been initialized")
+
+        if program is not None and len(program) > 0:
+            self.debug_run(print, "Running startup file")
+            self.local_modules.get(">").message_received("run " + program[0])
 
         while self.quit_program is False:
-
-            # self.debug_run(print, "Starting to listen")
-
-            responded = select.select(self.listening_to, [], [], .5)[0]
-
-            # self.debug_run(print, "Select started")
-
-            for response in responded:
-
-                if response == sys.stdin:
-                    self._process_stdin()
-
-                elif response == self.arduino:
-                    self.debug_run(print, "Arduino sent a message.")
-                    self._process_arduino_message(response)
-
-                else:
-                    print("ERROR")
-
-                if self.quit_program:
-                    print("Goodbye!")
-                    return
-
-            # self.debug_run(print, "Running on_wait commands.")
-            for _, mod in {**self.local_modules, **self.arduino_modules}.items():
-                try:
-                    mod.on_wait()
-                except Exception as e:
-                    print("Exception found in module " + mod.name + " for on wait\n" + str(e))
+            self.process_sockets()
 
     def exit(self):
         """
@@ -103,6 +80,7 @@ class SamControl:
         """
         if self.log_file is not None:
             self.log_file.close()
+
         if self.arduino is not None:
             self.arduino.close()
 
@@ -178,6 +156,36 @@ class SamControl:
             print("Arduino USB was not found.")
         self.listening_to.append(sys.stdin)
 
+    def process_sockets(self):
+        # self.debug_run(print, "Starting to listen")
+
+        responded = select.select(self.listening_to, [], [], .02)[0]
+
+        # self.debug_run(print, "Select started")
+
+        for response in responded:
+
+            if response == sys.stdin:
+                self._process_stdin()
+
+            elif response == self.arduino:
+                self.debug_run(print, "Arduino sent a message.")
+                self._process_arduino_message(response)
+
+            else:
+                print("ERROR")
+
+            if self.quit_program:
+                print("Goodbye!")
+                return
+
+        # self.debug_run(print, "Running on_wait commands.")
+        for _, mod in {**self.local_modules, **self.arduino_modules}.items():
+            try:
+                mod.on_wait()
+            except Exception as e:
+                print("Exception found in module " + mod.name + " for on wait\n" + str(e))
+
     def _process_stdin(self):
 
         str_rsv = sys.stdin.readline()
@@ -187,7 +195,7 @@ class SamControl:
         try:
             self.local_modules.get(">").message_received(str_rsv)
         except Exception as e:
-            print("Exception found in stdin module for message received\n" + str(e))
+            print("Exception found in stdin module for message received --> "+str(e.__doc__)+"\n" + str(e))
 
     def _process_arduino_message(self, response):
 
@@ -210,7 +218,7 @@ class SamControl:
             try:
                 module_to_use.message_received(" ".join(message_from_arduino.split(" ")[1:]))
             except Exception as e:
-                print("Exception found in module " + module_to_use.name + " for message received\n" + str(e))
+                print("Exception found in module " + module_to_use.name + " for message received --> "+str(e.__doc__)+"\n" + str(e))
         else:
             self.debug_run(print, "Received incorrect module " +message_from_arduino.split(" ")[0])
 
@@ -282,13 +290,17 @@ if __name__ == "__main__":
                         help="Use this variable to set a log file and start logging.")
     parser.add_argument("--arduino", nargs=1, type=str,
                         help="Set the location of the arduino. Useful if there are multiple arduinos connected.")
+    parser.add_argument("--run", nargs=1, type=str,
+                        help="Run a file")
+    parser.add_argument("--debug", action="store_true",
+                        help="Run a file")
 
     args = parser.parse_args()
 
-    sam = SamControl(args.log_file, args.arduino)
+    sam = SamControl(args.log_file, args.arduino, args.debug)
 
     try:
-        sam.main()
+        sam.main(program=args.run)
     except Exception as e:
         print("Sam has failed --> " + e.__doc__)
         print(str(e))

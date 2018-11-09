@@ -1,0 +1,6 @@
+
+echo Starting robot
+request motor start
+request motor wait 2 stop
+echo will move soon...
+

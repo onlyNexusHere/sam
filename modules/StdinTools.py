@@ -40,6 +40,12 @@ class StdinTools(SamModule):
                            "wait": (lambda str_args: self.wait(str_args),
                                     "Change debugging to true or false"),
 
+                           "run": (lambda str_args: self.run_file(str_args),
+                                    "Run lines in a file"),
+
+                           "echo": (lambda str_args: self.echo(str_args),
+                                    "Echo a string"),
+
                            "quit": (lambda str_args: self.sam.request_quit(),
                                     "Quit the program"),
 
@@ -48,6 +54,9 @@ class StdinTools(SamModule):
                            }
 
     def message_received(self, message):
+        if message.strip() == "":
+            return
+
         message_arg = message.strip().split(" ")
 
         self.debug_run(print, "Function requested: " + message_arg[0])
@@ -86,7 +95,7 @@ class StdinTools(SamModule):
         if self.arduino is not None:
             self.write_to_stdout("Arduino is: " + self.sam.arduino.port + "\nDebugging is " + str(self.sam.debug))
         else:
-            self.write_to_stdout("Arduino is not detected.")
+            self.write_to_stdout("Arduino is not detected." + "\nDebugging is " + str(self.sam.debug))
 
     def send_message(self, str_args):
         self.sam.send(" ".join(str_args))
@@ -104,5 +113,26 @@ class StdinTools(SamModule):
                 self.write_to_stdout("Cannot run request for module " + get_mod.name + "\n" + str(e))
 
     def wait(self, str_args):
-        if str_args > 0 and str_args[1].isdigit():
-            time.sleep(int(str_args))
+        if len(str_args) > 0 and str_args[0].isdigit():
+            time.sleep(int(str_args[0]))
+
+    def echo(self, str_args):
+        self.write_to_stdout(" ".join(str_args))
+
+    def run_file(self, str_args):
+        if str_args is None or len(str_args) < 1 or str_args[0].strip() == "":
+            self.write_to_stdout("Cannot open file")
+            return
+
+        to_run = open(str_args[0], 'r', encoding='utf-8')
+
+        line_to_read = to_run.readline()
+        while line_to_read is not "":
+
+            if line_to_read.strip() != "":
+                # Ignore empty lines
+                self.message_received(line_to_read.strip())
+                # Keeps file reading from being non-blocking
+                self.sam.process_sockets()
+
+            line_to_read = to_run.readline()
