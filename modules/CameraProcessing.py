@@ -21,6 +21,8 @@ class CameraProcessing(SamModule):
     prev = None
     camera = None
 
+    is_following_lane = False
+
     def __init__(self, kargs):
         super().__init__(module_name="CameraProcessing", is_local=True, identi="camera", **kargs)
 
@@ -41,28 +43,33 @@ class CameraProcessing(SamModule):
 
         self.prev = 640/2
 
+        self.is_following_lane = False
+
     def stdin_request(self, message):
-        pass
+        if message.strip() == "start":
+            self.is_following_lane = True
+        elif message.strip() == "stop":
+            self.is_following_lane = False
 
     def on_wait(self):
-        start = time.time()
-        self.camera.capture(self.path)
-        img = np.array(Image.open(self.path).convert('L'))
-        mid = detect_mid(img)[0]
-        process_time = detect_mid(img)[1]
-        print('= = = = = = =')
-        end = time.time()
-        print('Process Time: ' + str(process_time))
-        print('Total Time: ' + str(end - start))
-        print('Mid: ' + mid)
-        if mid > self.prev:
-            motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
-            self.sam['motor'].send(motor_command.encode())
-        else:
-            motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
-            self.sam['motor'].send(motor_command.encode())
-        self.prev = mid
-
+        if self.is_following_lane:
+            start = time.time()
+            self.camera.capture(self.path)
+            img = np.array(Image.open(self.path).convert('L'))
+            mid = detect_mid(img)[0]
+            process_time = detect_mid(img)[1]
+            print('= = = = = = =')
+            end = time.time()
+            print('Process Time: ' + str(process_time))
+            print('Total Time: ' + str(end - start))
+            print('Mid: ' + mid)
+            if mid > self.prev:
+                motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
+                self.sam['motor'].send(motor_command.encode())
+            else:
+                motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
+                self.sam['motor'].send(motor_command.encode())
+            self.prev = mid
 
     def write_to_stdout(self, string_to_write):
         pass
