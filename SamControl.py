@@ -2,7 +2,7 @@ import sys
 import argparse
 import select
 import serial.tools.list_ports
-from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature
+from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature, SamModule
 from datetime import datetime
 
 
@@ -278,7 +278,7 @@ class SamControl:
         self.quit_program = True
 
     def __getitem__(self, item):
-        return self.arduino_modules.get(item.strip().lower(), None)
+        return self.arduino_modules.get(item.strip().lower(), SamModule.SamModule())
 
     class Sam_Control_Error(Exception):
         """Base error class"""
