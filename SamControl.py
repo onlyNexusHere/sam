@@ -2,7 +2,7 @@ import sys
 import argparse
 import select
 import serial.tools.list_ports
-from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors
+from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature
 from datetime import datetime
 
 
@@ -105,7 +105,8 @@ class SamControl:
                 CameraProcessing.CameraProcessing(args_for_mods),
                 ArduinoDebug.ArduinoDebug(args_for_mods),
                 Ping.Ping(args_for_mods),
-                Motors.Motors(args_for_mods)]
+                Motors.Motors(args_for_mods),
+                Quadrature.Quadrature(args_for_mods)]
 
         self.debug_run(print, "mods initialized")
 
