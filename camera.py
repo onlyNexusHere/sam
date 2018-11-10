@@ -23,9 +23,9 @@ with picamera.PiCamera() as camera:
 	for item in range(int(w/2),0,-1):
 		if(pix[item,int(h*.30)][0]>threshold):
 			if(item>206):
-				print("Camera l ",abs(item-203))
+				print("Camera l ", abs(item-203))
 			else:
-				print("Camera r ",abs(item-203))
+				print("Camera r ", abs(item-203))
 			break
 		# print(pix[item,int(h*.8)])
 		pix[item,int(h*.30)] = (255,255)

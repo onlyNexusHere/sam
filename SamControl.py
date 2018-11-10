@@ -84,6 +84,8 @@ class SamControl:
         if self.arduino is not None:
             self.arduino.close()
 
+        #TODO run module exit functions. With try/catch
+
     def init_mods(self):
         """
         Imports files in the modules folder and initializes them.

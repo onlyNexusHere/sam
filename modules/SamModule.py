@@ -84,3 +84,10 @@ class SamModule:
         """
         self.sam.debug_run(func, func_args)
 
+    def exit(self):
+        """
+        Use this command to close anything you may have intitialized.
+        :return:
+        """
+        pass
+
