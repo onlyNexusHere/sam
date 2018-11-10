@@ -41,10 +41,14 @@ You can use these functions and variables:
      
     self.sam: Sam
         This is the link to the sam object.
-        
+    
+    self.sam[NAME_OF_ID]
+        Name of ID is a string.
+        Get the module that matches the id with NAME_OF_ID. Returns the module or None.
+    
     self.sam.debug: Boolean
         If you want to print something only in debugging mode, then chcek this boolean.
-        
+    
     self.sam.request_quit()
         use this to request that the full program quit.
         
@@ -74,6 +78,7 @@ You can use these functions and variables:
     self.send(self, msg):
         Use this function to send a message to the arduino.
         Adds the identifier   
+        
         
 
    
