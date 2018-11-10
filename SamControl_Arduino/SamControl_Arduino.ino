@@ -18,9 +18,57 @@ DualMC33926MotorShield md;
 double posn[] = {0., 0.};
 double heading = 0.0;
 
+void stopIfFault()
+{
+  if (md.getFault())
+  {
+    Serial.println("fault");
+    while(1);
+  }
+}
+
+void encoder_isr_left() {
+  // pins 2 and 5
+    static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+    static uint8_t enc_val_l = 0;
+    uint8_t ir1 = ((PIND & 0b0100) >> 2) | ((PIND & 0b100000) >> 4);
+
+    enc_val_l = enc_val_l << 2;
+    enc_val_l = enc_val_l | ir1;
+
+    int delta = lookup_table[enc_val_l & 0b1111];
+    enc_count_left = enc_count_left + delta;
+    double dx = delta * 0.5 * SEGMENT_LEN;
+    double dt = atan2(-dx, WHEELBASE/2);
+    heading += dt;
+    posn[0] = posn[0] + dx*cos(heading);
+    posn[1] = posn[1] + dx*sin(heading);
+}
+
+void encoder_isr_right() {
+    // pins 3 and 6
+    static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+    static uint8_t enc_val_r = 0;
+    uint8_t ir2 = ((PIND & 0b1000) >> 3) | ((PIND & 0b1000000) >> 5);
+
+    enc_val_r = enc_val_r << 2;
+    enc_val_r = enc_val_r | ir2;
+    
+    int delta = lookup_table[enc_val_r & 0b1111];
+    enc_count_right = enc_count_right + delta;
+    double dx = delta * 0.5 * SEGMENT_LEN;
+    double dt = atan2(dx, WHEELBASE/2);
+    heading += dt;
+    posn[0] = posn[0] + dx*cos(heading);
+    posn[1] = posn[1] + dx*sin(heading);
+}
+
 void setup() {
     // all your normal setup code
     Serial.begin(9600);
+    Serial.flush();
+    //Serial.println("Dual MC33926 Motor Shield");
+    md.init();
     enableInterrupt(2,encoder_isr_left,CHANGE);
     enableInterrupt(5,encoder_isr_left,CHANGE);
     enableInterrupt(3,encoder_isr_right,CHANGE);
@@ -28,30 +76,97 @@ void setup() {
     md.init();
     md.setM1Speed(0);
     md.setM2Speed(0);
-//    md.setM1Speed(200);
-//    md.setM2Speed(r_pwm_to_val(200));
+
 }
 
+String incomingByte = "";
+String m[12];
+
+int i = 0;
+
+// Can receive the following commands from pi:
+// 1. "m 1 100 200" => m: motor, 1/0: on/off, 100: left motor to 100, 200: right motor 200
+// 2. "ir" => returns "ir 1 2 3\n" where 1: x, 2: y, 3: heading
 void loop(){
-  do_right_turn();
-//  do_left_turn();
-//  print_posn();
-//  Serial.print("Left: ");
-//  Serial.println(enc_count_left);
-//  Serial.print("Right: ");
-//  Serial.println(enc_count_right);
-//  delay(2000);
-//  print_pwm_map();
+    if (Serial.available()) {
+      String string = Serial.readString();
+      char str[10];
+      string.toCharArray(str, 12);
+      char* ptr = strtok(str, " ");
+          
+      while(ptr != NULL) {
+        Serial.println(ptr);
+        m[i] = ptr;
+        i = i + 1;
+        ptr = strtok(NULL, " ");
+      }
+    }
+    
+    // If setting motor value 
+    if(m[0].equals("m")){
+      
+      if(m[1] == "0") {
+        md.setM1Speed(0);
+        md.setM2Speed(0);
+        //Serial.println("left = 0");
+        //Serial.println("right = 0");
+      } else if (m[1] == "1") {
+        md.setM1Speed(m[2].toInt());
+        md.setM2Speed(m[3].toInt());
+        //Serial.println("left = " + String(m[1]));
+        //Serial.println("right = " + String(m[2]));
+      }
+    
+      i = 0;
+    } 
+    // If PI requesting Quadrature data
+    else if(m[0].equals("ir")){
+        String pos = getPosition(); 
+        Serial.write(!pos);
+    }
+
+
+
+
+  //do_right_turn();
+  //do_left_turn();
+  //print_posn();
+  //Serial.println(getPosition());
+  //Serial.print("Left: ");
+  //Serial.println(enc_count_left);
+  //Serial.print("Right: ");
+  //Serial.println(enc_count_right);
+  //delay(2000);
+  //print_pwm_map();
 }
+
+
 
 void do_right_turn() {
-  md.setM1Speed(360);
-  md.setM2Speed(r_pwm_to_val(120));
+  double dtheta = 0;
+  double theta0 = heading;
+  while (dtheta < 1.57) {
+    dtheta = theta0 - heading;
+    md.setM1Speed(360);
+    md.setM2Speed(r_pwm_to_val(120));
+  }
+  md.setM1Speed(0);
+  md.setM2Speed(0);
 }
 
 void do_left_turn() {
-  md.setM1Speed(200);
-  md.setM2Speed(r_pwm_to_val(300));
+  double dtheta = 0;
+  double theta0 = heading;
+  while(dtheta > -1.57) {
+    Serial.println("TURN");
+    dtheta = theta0 - heading;
+//    md.setM1Speed(200);
+//    md.setM2Speed(r_pwm_to_val(300));
+  }
+  Serial.println("STOP");
+  md.setM1Speed(0);
+  md.setM2Speed(0);
+
 }
 
 int r_pwm_to_val(int pwm) {
@@ -91,51 +206,17 @@ void print_pwm_map() {
   md.setM2Speed(0);
 }
 
-void print_posn(){
-  Serial.print("x: ");
-  Serial.print(posn[0]);
-  Serial.print(" y: ");
-  Serial.print(posn[1]);
-  Serial.print(" theta: ");
-  Serial.println(heading);
+// Calculates the distance between the starting position of the robot and the current position
+double distance(){
+  double x = posn[0];
+  double y = posn[1];
+  return sqrt(x*x + y*y);
 }
 
-void encoder_isr_left() {
-  // pins 2 and 5
-    static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
-    static uint8_t enc_val_l = 0;
-    uint8_t ir1 = ((PIND & 0b0100) >> 2) | ((PIND & 0b100000) >> 4);
 
-    enc_val_l = enc_val_l << 2;
-    enc_val_l = enc_val_l | ir1;
-
-    int delta = lookup_table[enc_val_l & 0b1111];
-    enc_count_left = enc_count_left + delta;
-    double dx = delta * 0.5 * SEGMENT_LEN;
-    double dt = atan2(-dx, WHEELBASE/2);
-    heading += dt;
-    posn[0] = posn[0] + dx*cos(heading);
-    posn[1] = posn[1] + dx*sin(heading);
-//    Serial.print("Left:  ");
-//    Serial.println(enc_count_left);
+// Returns the position in the following format: 
+// "ir 1 2 3\n" where 1: x, 2: y, 3: heading
+String getPosition(){
+  return "ir " + String(posn[0]) + " "+ String(posn[1]) + " " + String(heading) + "\n";
 }
 
-void encoder_isr_right() {
-    // pins 3 and 6
-    static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
-    static uint8_t enc_val_r = 0;
-    uint8_t ir2 = ((PIND & 0b1000) >> 3) | ((PIND & 0b1000000) >> 5);
-
-    enc_val_r = enc_val_r << 2;
-    enc_val_r = enc_val_r | ir2;
-    
-    int delta = lookup_table[enc_val_r & 0b1111];
-    enc_count_right = enc_count_right + delta;
-    double dx = delta * 0.5 * SEGMENT_LEN;
-    double dt = atan2(dx, WHEELBASE/2);
-    heading += dt;
-    posn[0] = posn[0] + dx*cos(heading);
-    posn[1] = posn[1] + dx*sin(heading);
-//    Serial.print("Right: ");
-//    Serial.println(enc_count_right);
-}
