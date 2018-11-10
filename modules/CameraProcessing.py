@@ -35,8 +35,7 @@ class CameraProcessing(SamModule):
         self.sam['motor'].send(motor_command.encode())
 
         self.camera = PiCamera()
-        # camera.color_effects = (128, 128)
-        # camera.framerate = 10
+
         self.camera.start_preview()
 
         self.path = '/home/pi/Desktop/503/path.jpg'

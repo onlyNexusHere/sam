@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.ndimage import gaussian_filter
+# from scipy.ndimage import gaussian_filter
 
 
 def detect_mid(img):
@@ -8,7 +8,7 @@ def detect_mid(img):
 
     h, w = img.shape
 
-    img = gaussian_filter(img, sigma=0.5)
+    # img = gaussian_filter(img, sigma=0.5)
 
     R, C = np.where(img >= 180)
 
