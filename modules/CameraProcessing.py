@@ -30,7 +30,7 @@ class CameraProcessing(SamModule):
 
         motor_command = str(self.ml) + ' ' + str(self.mr)
 
-        self.send(motor_command.encode())
+        self.sam['motor'].send(motor_command.encode())
 
         self.camera = PiCamera()
         # camera.color_effects = (128, 128)
@@ -57,10 +57,10 @@ class CameraProcessing(SamModule):
         print('Mid: ' + mid)
         if mid > self.prev:
             motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
-            self.send(motor_command.encode())
+            self.sam['motor'].send(motor_command.encode())
         else:
             motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
-            self.send(motor_command.encode())
+            self.sam['motor'].send(motor_command.encode())
         self.prev = mid
 
 
