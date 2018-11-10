@@ -43,7 +43,7 @@ class Quadrature(SamModule):
 
     def stdin_request(self, message):
         if message.strip() == "get location" or message.strip() == "location" or message.strip == "get":
-            self.send("get")
+            self.send(" ")
             self.waiting_for_location = True
 
 

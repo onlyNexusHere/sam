@@ -12,6 +12,7 @@ class SamModule:
     sam = None
     name = None
     identifier = None
+    send_id = None
     is_local_to_pi = False
     log_file = None
 
@@ -31,6 +32,7 @@ class SamModule:
         self.identifier = identi.lower()
         self.is_local_to_pi = is_local
         self.log_file = log_file
+        self.send_id = self.identifier
 
     def message_received(self, message):
         """
@@ -72,7 +74,7 @@ class SamModule:
         Adds the identifier
         """
         self.debug_run(self.write_to_stdout, "Sending \"" +msg + "\" to arduino")
-        self.sam.send(self.identifier + " " + msg)
+        self.sam.send(self.send_id + " " + msg)
 
     def debug_run(self, func, func_args):
         """

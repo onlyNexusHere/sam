@@ -16,6 +16,8 @@ class Motors(SamModule):
     def __init__(self, kargs):
         super().__init__(module_name="Motors", is_local=False, identi="motor", **kargs)
 
+        self.send_id = "m"
+
     def message_received(self, message):
         pass
 

@@ -273,14 +273,12 @@ class SamControl:
             else:
                 func(func_args)
 
-
     def request_quit(self):
         """Use this function to kill the robot's program. Any mod can do this if needed."""
         self.quit_program = True
 
     def __getitem__(self, item):
         return self.arduino_modules.get(item.strip().lower(), None)
-
 
     class Sam_Control_Error(Exception):
         """Base error class"""
