@@ -66,6 +66,11 @@ class SamControl:
         if self.arduino is None:
             self.find_arduino()
 
+        if self.arduino is not None:
+            self.listening_to.append(self.arduino)
+        else:
+            print("Arduino USB was not found.")
+
         self.listening_to.append(sys.stdin)
 
         self.init_mods()
@@ -160,10 +165,7 @@ class SamControl:
 
                 # Adding listeners to the list
         self.debug_run(print, "Done looking through ports")
-        if self.arduino is not None:
-            self.listening_to.append(self.arduino)
-        else:
-            print("Arduino USB was not found.")
+
 
     def _send_code_to_arduino(self, location_of_file):
         pass
