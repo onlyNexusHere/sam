@@ -43,7 +43,7 @@ class CameraProcessing(SamModule):
             self.ml = 120
             self.mr = 125
             motor_command = str(self.ml) + ' ' + str(self.mr)
-            self.sam['motor'].send(motor_command.encode())
+            self.sam['motor'].send(motor_command.encode('utf-8'))
             self.prev = 640/2
 
         elif message.strip() == "stop":
