@@ -20,6 +20,7 @@ class Quadrature(SamModule):
         :param message:
         :return:
         """
+        self.debug_run(self.write_to_stdout, "Got IR message")
         msg_parts = message.strip().split(" ")
 
         # 0 will be x, 1 will be y, 2 will be heading.
