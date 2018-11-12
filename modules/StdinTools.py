@@ -1,6 +1,6 @@
 from .SamModule import SamModule
 import time
-import serial.Serial
+import serial.tools.list_ports
 
 
 class StdinTools(SamModule):
