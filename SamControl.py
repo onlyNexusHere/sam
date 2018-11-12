@@ -34,6 +34,9 @@ class SamControl:
     local_modules = {}
     arduino_modules = {}
 
+    # list of module names that are filtered out of on_wait
+    broken_module_on_wait = list()
+
     quit_program = False
 
     # Array of file numbers for
@@ -191,14 +194,15 @@ class SamControl:
 
         # self.debug_run(print, "Running on_wait commands.")
         for _, mod in {**self.local_modules, **self.arduino_modules}.items():
-            try:
-                mod.on_wait()
-            except Exception as e:
-                print("Exception found in module " + mod.name + " for on wait\n" + str(e.__doc__) + "\n" + str(e))
-                # _, _, traceback_ = sys.exc_info()
-                # print(traceback.format_tb(traceback_))
-
-                # Todo: if mod fails, remove mod.
+            if not (mod.name in self.broken_module_on_wait):
+                try:
+                    mod.on_wait()
+                except Exception as e:
+                    print("Exception found in module " + mod.name + " for on wait\n" + str(e.__doc__) + "\n" + str(e))
+                    _, _, traceback_ = sys.exc_info()
+                    print(traceback.format_tb(traceback_))
+                    self.debug_run(print, mod.name + "removed from on_wait.")
+                    self.broken_module_on_wait.append(mod.name)
 
     def _process_stdin(self):
         str_rsv = sys.stdin.readline()
@@ -232,7 +236,7 @@ class SamControl:
             except Exception as e:
                 print("Exception found in module " + module_to_use.name + " for message received --> "+str(e.__doc__)+"\n" + str(e))
         else:
-            self.debug_run(print, "Received incorrect module " +message_from_arduino.split(" ")[0])
+            self.debug_run(print, "Received incorrect module " + message_from_arduino.split(" ")[0])
 
     def send(self, message):
         """
