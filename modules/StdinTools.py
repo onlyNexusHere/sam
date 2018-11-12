@@ -1,5 +1,6 @@
 from .SamModule import SamModule
 import time
+import serial.Serial
 
 
 class StdinTools(SamModule):
@@ -83,8 +84,17 @@ class StdinTools(SamModule):
     def show_mods(self):
         self.write_to_stdout(str([n for n in {**self.sam.arduino_modules, **self.sam.local_modules}.keys()]))
 
-    def set_var(self, message: list):
-        pass
+    def set_var(self, str_args):
+        if len(str_args) == 2:
+            if str_args[0].lower() == 'arduino':
+                try:
+                    serial.Serial(str_args[1], timeout=1)
+                except Exception as e:
+                    self.debug_run(self.write_to_stdout, "Could not connect to arduino: " + e.__doc__ + "\n" + str(e))
+            else:
+                self.write_to_stdout("Only setting arduino path is available")
+        else:
+            self.write_to_stdout("Need two arguments.")
 
     def show_help(self):
 

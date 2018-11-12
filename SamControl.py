@@ -257,8 +257,8 @@ class SamControl:
         :param msg:
         :return:
         """
-        print(mod_name + " " + msg)
-        self.log_to_file(mod_name + " " + msg)
+        print(mod_name + ": " + msg)
+        self.log_to_file(mod_name + ": " + msg)
 
     def debug_run(self, func, func_args):
         """
