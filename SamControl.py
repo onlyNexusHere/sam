@@ -200,7 +200,7 @@ class SamControl:
                 except Exception as e:
                     print("Exception found in module " + mod.name + " for on wait\n" + str(e.__doc__) + "\n" + str(e))
                     traceback.print_tb(e.__traceback__)
-                    self.debug_run(print, mod.name + "removed from on_wait.")
+                    self.debug_run(print, mod.name + " removed from on_wait.")
                     self.broken_module_on_wait.append(mod.name)
 
     def _process_stdin(self):

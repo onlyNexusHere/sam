@@ -103,11 +103,18 @@ class StdinTools(SamModule):
         print("\n".join([cmd + " --> \n\t" + comment for cmd, (_, comment) in self.stdin_cmds.items()]))
 
     def show_status(self):
+        to_print = "\n"
 
         if self.arduino is not None:
-            self.write_to_stdout("Arduino is: " + self.sam.arduino.port + "\nDebugging is " + str(self.sam.debug))
+            to_print = to_print + "Arduino is: " + self.sam.arduino.port + "\n"
         else:
-            self.write_to_stdout("Arduino is not detected." + "\nDebugging is " + str(self.sam.debug))
+            to_print = to_print + "Arduino is not detected." + "\n"
+
+        to_print = to_print + "Debugging is " + str(self.sam.debug) + "\n"
+
+        to_print = to_print + "Broken modules: " + str(self.sam.broken_module_on_wait)
+
+        self.write_to_stdout(to_print)
 
     def send_message(self, str_args):
         self.sam.send(" ".join(str_args))
