@@ -62,7 +62,7 @@ class CameraProcessing(SamModule):
             end = time.time()
             # print('Process Time: ' + str(process_time))
             print('Total Time: ' + str(end - start))
-            print('Mid: ' + mid)
+            print('Mid: ' + str(mid))
             if mid > self.prev:
                 motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
                 self.sam['motor'].send(motor_command)
