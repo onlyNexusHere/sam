@@ -143,7 +143,7 @@ class SamControl:
         ports = list(serial.tools.list_ports.comports())
         self.debug_run(print, "Looking at all ports")
         for p in ports:
-            self.debug_run(print, "Going to next port")
+            self.debug_run(print, "Going to next port: " + str(p[0]) + " :" + str(p[1]))
             if "Arduino" in p[1]:
                 try:
                     self.arduino = serial.Serial(p[0])
