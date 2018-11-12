@@ -12,6 +12,7 @@ class Quadrature(SamModule):
     def __init__(self, kargs):
         super().__init__(module_name="Quadrature", is_local=False, identi="ir", **kargs)
         self.current_location = (float(0), float(0), float(0))
+        self.send_id = "i"
 
     def message_received(self, message):
         """
