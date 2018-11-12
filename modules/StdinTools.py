@@ -1,5 +1,7 @@
 from .SamModule import SamModule
 import time
+import sys
+import traceback
 import serial.tools.list_ports
 
 
@@ -121,6 +123,8 @@ class StdinTools(SamModule):
                 get_mod.stdin_request(" ".join(str_args[1:]))
             except Exception as e:
                 self.write_to_stdout("Cannot run request for module " + get_mod.name + "\n" + str(e))
+                _, _, traceback_ = sys.exc_info()
+                print(traceback.format_tb(traceback_))
 
     def wait(self, str_args):
         if len(str_args) > 0 and str_args[0].isdigit():

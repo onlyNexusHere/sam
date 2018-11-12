@@ -1,6 +1,7 @@
 import sys
 import argparse
 import select
+import traceback
 import serial.tools.list_ports
 from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature, SamModule
 from datetime import datetime
@@ -193,9 +194,11 @@ class SamControl:
             try:
                 mod.on_wait()
             except Exception as e:
-                _, _, traceback_ = sys.exc_info()
                 print("Exception found in module " + mod.name + " for on wait\n" + str(e.__doc__) + "\n" + str(e))
-                print(str(traceback_))
+                # _, _, traceback_ = sys.exc_info()
+                # print(traceback.format_tb(traceback_))
+
+                # Todo: if mod fails, remove mod.
 
     def _process_stdin(self):
         str_rsv = sys.stdin.readline()
