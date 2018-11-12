@@ -56,11 +56,11 @@ class CameraProcessing(SamModule):
             start = time.time()
             self.camera.capture(self.path)
             img = np.array(Image.open(self.path).convert('L'))
-            mid = detect_mid(img)[0]
-            process_time = detect_mid(img)[1]
+            mid = detect_mid(img)
+            # process_time = detect_mid(img)[1]
             print('= = = = = = =')
             end = time.time()
-            print('Process Time: ' + str(process_time))
+            # print('Process Time: ' + str(process_time))
             print('Total Time: ' + str(end - start))
             print('Mid: ' + mid)
             if mid > self.prev:
