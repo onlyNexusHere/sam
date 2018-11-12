@@ -28,16 +28,16 @@ class CameraProcessing(SamModule):
 
         # Here: add the thing to upload an image
 
-
         self.camera = PiCamera()
 
         self.camera.start_preview()
 
-        self.path = '/home/pi/Desktop/503/path.jpg'
+        self.path = '/home/pi/Desktop/path.jpg'
 
         self.is_following_lane = False
 
     def stdin_request(self, message):
+
         if message.strip() == "start":
             self.is_following_lane = True
             self.ml = 120
