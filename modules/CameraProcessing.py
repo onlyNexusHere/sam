@@ -42,7 +42,7 @@ class CameraProcessing(SamModule):
             self.is_following_lane = True
             self.ml = 120
             self.mr = 125
-            motor_command = str(self.ml) + ' ' + str(self.mr)
+            motor_command = '1 ' + str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
             self.prev = 640/2
 
@@ -64,10 +64,10 @@ class CameraProcessing(SamModule):
             print('Total Time: ' + str(end - start))
             print('Mid: ' + mid)
             if mid > self.prev:
-                motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
+                motor_command = '1 ' +str(1.2 * self.ml) + ' ' + str(self.mr)
                 self.sam['motor'].send(motor_command)
             else:
-                motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
+                motor_command = '1 ' +str(self.ml) + ' ' + str(1.2 * self.mr)
                 self.sam['motor'].send(motor_command)
             self.prev = mid
 
