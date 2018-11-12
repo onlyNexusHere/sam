@@ -76,7 +76,7 @@ class Motors(SamModule):
 
         elif message_parts[0].lower() == "start" or message_parts[0].lower() == "straight":
             self.debug_run(self.write_to_stdout, "Sending straight")
-            self.send("200 200")
+            self.send("50 50")
 
         elif message_parts[0] == "wait" and len(message_parts) > 2:
             if not message_parts[1].isdigit():

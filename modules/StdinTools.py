@@ -90,7 +90,7 @@ class StdinTools(SamModule):
         if len(str_args) == 2:
             if str_args[0].lower() == 'arduino':
                 try:
-                    serial.Serial(str_args[1], timeout=1)
+                    serial.Serial(str_args[1], timeout=1, baudrate=115200)
                 except Exception as e:
                     self.debug_run(self.write_to_stdout, "Could not connect to arduino: " + e.__doc__ + "\n" + str(e))
             else:
