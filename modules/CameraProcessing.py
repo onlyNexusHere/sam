@@ -27,12 +27,7 @@ class CameraProcessing(SamModule):
         super().__init__(module_name="CameraProcessing", is_local=True, identi="camera", **kargs)
 
         # Here: add the thing to upload an image
-        self.ml = 120
-        self.mr = 125
 
-        motor_command = str(self.ml) + ' ' + str(self.mr)
-
-        self.sam['motor'].send(motor_command.encode())
 
         self.camera = PiCamera()
 
@@ -40,18 +35,26 @@ class CameraProcessing(SamModule):
 
         self.path = '/home/pi/Desktop/503/path.jpg'
 
-        self.prev = 640/2
+
 
         self.is_following_lane = False
 
     def stdin_request(self, message):
         if message.strip() == "start":
             self.is_following_lane = True
+            self.ml = 120
+            self.mr = 125
+            motor_command = str(self.ml) + ' ' + str(self.mr)
+            self.sam['motor'].send(motor_command.encode())
+            self.prev = 640/2
+            
         elif message.strip() == "stop":
             self.is_following_lane = False
 
     def on_wait(self):
+
         if self.is_following_lane:
+
             start = time.time()
             self.camera.capture(self.path)
             img = np.array(Image.open(self.path).convert('L'))

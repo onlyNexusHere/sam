@@ -309,5 +309,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("Sam has failed --> " + e.__doc__)
         print(str(e))
+        print(e.with_traceback())
         sam.exit()
 
