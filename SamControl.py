@@ -50,7 +50,7 @@ class SamControl:
                 print("Cannot open log_file" + log_file)
         if arduino_location is not None:
             try:
-                self.arduino = serial.Serial(arduino_location[0], timeout=1)
+                self.arduino = serial.Serial(arduino_location[0], timeout=1, baudrate=115200)
 
             except serial.serialutil.SerialException:
                 print("Could not connect to Arduino, either permissions or its busy")
@@ -153,7 +153,7 @@ class SamControl:
             self.debug_run(print, "Going to next port: " + str(p[0]) + " :" + str(p[1]))
             if "Arduino" in p[1]:
                 try:
-                    self.arduino = serial.Serial(p[0], timeout=1)
+                    self.arduino = serial.Serial(p[0], timeout=1, baudrate=115200)
                 except serial.serialutil.SerialException:
                     print("Could not connect to Arduino, either permissions or its busy")
                 print("Arduino USB was found at " + p[0])
