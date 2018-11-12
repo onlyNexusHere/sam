@@ -106,13 +106,13 @@ class StdinTools(SamModule):
         to_print = "\n"
 
         if self.arduino is not None:
-            to_print = to_print + "Arduino is: " + self.sam.arduino.port + "\n"
+            to_print = to_print + "\tArduino is: " + self.sam.arduino.port + "\n"
         else:
-            to_print = to_print + "Arduino is not detected." + "\n"
+            to_print = to_print + "\tArduino is not detected." + "\n"
 
-        to_print = to_print + "Debugging is " + str(self.sam.debug) + "\n"
+        to_print = to_print + "\tDebugging is " + str(self.sam.debug) + "\n"
 
-        to_print = to_print + "Broken modules: " + str(self.sam.broken_module_on_wait)
+        to_print = to_print + "\tBroken modules: " + str(self.sam.broken_module_on_wait)
 
         self.write_to_stdout(to_print)
 
