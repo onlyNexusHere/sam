@@ -160,7 +160,7 @@ class SamControl:
         self.listening_to.append(sys.stdin)
 
     def process_sockets(self):
-        # self.debug_run(print, "Starting to listen")
+        self.debug_run(print, "Starting to listen")
 
         responded = select.select(self.listening_to, [], [], .02)[0]
 
@@ -169,6 +169,7 @@ class SamControl:
         for response in responded:
 
             if response == sys.stdin:
+                self.debug_run(print, "Stdin sent a message.")
                 self._process_stdin()
 
             elif response == self.arduino:
@@ -182,7 +183,7 @@ class SamControl:
                 print("Goodbye!")
                 return
 
-        # self.debug_run(print, "Running on_wait commands.")
+        self.debug_run(print, "Running on_wait commands.")
         for _, mod in {**self.local_modules, **self.arduino_modules}.items():
             try:
                 mod.on_wait()
