@@ -82,10 +82,14 @@ class Motors(SamModule):
             self.debug_run(self.write_to_stdout, "Sending straight")
 
         elif message_parts[0] == "wait" and len(message_parts) > 2:
-            if not message_parts[1].isdigit():
-                if self.sam.debug: self.write_to_stdout("Cannot wait for non-digit seconds")
+            try:
+                float(message_parts[1])
+            except ValueError:
+                print("need float number")
+                return
 
-            seconds = int(message_parts[1])
+            seconds = float(message_parts[1])
+
             command = " ".join(message_parts[2:])
 
             now = datetime.now()
