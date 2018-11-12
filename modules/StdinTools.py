@@ -123,8 +123,6 @@ class StdinTools(SamModule):
                 get_mod.stdin_request(" ".join(str_args[1:]))
             except Exception as e:
                 self.write_to_stdout("Cannot run request for module " + get_mod.name + "\n" + str(e))
-                # _, _, traceback_ = sys.exc_info()
-                # print(traceback.format_tb(traceback_))
                 traceback.print_tb(e.__traceback__)
 
     def wait(self, str_args):
