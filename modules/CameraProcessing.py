@@ -32,7 +32,7 @@ class CameraProcessing(SamModule):
 
         self.camera.start_preview()
 
-        self.path = '/home/pi/Desktop/path.jpg'
+        self.path = '/home/same_student/sam/path.jpg'
 
         self.is_following_lane = False
 
