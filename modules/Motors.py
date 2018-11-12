@@ -111,6 +111,27 @@ class Motors(SamModule):
 
                 self.promise.append((new_time, " ".join(message_parts[1:])))
 
+        # elif len(message_parts) > 3 and message_parts[0] == "to":
+        #     x = 0.0
+        #     y = 0.0
+        #     heading = 0.0
+        #     try:
+        #         x = float(message_parts[1])
+        #         y = float(message_parts[2])
+        #         heading = float(message_parts[3])
+        #     except ValueError:
+        #         print("need float number")
+        #         return
+        #
+        #     curr_x, curr_y, curr_h = self.sam['ir'].current_location
+        #     if heading -
+        #     if heading < curr_h:
+        #         # adjust right
+        #         pass
+        #     else heading > curr_h:
+        #         # adjust left
+        #
+
     def on_wait(self):
 
         now = datetime.now()
