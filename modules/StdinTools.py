@@ -98,6 +98,8 @@ class StdinTools(SamModule):
         else:
             self.write_to_stdout("Need two arguments.")
 
+        # TODO sam listening list is affected, fix is...
+
     def show_help(self):
 
         print("\n".join([cmd + " --> \n\t" + comment for cmd, (_, comment) in self.stdin_cmds.items()]))

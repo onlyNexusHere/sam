@@ -3,6 +3,7 @@ import argparse
 import select
 import traceback
 import serial.tools.list_ports
+import serial.serialutil
 from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature, SamModule
 from datetime import datetime
 
@@ -218,7 +219,11 @@ class SamControl:
     def _process_arduino_message(self, response):
         try:
             arduino_says = response.readline()
+        except serial.serialutil.SerialException:
+            print("Arduino disconnected. Quiting program.")
+            self.request_quit()
         except Exception as e:
+            print(str(e.__doc__))
             print(str(e))
             return
 
