@@ -161,6 +161,8 @@ class SamControl:
         else:
             print("Arduino USB was not found.")
 
+    def _send_code_to_arduino(self, location_of_file):
+        pass
 
     def process_sockets(self):
         # self.debug_run(print, "Starting to listen")
@@ -191,10 +193,11 @@ class SamControl:
             try:
                 mod.on_wait()
             except Exception as e:
-                print("Exception found in module " + mod.name + " for on wait\n" + str(e))
+                _, _, traceback_ = sys.exc_info()
+                print("Exception found in module " + mod.name + " for on wait\n" + str(e.__doc__) + "\n" + str(e))
+                print(str(traceback_))
 
     def _process_stdin(self):
-
         str_rsv = sys.stdin.readline()
 
         self.debug_run(print, "got message: " + str_rsv)
@@ -205,7 +208,6 @@ class SamControl:
             print("Exception found in stdin module for message received --> "+str(e.__doc__)+"\n" + str(e))
 
     def _process_arduino_message(self, response):
-
         try:
             arduino_says = response.readline()
         except Exception as e:
