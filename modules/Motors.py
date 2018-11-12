@@ -13,6 +13,12 @@ class Motors(SamModule):
     promise = []
     ready = True
 
+
+#     Quadrature: Current location is 0.0 0.0 0.0
+#     Quadrature: Current location is 18.88 -0.48 0.0
+#     Quadrature: Current location is 36.9 11.25 1.27
+#     Quadrature: Current location is 49.5 46.43 1.23
+
     def __init__(self, kargs):
         super().__init__(module_name="Motors", is_local=False, identi="motor", **kargs)
 
