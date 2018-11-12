@@ -46,7 +46,7 @@ class SamControl:
                 print("Cannot open log_file" + log_file)
         if arduino_location is not None:
             try:
-                self.arduino = serial.Serial(arduino_location[0], timeout=0.5)
+                self.arduino = serial.Serial(arduino_location[0], timeout=1)
 
             except serial.serialutil.SerialException:
                 print("Could not connect to Arduino, either permissions or its busy")
@@ -62,6 +62,8 @@ class SamControl:
         if self.arduino is None:
             self.find_arduino()
 
+        self.listening_to.append(sys.stdin)
+
         self.init_mods()
 
         self.debug_run(print, "Everything has been initialized")
@@ -70,6 +72,7 @@ class SamControl:
             self.debug_run(print, "Running startup file")
             self.local_modules.get(">").message_received("run " + program[0])
 
+        self.debug_run(print, "Start non-blocking loop")
         while self.quit_program is False:
             self.process_sockets()
 
@@ -146,7 +149,7 @@ class SamControl:
             self.debug_run(print, "Going to next port: " + str(p[0]) + " :" + str(p[1]))
             if "Arduino" in p[1]:
                 try:
-                    self.arduino = serial.Serial(p[0], timeout=0.5)
+                    self.arduino = serial.Serial(p[0], timeout=1)
                 except serial.serialutil.SerialException:
                     print("Could not connect to Arduino, either permissions or its busy")
                 print("Arduino USB was found at " + p[0])
@@ -157,10 +160,10 @@ class SamControl:
             self.listening_to.append(self.arduino)
         else:
             print("Arduino USB was not found.")
-        self.listening_to.append(sys.stdin)
+
 
     def process_sockets(self):
-        self.debug_run(print, "Starting to listen")
+        # self.debug_run(print, "Starting to listen")
 
         responded = select.select(self.listening_to, [], [], .02)[0]
 
@@ -183,7 +186,7 @@ class SamControl:
                 print("Goodbye!")
                 return
 
-        self.debug_run(print, "Running on_wait commands.")
+        # self.debug_run(print, "Running on_wait commands.")
         for _, mod in {**self.local_modules, **self.arduino_modules}.items():
             try:
                 mod.on_wait()
