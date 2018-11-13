@@ -29,6 +29,57 @@ void stopIfFault()
   }
 } 
 
+
+void left_routine() {
+    md.setM1Speed(160);
+    int r_val = 155;
+    md.setM2Speed(r_val);
+    Serial.println("Straight Start");
+    while(posn[0] < 43) { //30 inches from start - how far to go before turn
+      Serial.print("Straight");
+      Serial.println(posn[0]);
+      continue;
+    }
+    Serial.println("Straight Finished");
+    do_left_turn();
+    md.setM1Speed(160);
+    md.setM2Speed(r_val);
+    double start_y = posn[1];
+    Serial.println("HERE");
+    while((start_y - posn[1]) > -17.5){ // 14 inches to end line
+      Serial.println(start_y - posn[1]);
+      continue;
+    }
+    md.setM1Speed(0);
+    md.setM2Speed(0);
+}
+
+void right_routine() {
+    int l_val = 160;
+    int r_val = 155;
+    md.setM1Speed(l_val);
+    
+    md.setM2Speed(r_val);
+    Serial.println("Straight Start");
+    while(posn[0] < 20.5) { //30 inches from start - how far to go before turn
+      Serial.print("Straight");
+      Serial.println(posn[0]);
+      continue;
+    }
+    Serial.println("Straight Finished");
+    do_right_turn();
+    md.setM1Speed(l_val);
+    md.setM2Speed(r_val);
+    double start_y = posn[1];
+    Serial.println("HERE");
+    while((start_y - posn[1]) < 42.5){ // 14 inches to end line
+      Serial.println(start_y - posn[1]);
+      continue;
+    }
+    md.setM1Speed(0);
+    md.setM2Speed(0);
+}
+
 void encoder_isr_left() {
   // pins 2 and 5
     static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
@@ -90,6 +141,7 @@ int i = 0;
 // Can receive the following commands from pi:
 // 1. "m 1 100 200" => m: motor, 1/0: on/off, 100: left motor to 100, 200: right motor 200
 // 2. "ir" => returns "ir 1 2 3\n" where 1: x, 2: y, 3: heading
+long timeout = 0;
 void loop(){
 
     if (Serial.available()) {
@@ -123,6 +175,13 @@ void loop(){
         char x[100] ;
         pos.toCharArray(x, 100);
         Serial.print(x);
+    }
+
+    else if(m[0].equals("x")){
+      left_routine();
+    }
+    else if(m[0].equals("y")){
+      right_routine();
     }
 
 
@@ -187,35 +246,7 @@ int r_pwm_to_val(int pwm) {
   int idx = (pwm + 400) / 20;
   return pwm * motor_lookup[idx];
 }
-//
-//void print_pwm_map() {
-//  Serial.println("Motor 1 Start: 2 second gap");
-//  Serial.println("speed, encoder start, encoder end");
-//  for(int i = -400; i <= 400; i+=20) {
-//    md.setM1Speed(i);
-//    delay(250);
-//    Serial.print(i);
-//    Serial.print(",");
-//    Serial.print(enc_count_left);
-//    Serial.print(",");
-//    delay(2000);
-//    Serial.println(enc_count_left);
-//  }
-//  md.setM1Speed(0);
-//  Serial.println("Motor 2 Start: 2 second gap");
-//  Serial.println("speed, encoder start, encoder end");
-//  for(int i = -400; i <= 400; i+=20) {
-//    md.setM2Speed(i);
-//    delay(250);
-//    Serial.print(i);
-//    Serial.print(",");
-//    Serial.print(enc_count_right);
-//    Serial.print(",");
-//    delay(2000);
-//    Serial.println(enc_count_right);
-//  }
-//  md.setM2Speed(0);
-//}
+
 
 // Calculates the distance between the starting position of the robot and the current position
 double distance(){
@@ -230,4 +261,6 @@ double distance(){
 String getPosition(){
   return "ir " + String(posn[0]) + " "+ String(posn[1]) + " " + String(heading) + "\n";
 }
+
+
 
