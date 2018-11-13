@@ -12,6 +12,7 @@ class Quadrature(SamModule):
     def __init__(self, kargs):
         super().__init__(module_name="Quadrature", is_local=False, identi="ir", **kargs)
         self.current_location = (float(0), float(0), float(0))
+        self.send_id = "i"
 
     def message_received(self, message):
         """
@@ -20,6 +21,7 @@ class Quadrature(SamModule):
         :param message:
         :return:
         """
+        self.debug_run(self.write_to_stdout, "Got IR message")
         msg_parts = message.strip().split(" ")
 
         # 0 will be x, 1 will be y, 2 will be heading.
@@ -42,7 +44,7 @@ class Quadrature(SamModule):
                 self.debug_run(self.write_to_stdout, "Cannot process message that is not 3 floats.")
 
     def stdin_request(self, message):
-        if message.strip() == "get location" or message.strip() == "location" or message.strip == "get":
+        if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
             self.send(" ")
             self.waiting_for_location = True
 

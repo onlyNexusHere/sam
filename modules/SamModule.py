@@ -73,7 +73,11 @@ class SamModule:
 
         Adds the identifier
         """
-        self.debug_run(self.write_to_stdout, "Sending \"" +msg + "\" to arduino")
+        if type(msg) is bytes:
+            self.write_to_stdout(self.name + " module is sending bytes, please send a string.")
+            return
+
+        self.debug_run(self.write_to_stdout, "Sending \" " + msg + " \" to arduino")
         self.sam.send(self.send_id + " " + msg)
 
     def debug_run(self, func, func_args):

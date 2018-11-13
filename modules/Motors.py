@@ -13,6 +13,12 @@ class Motors(SamModule):
     promise = []
     ready = True
 
+
+#     Quadrature: Current location is 0.0 0.0 0.0
+#     Quadrature: Current location is 18.88 -0.48 0.0
+#     Quadrature: Current location is 36.9 11.25 1.27
+#     Quadrature: Current location is 49.5 46.43 1.23
+
     def __init__(self, kargs):
         super().__init__(module_name="Motors", is_local=False, identi="motor", **kargs)
 
@@ -44,45 +50,52 @@ class Motors(SamModule):
 
         if message_parts[0].lower() == "turn":
 
-            if len(message_parts) < 2:
+            if len(message_parts) < 3:
                 self.write_to_stdout("Need direction to turn")
                 return
-            elif message_parts[1].lower() == "right":
-                self.send("turn right")
-
-            elif message_parts[1].lower() == "left":
-                self.send("turn left")
-
             else:
-                self.write_to_stdout("Cannot turn " + message_parts[1].lower())
+                self.send(message_parts[1] + " " + message_parts[2])
+            #
+            # elif message_parts[1].lower() == "left":
+            #     self.send("turn left")
+            #
+            # else:
+            #     self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
-        elif message_parts[0].lower() == "adjust":
-
-            if len(message_parts)<2:
-                self.write_to_stdout("Need direction to turn")
-                return
-
-            elif message_parts[1].lower() == "right":
-                self.send("adjust right")
-
-            elif message_parts[1].lower() == "left":
-                self.send("adjust left")
-
-            else:
-                self.write_to_stdout("Cannot turn " + message_parts[1].lower())
+        # elif message_parts[0].lower() == "adjust":
+        #
+        #     if len(message_parts)<2:
+        #         self.write_to_stdout("Need direction to turn")
+        #         return
+        #
+        #     elif message_parts[1].lower() == "right":
+        #         self.send("adjust right")
+        #
+        #     elif message_parts[1].lower() == "left":
+        #         self.send("adjust left")
+        #
+        #     else:
+        #         self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
         elif message_parts[0].lower() == "stop":
-            self.send("0 0 0")
+            self.send("0 0")
 
         elif message_parts[0].lower() == "start" or message_parts[0].lower() == "straight":
+            if len(message_parts) > 1:
+                self.send(message_parts[1] + " " + message_parts[1])
+            else:
+                self.send("150 150")
             self.debug_run(self.write_to_stdout, "Sending straight")
-            self.send("1 200 200")
 
         elif message_parts[0] == "wait" and len(message_parts) > 2:
-            if not message_parts[1].isdigit():
-                if self.sam.debug: self.write_to_stdout("Cannot wait for non-digit seconds")
+            try:
+                float(message_parts[1])
+            except ValueError:
+                print("need float number")
+                return
 
-            seconds = int(message_parts[1])
+            seconds = float(message_parts[1])
+
             command = " ".join(message_parts[2:])
 
             now = datetime.now()
@@ -97,6 +110,27 @@ class Motors(SamModule):
                 new_time = next_time + timedelta(milliseconds=100)
 
                 self.promise.append((new_time, " ".join(message_parts[1:])))
+
+        # elif len(message_parts) > 3 and message_parts[0] == "to":
+        #     x = 0.0
+        #     y = 0.0
+        #     heading = 0.0
+        #     try:
+        #         x = float(message_parts[1])
+        #         y = float(message_parts[2])
+        #         heading = float(message_parts[3])
+        #     except ValueError:
+        #         print("need float number")
+        #         return
+        #
+        #     curr_x, curr_y, curr_h = self.sam['ir'].current_location
+        #     if heading -
+        #     if heading < curr_h:
+        #         # adjust right
+        #         pass
+        #     else heading > curr_h:
+        #         # adjust left
+        #
 
     def on_wait(self):
 

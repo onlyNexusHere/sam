@@ -1,7 +1,9 @@
 import sys
 import argparse
 import select
+import traceback
 import serial.tools.list_ports
+import serial.serialutil
 from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature, SamModule
 from datetime import datetime
 
@@ -33,6 +35,9 @@ class SamControl:
     local_modules = {}
     arduino_modules = {}
 
+    # list of module names that are filtered out of on_wait
+    broken_module_on_wait = list()
+
     quit_program = False
 
     # Array of file numbers for
@@ -46,7 +51,7 @@ class SamControl:
                 print("Cannot open log_file" + log_file)
         if arduino_location is not None:
             try:
-                self.arduino = serial.Serial(arduino_location[0])
+                self.arduino = serial.Serial(arduino_location[0], timeout=1, baudrate=115200)
 
             except serial.serialutil.SerialException:
                 print("Could not connect to Arduino, either permissions or its busy")
@@ -62,6 +67,13 @@ class SamControl:
         if self.arduino is None:
             self.find_arduino()
 
+        if self.arduino is not None:
+            self.listening_to.append(self.arduino)
+        else:
+            print("Arduino USB was not found.")
+
+        self.listening_to.append(sys.stdin)
+
         self.init_mods()
 
         self.debug_run(print, "Everything has been initialized")
@@ -70,6 +82,7 @@ class SamControl:
             self.debug_run(print, "Running startup file")
             self.local_modules.get(">").message_received("run " + program[0])
 
+        self.debug_run(print, "Start non-blocking loop")
         while self.quit_program is False:
             self.process_sockets()
 
@@ -143,21 +156,20 @@ class SamControl:
         ports = list(serial.tools.list_ports.comports())
         self.debug_run(print, "Looking at all ports")
         for p in ports:
-            self.debug_run(print, "Going to next port")
+            self.debug_run(print, "Going to next port: " + str(p[0]) + " :" + str(p[1]))
             if "Arduino" in p[1]:
                 try:
-                    self.arduino = serial.Serial(p[0])
+                    self.arduino = serial.Serial(p[0], timeout=1, baudrate=115200)
                 except serial.serialutil.SerialException:
                     print("Could not connect to Arduino, either permissions or its busy")
                 print("Arduino USB was found at " + p[0])
 
                 # Adding listeners to the list
         self.debug_run(print, "Done looking through ports")
-        if self.arduino is not None:
-            self.listening_to.append(self.arduino)
-        else:
-            print("Arduino USB was not found.")
-        self.listening_to.append(sys.stdin)
+
+
+    def _send_code_to_arduino(self, location_of_file):
+        pass
 
     def process_sockets(self):
         # self.debug_run(print, "Starting to listen")
@@ -169,6 +181,7 @@ class SamControl:
         for response in responded:
 
             if response == sys.stdin:
+                self.debug_run(print, "Stdin sent a message.")
                 self._process_stdin()
 
             elif response == self.arduino:
@@ -184,13 +197,16 @@ class SamControl:
 
         # self.debug_run(print, "Running on_wait commands.")
         for _, mod in {**self.local_modules, **self.arduino_modules}.items():
-            try:
-                mod.on_wait()
-            except Exception as e:
-                print("Exception found in module " + mod.name + " for on wait\n" + str(e))
+            if not (mod.name in self.broken_module_on_wait):
+                try:
+                    mod.on_wait()
+                except Exception as e:
+                    print("Exception found in module " + mod.name + " for on wait\n" + str(e.__doc__) + "\n" + str(e))
+                    traceback.print_tb(e.__traceback__)
+                    self.debug_run(print, mod.name + " removed from on_wait.")
+                    self.broken_module_on_wait.append(mod.name)
 
     def _process_stdin(self):
-
         str_rsv = sys.stdin.readline()
 
         self.debug_run(print, "got message: " + str_rsv)
@@ -201,10 +217,13 @@ class SamControl:
             print("Exception found in stdin module for message received --> "+str(e.__doc__)+"\n" + str(e))
 
     def _process_arduino_message(self, response):
-
         try:
             arduino_says = response.readline()
+        except serial.serialutil.SerialException:
+            print("Arduino disconnected. Quiting program.")
+            self.request_quit()
         except Exception as e:
+            print(str(e.__doc__))
             print(str(e))
             return
 
@@ -223,7 +242,7 @@ class SamControl:
             except Exception as e:
                 print("Exception found in module " + module_to_use.name + " for message received --> "+str(e.__doc__)+"\n" + str(e))
         else:
-            self.debug_run(print, "Received incorrect module " +message_from_arduino.split(" ")[0])
+            self.debug_run(print, "Received incorrect module " + message_from_arduino.split(" ")[0])
 
     def send(self, message):
         """
@@ -253,8 +272,8 @@ class SamControl:
         :param msg:
         :return:
         """
-        print(mod_name + " " + msg)
-        self.log_to_file(mod_name + " " + msg)
+        print(mod_name + ": " + msg)
+        self.log_to_file(mod_name + ": " + msg)
 
     def debug_run(self, func, func_args):
         """
@@ -309,5 +328,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("Sam has failed --> " + e.__doc__)
         print(str(e))
+        print(e.with_traceback())
         sam.exit()
 

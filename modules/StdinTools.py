@@ -1,5 +1,8 @@
 from .SamModule import SamModule
 import time
+import sys
+import traceback
+import serial.tools.list_ports
 
 
 class StdinTools(SamModule):
@@ -83,19 +86,37 @@ class StdinTools(SamModule):
     def show_mods(self):
         self.write_to_stdout(str([n for n in {**self.sam.arduino_modules, **self.sam.local_modules}.keys()]))
 
-    def set_var(self, message: list):
-        pass
+    def set_var(self, str_args):
+        if len(str_args) == 2:
+            if str_args[0].lower() == 'arduino':
+                try:
+                    serial.Serial(str_args[1], timeout=1, baudrate=115200)
+                except Exception as e:
+                    self.debug_run(self.write_to_stdout, "Could not connect to arduino: " + e.__doc__ + "\n" + str(e))
+            else:
+                self.write_to_stdout("Only setting arduino path is available")
+        else:
+            self.write_to_stdout("Need two arguments.")
+
+        # TODO sam listening list is affected, fix is...
 
     def show_help(self):
 
         print("\n".join([cmd + " --> \n\t" + comment for cmd, (_, comment) in self.stdin_cmds.items()]))
 
     def show_status(self):
+        to_print = "\n"
 
         if self.arduino is not None:
-            self.write_to_stdout("Arduino is: " + self.sam.arduino.port + "\nDebugging is " + str(self.sam.debug))
+            to_print = to_print + "\tArduino is: " + self.sam.arduino.port + "\n"
         else:
-            self.write_to_stdout("Arduino is not detected." + "\nDebugging is " + str(self.sam.debug))
+            to_print = to_print + "\tArduino is not detected." + "\n"
+
+        to_print = to_print + "\tDebugging is " + str(self.sam.debug) + "\n"
+
+        to_print = to_print + "\tBroken modules: " + str(self.sam.broken_module_on_wait)
+
+        self.write_to_stdout(to_print)
 
     def send_message(self, str_args):
         self.sam.send(" ".join(str_args))
@@ -111,6 +132,7 @@ class StdinTools(SamModule):
                 get_mod.stdin_request(" ".join(str_args[1:]))
             except Exception as e:
                 self.write_to_stdout("Cannot run request for module " + get_mod.name + "\n" + str(e))
+                traceback.print_tb(e.__traceback__)
 
     def wait(self, str_args):
         if len(str_args) > 0 and str_args[0].isdigit():

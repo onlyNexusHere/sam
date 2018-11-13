@@ -3,7 +3,7 @@ import numpy as np
 
 
 def detect_mid(img):
-
+    img = np.fliplr(img[::-1])
     img = img[int(img.shape[0]/2):img.shape[0], :]
 
     h, w = img.shape

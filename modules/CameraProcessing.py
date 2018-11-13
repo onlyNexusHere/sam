@@ -27,47 +27,48 @@ class CameraProcessing(SamModule):
         super().__init__(module_name="CameraProcessing", is_local=True, identi="camera", **kargs)
 
         # Here: add the thing to upload an image
-        self.ml = 120
-        self.mr = 125
-
-        motor_command = str(self.ml) + ' ' + str(self.mr)
-
-        self.sam['motor'].send(motor_command.encode())
 
         self.camera = PiCamera()
 
         self.camera.start_preview()
 
-        self.path = '/home/pi/Desktop/503/path.jpg'
-
-        self.prev = 640/2
+        self.path = '/home/sam_student/sam/path.jpg'
 
         self.is_following_lane = False
 
     def stdin_request(self, message):
+
         if message.strip() == "start":
             self.is_following_lane = True
+            self.ml = 120
+            self.mr = 125
+            motor_command = str(self.ml) + ' ' + str(self.mr)
+            self.sam['motor'].send(motor_command)
+            self.prev = 640/2
+
         elif message.strip() == "stop":
             self.is_following_lane = False
 
     def on_wait(self):
+
         if self.is_following_lane:
+
             start = time.time()
             self.camera.capture(self.path)
             img = np.array(Image.open(self.path).convert('L'))
-            mid = detect_mid(img)[0]
-            process_time = detect_mid(img)[1]
+            mid = detect_mid(img)
+            # process_time = detect_mid(img)[1]
             print('= = = = = = =')
             end = time.time()
-            print('Process Time: ' + str(process_time))
+            # print('Process Time: ' + str(process_time))
             print('Total Time: ' + str(end - start))
-            print('Mid: ' + mid)
+            print('Mid: ' + str(mid))
             if mid > self.prev:
                 motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
-                self.sam['motor'].send(motor_command.encode())
+                self.sam['motor'].send(motor_command)
             else:
                 motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
-                self.sam['motor'].send(motor_command.encode())
+                self.sam['motor'].send(motor_command)
             self.prev = mid
 
     def write_to_stdout(self, string_to_write):
