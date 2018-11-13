@@ -13,11 +13,11 @@ with picamera.PiCamera() as camera:
     adjustment = 0
     # Tune these 
     K = 3
-	B = 1
-	m1speed = 160
-	m2speed = 160
+    B = 1
+    m1speed = 160
+    m2speed = 160
 
-	motor_command = str(m1speed) + ' ' + str(m2speed)
+    motor_command = str(m1speed) + ' ' + str(m2speed)
     self.sam['motor'].send(motor_command)
     while(True):
     	# Camera warm-up time
@@ -50,7 +50,6 @@ with picamera.PiCamera() as camera:
 				break
 			# print(pix[item,int(h*.8)])
 			#pix[item,int(h*.35)] = (255,255)
-
 		adjustment = item-middle
 		print(adjustment)
 		# based on the project 3 notes on the table next to the track
@@ -58,4 +57,4 @@ with picamera.PiCamera() as camera:
 		m1speed = m1speed + errorDD
 		m2speed = m2speed - errorDD
 		motor_command = str(m1speed) + ' ' + str(m2speed)
-        self.sam['motor'].send(motor_command)
+                self.sam['motor'].send(motor_command)
