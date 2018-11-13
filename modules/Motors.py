@@ -13,6 +13,9 @@ class Motors(SamModule):
     promise = []
     ready = True
 
+    # list of destination tuples
+    destinations = list()
+
 
 #     Quadrature: Current location is 0.0 0.0 0.0
 #     Quadrature: Current location is 18.88 -0.48 0.0
@@ -110,6 +113,12 @@ class Motors(SamModule):
                 new_time = next_time + timedelta(milliseconds=100)
 
                 self.promise.append((new_time, " ".join(message_parts[1:])))
+
+        elif message_parts[0].lower() == "r1":
+            self.sam.send("x")
+
+        elif message_parts[0].lower() == "r2":
+            self.sam.send("y")
 
         # elif len(message_parts) > 3 and message_parts[0] == "to":
         #     x = 0.0

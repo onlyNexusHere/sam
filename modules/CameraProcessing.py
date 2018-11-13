@@ -51,6 +51,10 @@ class CameraProcessing(SamModule):
 
     def on_wait(self):
 
+        # Check for if obstacle
+        # Check for intersection
+        # Check for middle of lane
+
         if self.is_following_lane:
 
             start = time.time()
@@ -70,6 +74,38 @@ class CameraProcessing(SamModule):
                 motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
                 self.sam['motor'].send(motor_command)
             self.prev = mid
+
+    def adjust_to_straight(self):
+
+        start = time.time()
+        self.camera.capture(self.path)
+        img = np.array(Image.open(self.path).convert('L'))
+        mid = detect_mid(img)
+        # process_time = detect_mid(img)[1]
+        print('= = = = = = =')
+        end = time.time()
+        # print('Process Time: ' + str(process_time))
+        print('Total Time: ' + str(end - start))
+        print('Mid: ' + str(mid))
+        if mid > self.prev:
+            motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
+            self.sam['motor'].send(motor_command)
+        else:
+            motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
+            self.sam['motor'].send(motor_command)
+        self.prev = mid
+
+    def check_for_intersection(self):
+        # If there an intersection??
+        pass
+
+    def check_for_obsticle(self):
+        # Is there an obstacle??
+        pass
+
+    def check_for_end(self):
+        # Have we reached the edge of the map??
+        pass
 
     def write_to_stdout(self, string_to_write):
         pass
