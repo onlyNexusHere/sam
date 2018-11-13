@@ -122,7 +122,7 @@ void loop(){
 
         char x[100] ;
         pos.toCharArray(x, 100);
-        Serial.write(x);
+        Serial.print(x);
     }
 
 
