@@ -14,6 +14,8 @@ double motor_lookup[] = {0.983240223,0.97752809,0.975903614,0.980392157,0.979166
 
 volatile long enc_count_left = 0;
 volatile long enc_count_right = 0;
+int count = 0;
+
 DualMC33926MotorShield md;
 double posn[] = {0., 0.};
 double heading = 0.0;
@@ -25,7 +27,7 @@ void stopIfFault()
     Serial.println("fault");
     while(1);
   }
-}
+} 
 
 void encoder_isr_left() {
   // pins 2 and 5
@@ -65,17 +67,18 @@ void encoder_isr_right() {
 
 void setup() {
     // all your normal setup code
-    Serial.begin(9600);
+    Serial.begin(115200);
     Serial.flush();
+    Serial.setTimeout(250);
     //Serial.println("Dual MC33926 Motor Shield");
     md.init();
     enableInterrupt(2,encoder_isr_left,CHANGE);
     enableInterrupt(5,encoder_isr_left,CHANGE);
     enableInterrupt(3,encoder_isr_right,CHANGE);
     enableInterrupt(6,encoder_isr_right,CHANGE);
-    md.init();
     md.setM1Speed(0);
     md.setM2Speed(0);
+    //noInterrupts();
 
 }
 
@@ -88,42 +91,50 @@ int i = 0;
 // 1. "m 1 100 200" => m: motor, 1/0: on/off, 100: left motor to 100, 200: right motor 200
 // 2. "ir" => returns "ir 1 2 3\n" where 1: x, 2: y, 3: heading
 void loop(){
+
     if (Serial.available()) {
       String string = Serial.readString();
-      char str[10];
+      
+      char str[12];
       string.toCharArray(str, 12);
       char* ptr = strtok(str, " ");
-          
+
+      i = 0;
       while(ptr != NULL) {
-        Serial.println(ptr);
+        //Serial.println(ptr);
         m[i] = ptr;
         i = i + 1;
         ptr = strtok(NULL, " ");
       }
+      Serial.flush();
+
+
+
+    if(m[0].equals("m")){
+       md.setSpeeds(m[1].toInt(), m[2].toInt());
+    }
+    
+    
+    //If PI requesting Quadrature data
+    else if (m[0].equals("i")){
+        Serial.flush();
+        String pos = getPosition();
+
+        char x[100] ;
+        pos.toCharArray(x, 100);
+        Serial.print(x);
+    }
+
+
+
+      
     }
     
     // If setting motor value 
-    if(m[0].equals("m")){
-      
-      if(m[1] == "0") {
-        md.setM1Speed(0);
-        md.setM2Speed(0);
-        //Serial.println("left = 0");
-        //Serial.println("right = 0");
-      } else if (m[1] == "1") {
-        md.setM1Speed(m[2].toInt());
-        md.setM2Speed(m[3].toInt());
-        //Serial.println("left = " + String(m[1]));
-        //Serial.println("right = " + String(m[2]));
-      }
+
+
     
-      i = 0;
-    } 
-    // If PI requesting Quadrature data
-    else if(m[0].equals("ir")){
-        String pos = getPosition(); 
-        Serial.write(!pos);
-    }
+
 
 
 
@@ -176,35 +187,35 @@ int r_pwm_to_val(int pwm) {
   int idx = (pwm + 400) / 20;
   return pwm * motor_lookup[idx];
 }
-
-void print_pwm_map() {
-  Serial.println("Motor 1 Start: 2 second gap");
-  Serial.println("speed, encoder start, encoder end");
-  for(int i = -400; i <= 400; i+=20) {
-    md.setM1Speed(i);
-    delay(250);
-    Serial.print(i);
-    Serial.print(",");
-    Serial.print(enc_count_left);
-    Serial.print(",");
-    delay(2000);
-    Serial.println(enc_count_left);
-  }
-  md.setM1Speed(0);
-  Serial.println("Motor 2 Start: 2 second gap");
-  Serial.println("speed, encoder start, encoder end");
-  for(int i = -400; i <= 400; i+=20) {
-    md.setM2Speed(i);
-    delay(250);
-    Serial.print(i);
-    Serial.print(",");
-    Serial.print(enc_count_right);
-    Serial.print(",");
-    delay(2000);
-    Serial.println(enc_count_right);
-  }
-  md.setM2Speed(0);
-}
+//
+//void print_pwm_map() {
+//  Serial.println("Motor 1 Start: 2 second gap");
+//  Serial.println("speed, encoder start, encoder end");
+//  for(int i = -400; i <= 400; i+=20) {
+//    md.setM1Speed(i);
+//    delay(250);
+//    Serial.print(i);
+//    Serial.print(",");
+//    Serial.print(enc_count_left);
+//    Serial.print(",");
+//    delay(2000);
+//    Serial.println(enc_count_left);
+//  }
+//  md.setM1Speed(0);
+//  Serial.println("Motor 2 Start: 2 second gap");
+//  Serial.println("speed, encoder start, encoder end");
+//  for(int i = -400; i <= 400; i+=20) {
+//    md.setM2Speed(i);
+//    delay(250);
+//    Serial.print(i);
+//    Serial.print(",");
+//    Serial.print(enc_count_right);
+//    Serial.print(",");
+//    delay(2000);
+//    Serial.println(enc_count_right);
+//  }
+//  md.setM2Speed(0);
+//}
 
 // Calculates the distance between the starting position of the robot and the current position
 double distance(){
