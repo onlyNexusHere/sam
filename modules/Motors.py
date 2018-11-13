@@ -141,6 +141,9 @@ class Motors(SamModule):
         #         # adjust left
         #
 
+        # 6.375 in wheel base
+
+
     def on_wait(self):
 
         now = datetime.now()

@@ -37,6 +37,7 @@ class Quadrature(SamModule):
                 self.current_location = (x, y, heading)
 
                 if self.waiting_for_location:
+                    # If the location was requested to print out the location, print it.
                     self.write_to_stdout("Current location is " + str(x) + " " + str(y) + " " + str(heading))
                     self.waiting_for_location = False
 
@@ -45,8 +46,16 @@ class Quadrature(SamModule):
 
     def stdin_request(self, message):
         if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
-            self.send(" ")
+            # self.send(" ")
             self.waiting_for_location = True
+            # Next time a packet is received, the location will be printed
+
+        elif message.strip() == "reset":
+            self.send("reset")
+
+    def on_wait(self):
+        # We always want to get updates about the location of robot.
+        self.send(" ")
 
 
 
