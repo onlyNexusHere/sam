@@ -76,7 +76,7 @@ class CameraProcessing(SamModule):
             for itemy in range(int(w/2),w,1):
                 if(pix[itemy,int(h*.35)][0]>thresholdy):
                     break
-            adjustment = item - middle
+            adjustmentw = item - middle
             adjustmenty = itemy - middley 
 
             if item == 1 and itemy == 1023:
@@ -88,7 +88,7 @@ class CameraProcessing(SamModule):
             elif item != 1 and itemy == 1023:
                 adjustment = adjustmentw
             else:
-                adjusttment = (adjustmenty + adjustmentw) / 2
+                adjustment = (adjustmenty + adjustmentw) / 2
 
             errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
             self.debug_run(print, "eDD: {}".format(errorDD))
