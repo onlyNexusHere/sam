@@ -61,7 +61,7 @@ class CameraProcessing(SamModule):
 
             start = time.time()
             self.camera.capture(self.path)
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             img = Image.open('foo.jpg').convert('LA')
             pix = img.load()
             threshold = 200
