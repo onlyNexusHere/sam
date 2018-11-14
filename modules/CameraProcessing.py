@@ -63,14 +63,32 @@ class CameraProcessing(SamModule):
             img = Image.open('foo.jpg').convert('LA')
             pix = img.load()
             threshold = 200
+            thresholdy = 200
             w, h = img.size
             
-            middle=240
+            middle = 190
+            middley = 33
             for item in range(int(w/2),0,-1):
 
                 if(pix[item,int(h*.35)][0]>threshold):
                     break
-            adjustment = item-middle
+            for itemy in range(0,int(w/2),1):
+
+                if(pix[itemy,int(h*.35)][0]>thresholdy):
+                    break
+            adjustmentw = item - middle
+            adjustmenty = itemy - middley
+
+            if item == 1 and itemy == 511:
+                # well shit
+                adjustment = 0
+                pass
+            elif item == 1 and itemy != 511:
+                adjustment = adjustmenty
+            elif item != 1 and itemy == 511:
+                adjustment = adjustmentw
+            else:
+                adjusttment = (adjustmenty + adjustmentw) / 2
 
             errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
             self.debug_run(print, "eDD: {}".format(errorDD))
