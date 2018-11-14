@@ -22,29 +22,28 @@ with picamera.PiCamera() as camera:
     while(True):
         # Camera warm-up time
         
-        # img = camera.capture('foo.jpg')
+        img = camera.capture('foo.jpg')
+        img = Image.open('foo.jpg').convert('LA')
         #print("Picture Taken")
-        img = Image.open('a.jpg').convert('LA')
         pix = img.load()
         #print("Time Elapsed",curr-time.time())
         curr = time.time()
         threshold = 200
-        thresholdy = 200
+        thresholdy = 100
         w, h = img.size
         
-        middle = 190
-        middley = 33
+        middle = 140
+        middley = 800
         for item in range(int(w/2),0,-1):
-
             if(pix[item,int(h*.35)][0]>threshold):
                 break
-        for itemy in range(0,int(w/2),1):
-
+        for itemy in range(int(w/2),w,1):
             if(pix[itemy,int(h*.35)][0]>thresholdy):
                 break
         adjustment = item - middle
         adjustmenty = itemy - middley
-        # print(adjustment)
+        print("item: {} itemy: {}".format(item, itemy))
+        print("adjustment: {} adjustmenty: {}".format(adjustment, adjustmenty))
         # based on the project 3 notes on the table next to the track
         errorDD = -K*adjustment-B*(adjustment-last_adjustment)
         m1speed = m1speed + errorDD
