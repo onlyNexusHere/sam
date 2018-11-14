@@ -63,29 +63,27 @@ class CameraProcessing(SamModule):
             img = Image.open('foo.jpg').convert('LA')
             pix = img.load()
             threshold = 200
-            thresholdy = 200
+            thresholdy = 100
             w, h = img.size
             
-            middle = 190
-            middley = 33
+            middle = 140
+            middley = 800
             for item in range(int(w/2),0,-1):
-
                 if(pix[item,int(h*.35)][0]>threshold):
                     break
-            for itemy in range(0,int(w/2),1):
-
+            for itemy in range(int(w/2),w,1):
                 if(pix[itemy,int(h*.35)][0]>thresholdy):
                     break
-            adjustmentw = item - middle
-            adjustmenty = itemy - middley
+            adjustment = item - middle
+            adjustmenty = itemy - middley 
 
-            if item == 1 and itemy == 511:
+            if item == 1 and itemy == 1023:
                 # well shit
                 adjustment = 0
                 pass
-            elif item == 1 and itemy != 511:
+            elif item == 1 and itemy != 1023:
                 adjustment = adjustmenty
-            elif item != 1 and itemy == 511:
+            elif item != 1 and itemy == 1023:
                 adjustment = adjustmentw
             else:
                 adjusttment = (adjustmenty + adjustmentw) / 2

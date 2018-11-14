@@ -42,8 +42,6 @@ with picamera.PiCamera() as camera:
                 break
         adjustment = item - middle
         adjustmenty = itemy - middley
-        print("item: {} itemy: {}".format(item, itemy))
-        print("adjustment: {} adjustmenty: {}".format(adjustment, adjustmenty))
         # based on the project 3 notes on the table next to the track
         errorDD = -K*adjustment-B*(adjustment-last_adjustment)
         m1speed = m1speed + errorDD
