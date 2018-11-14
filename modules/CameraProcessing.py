@@ -36,15 +36,18 @@ class CameraProcessing(SamModule):
 
         self.is_following_lane = False
 
+
     def stdin_request(self, message):
 
         if message.strip() == "start":
             self.is_following_lane = True
-            self.ml = 120
-            self.mr = 125
+            self.ml = 160
+            self.mr = 160
             motor_command = str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
-            self.prev = 640/2
+            self.prev = 0
+            self.K = 2
+            self.B = 2
 
         elif message.strip() == "stop":
             self.is_following_lane = False
@@ -61,19 +64,27 @@ class CameraProcessing(SamModule):
             self.camera.capture(self.path)
             img = np.array(Image.open(self.path).convert('L'))
             mid = detect_mid(img)
+
             # process_time = detect_mid(img)[1]
-            print('= = = = = = =')
-            end = time.time()
+            # print('= = = = = = =')
+            # end = time.time()
             # print('Process Time: ' + str(process_time))
-            print('Total Time: ' + str(end - start))
-            print('Mid: ' + str(mid))
-            if mid > self.prev:
-                motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
-                self.sam['motor'].send(motor_command)
-            else:
-                motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
-                self.sam['motor'].send(motor_command)
-            self.prev = mid
+            # print('Total Time: ' + str(end - start))
+            # print('Mid: ' + str(mid))
+            # if mid > self.prev:
+            #     motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
+            #     self.sam['motor'].send(motor_command)
+            # else:
+            #     motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
+            #     self.sam['motor'].send(motor_command)
+            # self.prev = mid
+            errorDD = -K*adjustment-B*(adjustment-self.prev)
+            self.ml = self.ml + errorDD
+            self.mr = self.mr - errorDD
+            motor_command = str(self.ml) + ' ' + str(self.mr)
+            self.sam['motor'].send(motor_command)
+            self.prev = adjustment
+
 
     def adjust_to_straight(self):
 
