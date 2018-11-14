@@ -18,7 +18,7 @@ with picamera.PiCamera() as camera:
 	m2speed = 160
 
 	motor_command = str(m1speed) + ' ' + str(m2speed)
-    self.sam['motor'].send(motor_command)
+    # self.sam['motor'].send(motor_command)
     while(True):
     	# Camera warm-up time
         
@@ -58,4 +58,4 @@ with picamera.PiCamera() as camera:
 		m1speed = m1speed + errorDD
 		m2speed = m2speed - errorDD
 		motor_command = str(m1speed) + ' ' + str(m2speed)
-        self.sam['motor'].send(motor_command)
+        # self.sam['motor'].send(motor_command)
