@@ -9,7 +9,7 @@ import serial
 import time
 import numpy as np
 from PIL import Image
-from pi.detect_1 import detect_mid
+from pi.detect_1 import get_adjustment
 
 
 from .SamModule import SamModule
