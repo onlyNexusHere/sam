@@ -10,8 +10,6 @@ def detect_mid(img):
     for item in range(int(w/2),0,-1):
 
         if(pix[item,int(h*.35)][0]>threshold):
-            if(item>middle):
-            print("Camera l ", abs(item-203))
             break
 
     adjustment = item-middle
