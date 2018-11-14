@@ -45,7 +45,7 @@ class CameraProcessing(SamModule):
             motor_command = str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
             self.prev = 0
-            self.K = 1/6000.0
+            self.K = 1/4500.0
             self.B = 1/6000.0
 
         elif message.strip() == "stop":
