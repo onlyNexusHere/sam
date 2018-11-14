@@ -30,7 +30,8 @@ class CameraProcessing(SamModule):
 
         self.camera.start_preview()
 
-        self.path = '/home/sam_student/sam/path.jpg'
+
+        self.path = '/home/sam_student/vision2/sam/foo.jpg'
 
         self.is_following_lane = False
 
@@ -60,6 +61,7 @@ class CameraProcessing(SamModule):
 
             start = time.time()
             self.camera.capture(self.path)
+            import pdb; pdb.set_trace()
             img = Image.open('foo.jpg').convert('LA')
             pix = img.load()
             threshold = 200
