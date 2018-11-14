@@ -45,8 +45,8 @@ class CameraProcessing(SamModule):
             motor_command = str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
             self.prev = 0
-            self.K = 0.1
-            self.B = 0
+            self.K = 0.02
+            self.B = self.K/2
 
         elif message.strip() == "stop":
             self.is_following_lane = False
