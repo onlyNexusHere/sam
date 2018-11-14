@@ -9,8 +9,6 @@ import serial
 import time
 import numpy as np
 from PIL import Image
-from pi.detect_1 import get_adjustment
-
 
 from .SamModule import SamModule
 
@@ -62,8 +60,17 @@ class CameraProcessing(SamModule):
 
             start = time.time()
             self.camera.capture(self.path)
-            img = np.array(Image.open(self.path).convert('L'))
-            adjustment = get_adjustment(img)
+            img = Image.open('foo.jpg').convert('LA')
+            pix = img.load()
+            threshold = 200
+            w, h = img.size
+            
+            middle=86
+            for item in range(int(w/2),0,-1):
+
+                if(pix[item,int(h*.35)][0]>threshold):
+                    break
+            adjustment = item-middle
 
             # process_time = detect_mid(img)[1]
             # print('= = = = = = =')
