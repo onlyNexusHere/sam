@@ -44,7 +44,7 @@ class CameraProcessing(SamModule):
             motor_command = str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
             self.prev = 0
-            self.K = 2
+            self.K = 0.02
             self.B = 0
 
         elif message.strip() == "stop":
@@ -65,34 +65,20 @@ class CameraProcessing(SamModule):
             threshold = 200
             w, h = img.size
             
-            middle=86
+            middle=240
             for item in range(int(w/2),0,-1):
 
                 if(pix[item,int(h*.35)][0]>threshold):
                     break
             adjustment = item-middle
 
-            # process_time = detect_mid(img)[1]
-            # print('= = = = = = =')
-            # end = time.time()
-            # print('Process Time: ' + str(process_time))
-            # print('Total Time: ' + str(end - start))
-            # print('Mid: ' + str(mid))
-            # if mid > self.prev:
-            #     motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
-            #     self.sam['motor'].send(motor_command)
-            # else:
-            #     motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
-            #     self.sam['motor'].send(motor_command)
-            # self.prev = mid
-
             errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
             self.debug_run(print, "eDD: {}".format(errorDD))
             self.debug_run(print, "adjustment: {}".format(adjustment))
             self.debug_run(print, "item: {}".format(item))
 
-            self.ml = self.ml + errorDD
-            self.mr = self.mr - errorDD
+            self.ml = int(self.ml + errorDD)
+            self.mr = int(self.mr - errorDD)
             motor_command = str(self.ml) + ' ' + str(self.mr)
             # self.sam['motor'].send(motor_command)
             self.prev = adjustment
