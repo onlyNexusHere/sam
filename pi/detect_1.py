@@ -2,7 +2,7 @@ import numpy as np
 # from scipy.ndimage import gaussian_filter
 
 
-def detect_mid(img):
+def get_adjustment(img):
     threshold = 200
     w, h = img.size
     

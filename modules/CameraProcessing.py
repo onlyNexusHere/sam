@@ -47,7 +47,7 @@ class CameraProcessing(SamModule):
             self.sam['motor'].send(motor_command)
             self.prev = 0
             self.K = 2
-            self.B = 2
+            self.B = 0
 
         elif message.strip() == "stop":
             self.is_following_lane = False
@@ -63,7 +63,7 @@ class CameraProcessing(SamModule):
             start = time.time()
             self.camera.capture(self.path)
             img = np.array(Image.open(self.path).convert('L'))
-            mid = detect_mid(img)
+            adjustment = get_adjustment(img)
 
             # process_time = detect_mid(img)[1]
             # print('= = = = = = =')
@@ -78,7 +78,11 @@ class CameraProcessing(SamModule):
             #     motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
             #     self.sam['motor'].send(motor_command)
             # self.prev = mid
+
             errorDD = -K*adjustment-B*(adjustment-self.prev)
+            self.debug_run(print, "eDD: {}".format(errorDD))
+            self.debug_run(print, "adjustment: {}".format(adjustment))
+
             self.ml = self.ml + errorDD
             self.mr = self.mr - errorDD
             motor_command = str(self.ml) + ' ' + str(self.mr)
