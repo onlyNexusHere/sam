@@ -76,7 +76,7 @@ class CameraProcessing(SamModule):
             for itemy in range(int(w/2),w,1):
                 if(pix[itemy,int(h*.35)][0]>thresholdy):
                     break
-            adjustmentw = item - middle
+            adjustmentw = item - middle #changed
             adjustmenty = itemy - middley 
 
             if item == 1 and itemy == 1023:
