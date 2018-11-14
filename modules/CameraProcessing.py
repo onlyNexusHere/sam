@@ -93,7 +93,11 @@ class CameraProcessing(SamModule):
             errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
             self.debug_run(print, "eDD: {}".format(errorDD))
             self.debug_run(print, "adjustment: {}".format(adjustment))
-            self.debug_run(print, "item: {}".format(item))
+            self.debug_run(print, "adjustmentw: {}".format(adjustmentw))
+            self.debug_run(print, "adjustmenty: {}".format(adjustmenty))
+            self.debug_run(print, "itemw: {}".format(item))
+            self.debug_run(print, "itemy: {}".format(itemy))
+
 
             self.ml = int(self.ml + errorDD)
             self.mr = int(self.mr - errorDD)
