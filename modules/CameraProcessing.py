@@ -86,7 +86,7 @@ class CameraProcessing(SamModule):
             #     self.sam['motor'].send(motor_command)
             # self.prev = mid
 
-            errorDD = -K*adjustment-B*(adjustment-self.prev)
+            errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
             self.debug_run(print, "eDD: {}".format(errorDD))
             self.debug_run(print, "adjustment: {}".format(adjustment))
 
