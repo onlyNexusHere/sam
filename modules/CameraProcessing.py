@@ -50,6 +50,7 @@ class CameraProcessing(SamModule):
 
         elif message.strip() == "stop":
             self.is_following_lane = False
+            self.sam['motor'].send("0 0 0")
 
     def on_wait(self):
 
