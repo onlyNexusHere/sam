@@ -44,10 +44,11 @@ class Quadrature(SamModule):
                 self.debug_run(self.write_to_stdout, "Cannot process message that is not 3 floats.")
 
     def stdin_request(self, message):
-        # if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
+        if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
+            self.send(" ")
+            self.waiting_for_location = True
+
+    def on_wait(self):
         self.send(" ")
-            # self.waiting_for_location = True
-
-
 
 
