@@ -18,6 +18,8 @@ class CameraProcessing(SamModule):
     path = None
     prev = None
     camera = None
+    K = 0.0
+    B = 0.0
 
     is_following_lane = False
 

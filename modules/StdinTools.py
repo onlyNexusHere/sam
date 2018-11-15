@@ -200,7 +200,7 @@ class StdinTools(SamModule):
             self.write_to_stdout("cannot get ir module")
 
         if self.r1:
-            if not (x < 20.5):
+            if x >= 20.5:
                 if not self.r1_past_1:
                     self.debug_run(self.write_to_stdout, "in turn")
                     self.sam['camera'].stdin_request('stop')
@@ -219,7 +219,7 @@ class StdinTools(SamModule):
 
         elif self.r2:
             # self.debug_run(self.write_to_stdout, "in r1")
-            if not (x < 43):
+            if x > 43:
                 if not self.r2_past_1:
                     self.debug_run(self.write_to_stdout, "in turn")
                     self.sam['camera'].stdin_request('stop')
