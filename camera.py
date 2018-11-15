@@ -40,6 +40,6 @@ with picamera.PiCamera() as camera:
 		#pix[item,int(h*.35)] = (255,255)
 
 	adjustment = item-middle
-	#print(item)
-	print(adjustment)
+	print("item: ",item)
+	print("adjustment: ",adjustment)
 	
