@@ -19,10 +19,10 @@ with picamera.PiCamera() as camera:
 	threshold = 200
 	w, h = img.size
 	
-	middle=86
+	middle=218
 	for item in range(int(w/2),0,-1):
 
-		if(pix[item,int(h*.35)][0]>threshold):
+		if(pix[item,int(h*.4)][0]>threshold):
 			#print(item)
 			#if(item>middle):
 			#print("Camera l ", abs(item-203))
@@ -40,5 +40,6 @@ with picamera.PiCamera() as camera:
 		#pix[item,int(h*.35)] = (255,255)
 
 	adjustment = item-middle
+	#print(item)
 	print(adjustment)
 	
