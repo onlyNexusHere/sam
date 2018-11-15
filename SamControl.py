@@ -147,6 +147,7 @@ class SamControl:
                 self.arduino_modules[mod.identifier] = mod
 
         self.debug_run(print, "Debug imported modules")
+        self.debug_run(print, "mods in arduino mods: " + str(self.arduino_modules.keys()))
 
     def find_arduino(self):
         self.debug_run(print, "Finding Arduino USB")
@@ -297,7 +298,7 @@ class SamControl:
         self.quit_program = True
 
     def __getitem__(self, item):
-        self.debug_run(print, "Requesting mod" + item.strip().lower())
+        self.debug_run(print, "Requesting mod " + item.strip().lower())
         return self.arduino_modules.get(item.strip().lower(), SamModule.SamModule())
 
     class Sam_Control_Error(Exception):
