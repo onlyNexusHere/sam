@@ -174,7 +174,7 @@ void loop(){
 
         char x[100] ;
         pos.toCharArray(x, 100);
-        Serial.print(x);
+        Serial.println(x);
     }
 
     else if(m[0].equals("x")){
@@ -216,10 +216,12 @@ void do_right_turn() {
   double dtheta = 0;
   double theta0 = heading;
   while (dtheta < 1.57) {
+    Serial.println("TURN");
     dtheta = theta0 - heading;
     md.setM1Speed(360);
     md.setM2Speed(r_pwm_to_val(120));
   }
+  Serial.println("STOP");
   md.setM1Speed(0);
   md.setM2Speed(0);
 }
@@ -230,8 +232,8 @@ void do_left_turn() {
   while(dtheta > -1.57) {
     Serial.println("TURN");
     dtheta = theta0 - heading;
-//    md.setM1Speed(200);
-//    md.setM2Speed(r_pwm_to_val(300));
+    md.setM1Speed(200);
+    md.setM2Speed(r_pwm_to_val(300));
   }
   Serial.println("STOP");
   md.setM1Speed(0);
@@ -261,6 +263,3 @@ double distance(){
 String getPosition(){
   return "ir " + String(posn[0]) + " "+ String(posn[1]) + " " + String(heading) + "\n";
 }
-
-
-
