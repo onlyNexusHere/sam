@@ -216,6 +216,7 @@ class SamControl:
             self.local_modules.get(">").message_received(str_rsv)
         except Exception as e:
             print("Exception found in stdin module for message received --> "+str(e.__doc__)+"\n" + str(e))
+            print(e.with_traceback())
 
     def _process_arduino_message(self, response):
         try:
