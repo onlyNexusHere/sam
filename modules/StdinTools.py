@@ -182,7 +182,7 @@ class StdinTools(SamModule):
                 self.write_to_stdout("starting r1")
             else:
                 self.sam['camera'].stdin_request('stop')
-                self.sam['motor'].send("0 0 0")
+                self.sam['motor'].stdin_request('stop')
         elif routine == 'r2':
             self.r2 = not self.r2
             if self.r2:
@@ -190,7 +190,7 @@ class StdinTools(SamModule):
                 self.write_to_stdout("starting r2")
             else:
                 self.sam['camera'].stdin_request('stop')
-                self.sam['motor'].send("0 0 0")
+                self.sam['motor'].stdin_request('stop')
 
     def on_wait(self):
         # self.debug_run(self.write_to_stdout, "starting ir")
