@@ -12,6 +12,15 @@ class StdinTools(SamModule):
 
     stdin_cmds = {}
 
+    r1 = False
+    r1_started = False
+    r1_past_1 = False
+    r1_starty = 0.0
+
+    r2 = False
+    r2_past_1 = False
+    r2_starty = 0.0
+
     def __init__(self, kargs):
         super().__init__(module_name="StdinTools", is_local=True, identi=">", **kargs)
 
@@ -51,6 +60,12 @@ class StdinTools(SamModule):
 
                            "quit": (lambda str_args: self.sam.request_quit(),
                                     "Quit the program"),
+
+                           "r1": (lambda str_args: self.sam.follow('r1'),
+                                    "Start or stop r1"),
+
+                           "r2": (lambda str_args: self.sam.follow('r2'),
+                                    "Start or stop r2"),
 
                            "exit": (lambda str_args: self.sam.request_quit(),
                                     "Same as quit")
@@ -158,3 +173,56 @@ class StdinTools(SamModule):
                 self.sam.process_sockets()
 
             line_to_read = to_run.readline()
+
+    def follow(self, routine):
+        if routine == 'r1':
+            self.r1 = not self.r1
+            if self.r1:
+                self.sam('camera').stdin_request('start')
+            else:
+                self.sam('camera').stdin_request('stop')
+                self.sam['motor'].send("0 0 0")
+        elif routine == 'r2':
+            self.r2 = not self.r2
+            if self.r2:
+                self.sam('camera').stdin_request('start')
+            else:
+                self.sam('camera').stdin_request('stop')
+                self.sam['motor'].send("0 0 0")
+
+    def on_wait(self):
+        x, y, h = self.sam('ir').current_location
+
+        if self.r1:
+            if not (x < 20.5):
+                if not self.r1_past_1:
+                    self.sam('camera').stdin_request('stop')
+                    self.r1_starty = y
+                    self.sam['motor'].done = False
+                    self.sam['motor'].send('x')
+                    self.r1_past_1 = True
+                elif self.sam['motor'].done:
+                    if not self.sam['camera'].is_following_lane:
+                        self.r1_starty = y
+                        self.sam('camera').stdin_request('start')
+                    else:
+                        if (y-self.r1_starty) >= 42.5:
+                            self.follow('r1')
+
+        elif self.r2:
+            if not (x < 43):
+                if not self.r2_past_1:
+                    self.sam('camera').stdin_request('stop')
+                    self.r2_starty = y
+                    self.sam['motor'].done = False
+                    self.sam['motor'].send('y')
+                    self.r2_past_1 = True
+                elif self.sam['motor'].done:
+                    if not self.sam['camera'].is_following_lane:
+                        self.r2_starty = y
+                        self.sam('camera').stdin_request('start')
+                    else:
+                        if (y-self.r2_starty) <= -17.5:
+                            self.follow('r2')
+
+

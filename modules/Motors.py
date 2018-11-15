@@ -16,6 +16,8 @@ class Motors(SamModule):
     # list of destination tuples
     destinations = list()
 
+    done = False
+
 
 #     Quadrature: Current location is 0.0 0.0 0.0
 #     Quadrature: Current location is 18.88 -0.48 0.0
@@ -28,7 +30,8 @@ class Motors(SamModule):
         self.send_id = "m"
 
     def message_received(self, message):
-        pass
+        if message.strip() == "done":
+            self.done = True
 
     def stdin_request(self, message):
         """

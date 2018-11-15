@@ -251,12 +251,12 @@ class SamControl:
         :return:
         """
         if self.arduino is not None:
-            self.debug_run(print, "Sending arduino message: " + message)
+            # self.debug_run(print, "Sending arduino message: " + message)
 
             self.arduino.write(message.encode("utf-8"))
             self.log_to_file("Sending to arduino: " + message)
 
-            self.debug_run(print, "sent arduino message")
+            # self.debug_run(print, "sent arduino message")
         else:
             print("Arduino is not connected!")
 
