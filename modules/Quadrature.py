@@ -1,5 +1,5 @@
 from .SamModule import SamModule
-
+from datetime import datetime
 
 class Quadrature(SamModule):
     """
@@ -45,10 +45,12 @@ class Quadrature(SamModule):
 
     def stdin_request(self, message):
         if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
-            self.send(" ")
+            # self.send(" ")
             self.waiting_for_location = True
 
     def on_wait(self):
-        self.send(" ")
+        time_to_check = datetime.now()
+        if (time_to_check.microsecond < 20000) or (time_to_check.microsecond > 40000 and (time_to_check.microsecond < 60000))or (time_to_check.microsecond > 80000 and (time_to_check.microsecond < 100000)):
+            self.send(" ")
 
 
