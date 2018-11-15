@@ -191,12 +191,12 @@ class StdinTools(SamModule):
                 self.sam['motor'].send("0 0 0")
 
     def on_wait(self):
-        x, y, h = self.sam('ir').current_location
+        x, y, h = self.sam['ir'].current_location
 
         if self.r1:
             if not (x < 20.5):
                 if not self.r1_past_1:
-                    self.sam('camera').stdin_request('stop')
+                    self.sam['camera'].stdin_request('stop')
                     self.r1_starty = y
                     self.sam['motor'].done = False
                     self.sam['motor'].send('x')
@@ -204,7 +204,7 @@ class StdinTools(SamModule):
                 elif self.sam['motor'].done:
                     if not self.sam['camera'].is_following_lane:
                         self.r1_starty = y
-                        self.sam('camera').stdin_request('start')
+                        self.sam['camera'].stdin_request('start')
                     else:
                         if (y-self.r1_starty) >= 42.5:
                             self.follow('r1')
@@ -212,7 +212,7 @@ class StdinTools(SamModule):
         elif self.r2:
             if not (x < 43):
                 if not self.r2_past_1:
-                    self.sam('camera').stdin_request('stop')
+                    self.sam['camera'].stdin_request('stop')
                     self.r2_starty = y
                     self.sam['motor'].done = False
                     self.sam['motor'].send('y')
@@ -220,7 +220,7 @@ class StdinTools(SamModule):
                 elif self.sam['motor'].done:
                     if not self.sam['camera'].is_following_lane:
                         self.r2_starty = y
-                        self.sam('camera').stdin_request('start')
+                        self.sam['camera'].stdin_request('start')
                     else:
                         if (y-self.r2_starty) <= -17.5:
                             self.follow('r2')

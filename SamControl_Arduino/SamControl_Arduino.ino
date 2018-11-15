@@ -219,29 +219,29 @@ void do_right_turn() {
     dtheta = theta0 - heading;
     md.setM1Speed(360);
     md.setM2Speed(r_pwm_to_val(120));
-    Serial.print("debug ")
+    Serial.print("debug ");
     Serial.println(dtheta);
   }
   md.setM1Speed(0);
   md.setM2Speed(0);
-  Serial.println("motor done")
+  Serial.println("motor done");
 }
 
 void do_left_turn() {
   double dtheta = 0;
   double theta0 = heading;
   while(dtheta > -1.57) {
-    Serial.print("debug ")
+    Serial.print("debug ");
     Serial.println("TURN");
     dtheta = theta0 - heading;
     md.setM1Speed(200);
     md.setM2Speed(r_pwm_to_val(300));
   }
-  Serial.print("debug ")
+  Serial.print("debug ");
   Serial.println("STOP");
   md.setM1Speed(0);
   md.setM2Speed(0);
-  Serial.println("motor done")
+  Serial.println("motor done");
 
 }
 
