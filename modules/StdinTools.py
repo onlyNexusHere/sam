@@ -61,10 +61,10 @@ class StdinTools(SamModule):
                            "quit": (lambda str_args: self.sam.request_quit(),
                                     "Quit the program"),
 
-                           "r1": (lambda str_args: self.sam.follow('r1'),
+                           "r1": (lambda str_args: self.follow('r1'),
                                     "Start or stop r1"),
 
-                           "r2": (lambda str_args: self.sam.follow('r2'),
+                           "r2": (lambda str_args: self.follow('r2'),
                                     "Start or stop r2"),
 
                            "exit": (lambda str_args: self.sam.request_quit(),
