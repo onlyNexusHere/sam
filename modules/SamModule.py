@@ -24,7 +24,7 @@ class SamModule:
                  is_local=False,
                  log_file=None):
 
-        print("Setting up " + module_name)
+        print("qSetting up " + module_name)
 
         self.arduino = arduino_object
         self.sam = sam

@@ -91,12 +91,12 @@ class CameraProcessing(SamModule):
                 adjustment = (adjustmenty + adjustmentw) / 2
 
             errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
-            self.debug_run(print, "eDD: {}".format(errorDD))
-            self.debug_run(print, "adjustment: {}".format(adjustment))
-            self.debug_run(print, "adjustmentw: {}".format(adjustmentw))
-            self.debug_run(print, "adjustmenty: {}".format(adjustmenty))
-            self.debug_run(print, "itemw: {}".format(item))
-            self.debug_run(print, "itemy: {}".format(itemy))
+            self.debug_run(self.write_to_stdout, "eDD: {}".format(errorDD))
+            self.debug_run(self.write_to_stdout, "adjustment: {}".format(adjustment))
+            self.debug_run(self.write_to_stdout, "adjustmentw: {}".format(adjustmentw))
+            self.debug_run(self.write_to_stdout, "adjustmenty: {}".format(adjustmenty))
+            self.debug_run(self.write_to_stdout, "itemw: {}".format(item))
+            self.debug_run(self.write_to_stdout, "itemy: {}".format(itemy))
 
 
             self.ml = int(self.ml + errorDD)
@@ -113,11 +113,11 @@ class CameraProcessing(SamModule):
         img = np.array(Image.open(self.path).convert('L'))
         mid = detect_mid(img)
         # process_time = detect_mid(img)[1]
-        print('= = = = = = =')
+        self.debug_run(self.write_to_stdout,'= = = = = = =')
         end = time.time()
         # print('Process Time: ' + str(process_time))
-        print('Total Time: ' + str(end - start))
-        print('Mid: ' + str(mid))
+        self.debug_run(self.write_to_stdout, 'Total Time: ' + str(end - start))
+        self.debug_run(self.write_to_stdout, 'Mid: ' + str(mid))
         if mid > self.prev:
             motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
