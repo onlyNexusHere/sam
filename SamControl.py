@@ -297,6 +297,7 @@ class SamControl:
         self.quit_program = True
 
     def __getitem__(self, item):
+        self.debug_run(print, "Calling questionable function...")
         return self.arduino_modules.get(item.strip().lower(), SamModule.SamModule())
 
     class Sam_Control_Error(Exception):
