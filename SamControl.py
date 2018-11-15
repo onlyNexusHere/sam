@@ -300,7 +300,7 @@ class SamControl:
 
     def __getitem__(self, item):
         # self.debug_run(print, "Requesting mod " + item.strip().lower())
-        return self.arduino_modules.get(item.strip().lower())
+        return {**self.arduino_modules, **self.local_modules}.get(item.strip().lower())
 
     class Sam_Control_Error(Exception):
         """Base error class"""
