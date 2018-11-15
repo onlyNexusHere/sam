@@ -206,7 +206,7 @@ class StdinTools(SamModule):
                     self.sam['camera'].stdin_request('stop')
                     self.r1_starty = y
                     self.sam['motor'].done = False
-                    self.sam['motor'].send('x')
+                    self.sam['motor'].send('y')
                     self.r1_past_1 = True
                 elif self.sam['motor'].done:
                     if not self.sam['camera'].is_following_lane:
@@ -225,7 +225,7 @@ class StdinTools(SamModule):
                     self.sam['camera'].stdin_request('stop')
                     self.r2_starty = y
                     self.sam['motor'].done = False
-                    self.sam['motor'].send('y')
+                    self.sam['motor'].send('x')
                     self.r2_past_1 = True
                 elif self.sam['motor'].done:
                     if not self.sam['camera'].is_following_lane:
