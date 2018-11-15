@@ -191,6 +191,7 @@ class StdinTools(SamModule):
                 self.sam['motor'].send("0 0 0")
 
     def on_wait(self):
+        self.debug_run(self.write_to_stdout, "starting ir")
         x, y, h = self.sam['ir'].current_location
         self.debug_run(self.write_to_stdout, "in ir")
 
