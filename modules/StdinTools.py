@@ -192,8 +192,10 @@ class StdinTools(SamModule):
 
     def on_wait(self):
         x, y, h = self.sam['ir'].current_location
+        self.debug_run(self.write_to_stdout, "in ir")
 
         if self.r1:
+            self.debug_run(self.write_to_stdout, "in r1")
             if not (x < 20.5):
                 if not self.r1_past_1:
                     self.sam['camera'].stdin_request('stop')
@@ -210,6 +212,7 @@ class StdinTools(SamModule):
                             self.follow('r1')
 
         elif self.r2:
+            self.debug_run(self.write_to_stdout, "in r1")
             if not (x < 43):
                 if not self.r2_past_1:
                     self.sam['camera'].stdin_request('stop')

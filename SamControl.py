@@ -172,11 +172,11 @@ class SamControl:
         pass
 
     def process_sockets(self):
-        # self.debug_run(print, "Starting to listen")
+        self.debug_run(print, "Starting to listen")
 
         responded = select.select(self.listening_to, [], [], .02)[0]
 
-        # self.debug_run(print, "Select started")
+        self.debug_run(print, "Select started")
 
         for response in responded:
 
@@ -195,7 +195,7 @@ class SamControl:
                 print("Goodbye!")
                 return
 
-        # self.debug_run(print, "Running on_wait commands.")
+        self.debug_run(print, "Running on_wait commands.")
         for _, mod in {**self.local_modules, **self.arduino_modules}.items():
             if not (mod.name in self.broken_module_on_wait):
                 try:
