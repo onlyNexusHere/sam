@@ -55,7 +55,8 @@ class Quadrature(SamModule):
 
     def on_wait(self):
         # We always want to get updates about the location of robot.
-        self.send(" ")
+        # self.send(" ")
+        pass
 
 
 
