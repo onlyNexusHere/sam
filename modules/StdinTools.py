@@ -179,6 +179,7 @@ class StdinTools(SamModule):
             self.r1 = not self.r1
             if self.r1:
                 self.sam('camera').stdin_request('start')
+                self.write_to_stdout("starting r1")
             else:
                 self.sam('camera').stdin_request('stop')
                 self.sam['motor'].send("0 0 0")
@@ -186,19 +187,22 @@ class StdinTools(SamModule):
             self.r2 = not self.r2
             if self.r2:
                 self.sam('camera').stdin_request('start')
+                self.write_to_stdout("starting r2")
             else:
                 self.sam('camera').stdin_request('stop')
                 self.sam['motor'].send("0 0 0")
 
     def on_wait(self):
-        self.debug_run(self.write_to_stdout, "starting ir")
+        # self.debug_run(self.write_to_stdout, "starting ir")
         x, y, h = self.sam['ir'].current_location
-        self.debug_run(self.write_to_stdout, "in ir")
+        # self.debug_run(self.write_to_stdout, "in ir")
+        if x is None:
+            self.write_to_stdout("cannot get ir module")
 
         if self.r1:
-            self.debug_run(self.write_to_stdout, "in r1")
             if not (x < 20.5):
                 if not self.r1_past_1:
+                    self.debug_run(self.write_to_stdout, "in turn")
                     self.sam['camera'].stdin_request('stop')
                     self.r1_starty = y
                     self.sam['motor'].done = False
@@ -211,11 +215,13 @@ class StdinTools(SamModule):
                     else:
                         if (y-self.r1_starty) >= 42.5:
                             self.follow('r1')
+                            self.write_to_stdout("ending r1")
 
         elif self.r2:
-            self.debug_run(self.write_to_stdout, "in r1")
+            # self.debug_run(self.write_to_stdout, "in r1")
             if not (x < 43):
                 if not self.r2_past_1:
+                    self.debug_run(self.write_to_stdout, "in turn")
                     self.sam['camera'].stdin_request('stop')
                     self.r2_starty = y
                     self.sam['motor'].done = False
@@ -228,5 +234,6 @@ class StdinTools(SamModule):
                     else:
                         if (y-self.r2_starty) <= -17.5:
                             self.follow('r2')
+                            self.write_to_stdout("ending r2")
 
 
