@@ -4,15 +4,10 @@ import select
 import traceback
 import serial.tools.list_ports
 import serial.serialutil
-from modules import StdinTools, CameraProcessing, ArduinoDebug, Ping, Motors, Quadrature, SamModule
+from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature
+if sys.platform != 'darwin':
+    from modules import CameraProcessing
 from datetime import datetime
-
-
-# import os.path
-# if os.path.isfile("/proc/cpuinfo"):
-#     from picamera import PiCamera
-# else:
-#     PiCamera = None
 
 """
 
@@ -59,10 +54,9 @@ class SamControl:
         self.debug = debug
 
     def main(self, program=None):
+
         """
-
         Main method for running robot.
-
         """
         if self.arduino is None:
             self.find_arduino()
@@ -115,11 +109,12 @@ class SamControl:
         self.debug_run(print, "About to initialize mods")
 
         mods = [StdinTools.StdinTools(args_for_mods),
-                CameraProcessing.CameraProcessing(args_for_mods),
                 ArduinoDebug.ArduinoDebug(args_for_mods),
                 Ping.Ping(args_for_mods),
                 Motors.Motors(args_for_mods),
                 Quadrature.Quadrature(args_for_mods)]
+        if sys.platform != "darwin":
+            mods.append(CameraProcessing.CameraProcessing(args_for_mods))
 
         self.debug_run(print, "mods initialized")
 
@@ -166,10 +161,6 @@ class SamControl:
 
                 # Adding listeners to the list
         self.debug_run(print, "Done looking through ports")
-
-
-    def _send_code_to_arduino(self, location_of_file):
-        pass
 
     def process_sockets(self):
         # self.debug_run(print, "Starting to listen")

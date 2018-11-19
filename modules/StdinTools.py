@@ -3,6 +3,7 @@ import time
 import sys
 import traceback
 import serial.tools.list_ports
+import curses
 
 
 class StdinTools(SamModule):
@@ -11,6 +12,30 @@ class StdinTools(SamModule):
     """
 
     stdin_cmds = {}
+
+    r1 = False
+    r1_started = False
+    r1_past_1 = False
+    r1_starty = 0.0
+
+    r2 = False
+    r2_past_1 = False
+    r2_starty = 0.0
+
+    # Variables for curses
+    cur_key = ""
+    quit = False
+    stdscr = None
+
+    ml = 0
+    mr = 0
+    # Art by Max Strandberg
+    car = r"""
+    ____
+ __/  |_\_
+|  _     _``-.
+'-(_)---(_)--'"""
+    car_location = 0
 
     def __init__(self, kargs):
         super().__init__(module_name="StdinTools", is_local=True, identi=">", **kargs)
@@ -158,3 +183,96 @@ class StdinTools(SamModule):
                 self.sam.process_sockets()
 
             line_to_read = to_run.readline()
+
+    def follow(self, routine):
+        if routine == 'r1':
+            self.r1 = not self.r1
+            if self.r1:
+                self.sam['camera'].stdin_request('start')
+                self.write_to_stdout("Starting r1")
+            else:
+                self.sam['camera'].stdin_request('stop')
+                self.sam['motor'].stdin_request('stop')
+        elif routine == 'r2':
+            self.r2 = not self.r2
+            if self.r2:
+                self.sam['camera'].stdin_request('start')
+                self.write_to_stdout("starting r2")
+            else:
+                self.sam['camera'].stdin_request('stop')
+                self.sam['motor'].stdin_request('stop')
+
+    def on_wait(self):
+        pass
+
+    def _init_curses(self):
+        self.stdscr = curses.initscr()
+        curses.noecho()
+        curses.noecho()
+        self.stdscr.keypad(True)
+        curses.curs_set(False)
+        self.stdscr.nodelay(True)
+
+    def _end_curses(self):
+        curses.nocbreak()
+        self.stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+        self.quit = True
+
+    def draw(self, stdscr):
+        # Clear screen
+
+        self.cur_key = self.stdscr.getch()
+
+        curses.flushinp()
+
+        self.stdscr.clear()
+
+        title = "INTERACTIVE MODE"
+        subtitle = "Press 'q' to quit."
+        subtitle_1 = "Press arrow keys and space bar to control robot."
+        speed_l = "Left wheel: " + str(self.ml)
+        speed_r = "Right wheel: " + str(self.mr)
+
+        self.stdscr.addstr(0,int((curses.COLS-1)/2)-int(len(title)/2), title, curses.A_STANDOUT)
+        self.stdscr.addstr(2,int((curses.COLS-1)/2)-int(len(subtitle)/2), subtitle)
+        self.stdscr.addstr(4,int((curses.COLS-1)/2)-int(len(subtitle_1)/2), subtitle_1)
+
+        self.stdscr.addstr(6,0, str(curses.LINES - 1) + ", " + str(curses.COLS - 1))
+
+        self.stdscr.addstr(10,0, str(self.cur_key))
+
+        self.stdscr.addstr(11, 0, speed_l)
+        self.stdscr.addstr(12, 0, speed_r)
+
+        for y, line in enumerate(self.car.splitlines(), curses.LINES-5):
+            # self.stdscr.addstr(20,0, self.car)
+            self.stdscr.addstr(y, int(self.car_location)%(curses.COLS - 15), line)
+
+        self.car_location += (self.ml + self.mr)/100
+
+        if self.cur_key == ord('q'):
+            self._end_curses()
+            print("end")
+        elif self.cur_key == curses.KEY_LEFT:
+            self.ml += 20
+        elif self.cur_key == curses.KEY_RIGHT:
+            self.mr += 20
+        elif self.cur_key == curses.KEY_UP:
+            self.ml += 20
+            self.mr += 20
+        elif self.cur_key == curses.KEY_DOWN:
+            self.ml -= 20
+            self.mr -= 20
+        elif self.cur_key == ord(' '):
+            if self.ml == 0 and self.mr == 0:
+                self.ml = 60
+                self.mr = 60
+            else:
+                self.ml = 0
+                self.mr = 0
+
+        time.sleep(0.1)
+
+

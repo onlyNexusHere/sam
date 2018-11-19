@@ -8,14 +8,13 @@ class Motors(SamModule):
     """
 
     stdin_cmds = {}
-
     #send in some amount time, (exact_time, message)
     promise = []
     ready = True
-
     # list of destination tuples
     destinations = list()
-
+    done = False
+    current_speed = (0,0)
 
 #     Quadrature: Current location is 0.0 0.0 0.0
 #     Quadrature: Current location is 18.88 -0.48 0.0
@@ -158,6 +157,13 @@ class Motors(SamModule):
             self.promise.remove((time, cmd))
 
         self.ready = len(self.promise) < 1
+
+    def send(self, msg):
+        speeds = msg.strip().split(" ")
+        if len(speeds) == 2:
+            if speeds[0].isdigit() and speeds[1].isdigit():
+                self.current_speed = (speeds[0], speeds[1])
+        super(Motors, self).send(msg)
 
 
 
