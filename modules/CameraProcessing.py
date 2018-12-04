@@ -94,6 +94,12 @@ class CameraProcessing(SamModule):
                 adjustment = (adjustmenty + adjustmentw) / 2
 
             errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
+            # print("eDD: {}".format(errorDD))
+            # print("adjustment: {}".format(adjustment))
+            # print("adjustmentw: {}".format(adjustmentw))
+            # print("adjustmenty: {}".format(adjustmenty))
+            # print("item: {}".format(item))
+            # print("itemy: {}".format(itemy))
             self.debug_run(self.write_to_stdout, "eDD: {}".format(errorDD))
             self.debug_run(self.write_to_stdout, "adjustment: {}".format(adjustment))
             self.debug_run(self.write_to_stdout, "adjustmentw: {}".format(adjustmentw))
@@ -104,6 +110,8 @@ class CameraProcessing(SamModule):
 
             self.ml = int(self.ml + errorDD)
             self.mr = int(self.mr - errorDD)
+            # print('ml: {}'.format(self.ml))
+            # print('mr: {}'.format(self.mr))
             self.debug_run(self.write_to_stdout, 'ml: {}'.format(self.ml))
             self.debug_run(self.write_to_stdout, 'mr {}'.format(self.mr))
             motor_command = str(self.ml) + ' ' + str(self.mr)
