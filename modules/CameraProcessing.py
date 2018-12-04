@@ -104,6 +104,8 @@ class CameraProcessing(SamModule):
 
             self.ml = int(self.ml + errorDD)
             self.mr = int(self.mr - errorDD)
+            self.debug_run(self.write_to_stdout, 'ml: {}'.format(self.ml))
+            self.debug_run(self.write_to_stdout, 'mr {}'.format(self.mr))
             motor_command = str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
             self.prev = adjustment
