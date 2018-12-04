@@ -108,3 +108,8 @@ venv.bak/
 *.iml
 pi_libraries/
 .DS_store
+
+# images
+*.jpg
+*.png
+
