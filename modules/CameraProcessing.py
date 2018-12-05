@@ -9,8 +9,6 @@ import serial
 import time
 import numpy as np
 from PIL import Image
-from pi.detect_1 import detect_mid
-
 
 from .SamModule import SamModule
 
@@ -20,6 +18,8 @@ class CameraProcessing(SamModule):
     path = None
     prev = None
     camera = None
+    K = 0.0
+    B = 0.0
 
     is_following_lane = False
 
@@ -32,22 +32,27 @@ class CameraProcessing(SamModule):
 
         self.camera.start_preview()
 
-        self.path = '/home/sam_student/sam/path.jpg'
+
+        self.path = '/home/sam_student/vision2/sam/foo.jpg'
 
         self.is_following_lane = False
+
 
     def stdin_request(self, message):
 
         if message.strip() == "start":
             self.is_following_lane = True
-            self.ml = 120
-            self.mr = 125
+            self.ml = 160
+            self.mr = 160
             motor_command = str(self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)
-            self.prev = 640/2
+            self.prev = 0
+            self.K = 1/2000.0
+            self.B = 1/4000.0
 
         elif message.strip() == "stop":
             self.is_following_lane = False
+            self.sam['motor'].send("0 0 0")
 
     def on_wait(self):
 
@@ -59,21 +64,60 @@ class CameraProcessing(SamModule):
 
             start = time.time()
             self.camera.capture(self.path)
-            img = np.array(Image.open(self.path).convert('L'))
-            mid = detect_mid(img)
-            # process_time = detect_mid(img)[1]
-            print('= = = = = = =')
-            end = time.time()
-            # print('Process Time: ' + str(process_time))
-            print('Total Time: ' + str(end - start))
-            print('Mid: ' + str(mid))
-            if mid > self.prev:
-                motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
-                self.sam['motor'].send(motor_command)
+            #import pdb; pdb.set_trace()
+            img = Image.open('foo.jpg').convert('LA')
+            pix = img.load()
+            threshold = 200
+            thresholdy = 100
+            w, h = img.size
+            
+            middle = 140
+            middley = 800
+            for item in range(int(w/2),0,-1):
+                if(pix[item,int(h*.35)][0]>threshold):
+                    break
+            for itemy in range(int(w/2),w,1):
+                if(pix[itemy,int(h*.35)][0]>thresholdy):
+                    break
+            adjustmentw = item - middle #changed
+            adjustmenty = itemy - middley 
+
+            if item == 1 and itemy == 1023:
+                # well shit
+                adjustment = 0
+                pass
+            elif item == 1 and itemy != 1023:
+                adjustment = adjustmenty
+            elif item != 1 and itemy == 1023:
+                adjustment = adjustmentw
             else:
-                motor_command = str(self.ml) + ' ' + str(1.2 * self.mr)
-                self.sam['motor'].send(motor_command)
-            self.prev = mid
+                adjustment = (adjustmenty + adjustmentw) / 2
+
+            errorDD = -self.K*adjustment-self.B*(adjustment-self.prev)
+            # print("eDD: {}".format(errorDD))
+            # print("adjustment: {}".format(adjustment))
+            # print("adjustmentw: {}".format(adjustmentw))
+            # print("adjustmenty: {}".format(adjustmenty))
+            # print("item: {}".format(item))
+            # print("itemy: {}".format(itemy))
+            self.debug_run(self.write_to_stdout, "eDD: {}".format(errorDD))
+            self.debug_run(self.write_to_stdout, "adjustment: {}".format(adjustment))
+            self.debug_run(self.write_to_stdout, "adjustmentw: {}".format(adjustmentw))
+            self.debug_run(self.write_to_stdout, "adjustmenty: {}".format(adjustmenty))
+            self.debug_run(self.write_to_stdout, "itemw: {}".format(item))
+            self.debug_run(self.write_to_stdout, "itemy: {}".format(itemy))
+
+
+            self.ml = int(self.ml + errorDD)
+            self.mr = int(self.mr - errorDD)
+            # print('ml: {}'.format(self.ml))
+            # print('mr: {}'.format(self.mr))
+            self.debug_run(self.write_to_stdout, 'ml: {}'.format(self.ml))
+            self.debug_run(self.write_to_stdout, 'mr {}'.format(self.mr))
+            motor_command = str(self.ml) + ' ' + str(self.mr)
+            self.sam['motor'].send(motor_command)
+            self.prev = adjustment
+
 
     def adjust_to_straight(self):
 
@@ -82,11 +126,11 @@ class CameraProcessing(SamModule):
         img = np.array(Image.open(self.path).convert('L'))
         mid = detect_mid(img)
         # process_time = detect_mid(img)[1]
-        print('= = = = = = =')
+        self.debug_run(self.write_to_stdout,'= = = = = = =')
         end = time.time()
         # print('Process Time: ' + str(process_time))
-        print('Total Time: ' + str(end - start))
-        print('Mid: ' + str(mid))
+        self.debug_run(self.write_to_stdout, 'Total Time: ' + str(end - start))
+        self.debug_run(self.write_to_stdout, 'Mid: ' + str(mid))
         if mid > self.prev:
             motor_command = str(1.2 * self.ml) + ' ' + str(self.mr)
             self.sam['motor'].send(motor_command)

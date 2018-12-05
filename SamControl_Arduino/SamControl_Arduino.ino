@@ -31,53 +31,53 @@ void stopIfFault()
 
 
 void left_routine() {
-    md.setM1Speed(160);
-    int r_val = 155;
-    md.setM2Speed(r_val);
-    Serial.println("Straight Start");
-    while(posn[0] < 43) { //30 inches from start - how far to go before turn
-      Serial.print("Straight");
-      Serial.println(posn[0]);
-      continue;
-    }
-    Serial.println("Straight Finished");
+//    md.setM1Speed(160);
+//    int r_val = 155;
+//    md.setM2Speed(r_val);
+//    Serial.println("Straight Start");
+//    while(posn[0] < 43) { //30 inches from start - how far to go before turn
+//      Serial.print("Straight");
+//      Serial.println(posn[0]);
+//      continue;
+//    }
+//    Serial.println("Straight Finished");
     do_left_turn();
-    md.setM1Speed(160);
-    md.setM2Speed(r_val);
-    double start_y = posn[1];
-    Serial.println("HERE");
-    while((start_y - posn[1]) > -17.5){ // 14 inches to end line
-      Serial.println(start_y - posn[1]);
-      continue;
-    }
-    md.setM1Speed(0);
-    md.setM2Speed(0);
+//    md.setM1Speed(160);
+//    md.setM2Speed(r_val);
+//    double start_y = posn[1];
+//    Serial.println("HERE");
+//    while((start_y - posn[1]) > -17.5){ // 14 inches to end line
+//      Serial.println(start_y - posn[1]);
+//      continue;
+//    }
+//    md.setM1Speed(0);
+//    md.setM2Speed(0);
 }
 
 void right_routine() {
-    int l_val = 160;
-    int r_val = 155;
-    md.setM1Speed(l_val);
-    
-    md.setM2Speed(r_val);
-    Serial.println("Straight Start");
-    while(posn[0] < 20.5) { //30 inches from start - how far to go before turn
-      Serial.print("Straight");
-      Serial.println(posn[0]);
-      continue;
-    }
-    Serial.println("Straight Finished");
+//    int l_val = 160;
+//    int r_val = 155;
+//    md.setM1Speed(l_val);
+//    
+//    md.setM2Speed(r_val);
+//    Serial.println("Straight Start");
+//    while(posn[0] < 20.5) { //30 inches from start - how far to go before turn
+//      Serial.print("Straight");
+//      Serial.println(posn[0]);
+//      continue;
+//    }
+//    Serial.println("Straight Finished");
     do_right_turn();
-    md.setM1Speed(l_val);
-    md.setM2Speed(r_val);
-    double start_y = posn[1];
-    Serial.println("HERE");
-    while((start_y - posn[1]) < 42.5){ // 14 inches to end line
-      Serial.println(start_y - posn[1]);
-      continue;
-    }
-    md.setM1Speed(0);
-    md.setM2Speed(0);
+//    md.setM1Speed(l_val);
+//    md.setM2Speed(r_val);
+//    double start_y = posn[1];
+//    Serial.println("HERE");
+//    while((start_y - posn[1]) < 42.5){ // 14 inches to end line
+//      Serial.println(start_y - posn[1]);
+//      continue;
+//    }
+//    md.setM1Speed(0);
+//    md.setM2Speed(0);
 }
 
 void encoder_isr_left() {

@@ -13,6 +13,7 @@ class Motors(SamModule):
     ready = True
     # list of destination tuples
     destinations = list()
+
     done = False
     current_speed = (0,0)
 
@@ -27,7 +28,8 @@ class Motors(SamModule):
         self.send_id = "m"
 
     def message_received(self, message):
-        pass
+        if message.strip() == "done":
+            self.done = True
 
     def stdin_request(self, message):
         """
