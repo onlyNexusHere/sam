@@ -31,8 +31,3 @@ class Ping(SamModule):
     def on_wait(self):
         self.send(" ")
 
-       
-
-        print(dist)
-
-
