@@ -14,7 +14,7 @@ class Motors(SamModule):
     # list of destination tuples
     destinations = list()
     done = False
-    current_speed = (0,0)
+    current_speed = (0, 0)
 
 #     Quadrature: Current location is 0.0 0.0 0.0
 #     Quadrature: Current location is 18.88 -0.48 0.0
@@ -142,7 +142,6 @@ class Motors(SamModule):
 
         # 6.375 in wheel base
 
-
     def on_wait(self):
 
         now = datetime.now()
@@ -158,6 +157,7 @@ class Motors(SamModule):
 
         self.ready = len(self.promise) < 1
 
+    # msg is two integers seperated by a space
     def send(self, msg):
         speeds = msg.strip().split(" ")
         if len(speeds) == 2:

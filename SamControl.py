@@ -1,13 +1,13 @@
+from datetime import datetime
 import sys
 import argparse
 import select
 import traceback
 import serial.tools.list_ports
 import serial.serialutil
-from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature
+from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature, SamModule
 if sys.platform != 'darwin':
     from modules import CameraProcessing
-from datetime import datetime
 
 """
 
@@ -35,8 +35,8 @@ class SamControl:
 
     quit_program = False
 
-    # Array of file numbers for
-    listening_to = []
+    # Map, file_number -> func(response)
+    listening_to = {}
 
     def __init__(self, log_file=None, arduino_location=None, debug=False):
         if log_file is not None:
@@ -58,15 +58,16 @@ class SamControl:
         """
         Main method for running robot.
         """
+
+        # Check if the user already set the arduino. If not, find arduino.
         if self.arduino is None:
             self.find_arduino()
 
+        # Add Arduino socket support
         if self.arduino is not None:
-            self.listening_to.append(self.arduino)
+            self.listening_to[self.arduino] = self._process_arduino_message
         else:
             print("Arduino USB was not found.")
-
-        self.listening_to.append(sys.stdin)
 
         self.init_mods()
 
@@ -76,6 +77,7 @@ class SamControl:
             self.debug_run(print, "Running startup file")
             self.local_modules.get(">").message_received("run " + program[0])
 
+        # Main loop of program.
         self.debug_run(print, "Start non-blocking loop")
         while self.quit_program is False:
             self.process_sockets()
@@ -165,22 +167,29 @@ class SamControl:
     def process_sockets(self):
         # self.debug_run(print, "Starting to listen")
 
-        responded = select.select(self.listening_to, [], [], .02)[0]
+        responded = select.select(list(self.listening_to.keys()), [], [], .02)[0]
 
         # self.debug_run(print, "Select started")
 
         for response in responded:
 
-            if response == sys.stdin:
-                self.debug_run(print, "Stdin sent a message.")
-                self._process_stdin()
+            socket_function = self.listening_to.get(response)
 
-            elif response == self.arduino:
-                self.debug_run(print, "Arduino sent a message.")
-                self._process_arduino_message(response)
-
+            if not socket_function:
+                print("ERROR, recieved unknown socket packet")
             else:
-                print("ERROR")
+                socket_function(response)
+
+            # if response == sys.stdin:
+            #     self.debug_run(print, "Stdin sent a message.")
+            #     self._process_stdin()
+            #
+            # elif response == self.arduino:
+            #     self.debug_run(print, "Arduino sent a message.")
+            #     self._process_arduino_message(response)
+            #
+            # else:
+            #     print("ERROR")
 
             if self.quit_program:
                 print("Goodbye!")
@@ -197,17 +206,8 @@ class SamControl:
                     self.debug_run(print, mod.name + " removed from on_wait.")
                     self.broken_module_on_wait.append(mod.name)
 
-    def _process_stdin(self):
-        str_rsv = sys.stdin.readline()
-
-        self.debug_run(print, "got message: " + str_rsv)
-
-        try:
-            self.local_modules.get(">").message_received(str_rsv)
-        except Exception as e:
-            print("Exception found in stdin module for message received --> "+str(e.__doc__)+"\n" + str(e))
-
     def _process_arduino_message(self, response):
+        arduino_says = "".encode('utf-8')
         try:
             arduino_says = response.readline()
         except serial.serialutil.SerialException:
@@ -223,7 +223,7 @@ class SamControl:
             self.debug_run(print, "Received empty message from arduino")
             return
 
-        self.debug_run(print, "Messsage:" + message_from_arduino)
+        self.debug_run(print, "Message:" + message_from_arduino)
 
         module_to_use = self.arduino_modules.get(message_from_arduino.split(" ")[0].lower(), None)
 
