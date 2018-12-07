@@ -24,7 +24,7 @@ class SamModule:
                  is_local=False,
                  log_file=None):
 
-        print("Setting up " + module_name)
+        print("qSetting up " + module_name)
 
         self.arduino = arduino_object
         self.sam = sam
@@ -77,7 +77,7 @@ class SamModule:
             self.write_to_stdout(self.name + " module is sending bytes, please send a string.")
             return
 
-        self.debug_run(self.write_to_stdout, "Sending \" " + msg + " \" to arduino")
+        # self.debug_run(self.write_to_stdout, "Sending \" " + msg + " \" to arduino")
         self.sam.send(self.send_id + " " + msg)
 
     def debug_run(self, func, func_args):

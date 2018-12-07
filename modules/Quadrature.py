@@ -1,5 +1,5 @@
 from .SamModule import SamModule
-
+from datetime import datetime
 
 class Quadrature(SamModule):
     """
@@ -46,7 +46,7 @@ class Quadrature(SamModule):
 
     def stdin_request(self, message):
         if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
-            self.send(" ")
+            # self.send(" ")
             self.waiting_for_location = True
             # Next time a packet is received, the location will be printed
 

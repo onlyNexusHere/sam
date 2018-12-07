@@ -4,6 +4,7 @@ import socket
 from .SamModule import SamModule
 
 
+
 class CameraProcessing(SamModule):
 
     def __init__(self, kargs):
@@ -12,7 +13,6 @@ class CameraProcessing(SamModule):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind(('127.0.0.1', 5005))
         self.sam.listening_to[sock] = self.message_received
-
 
     def stdin_request(self, message):
         pass

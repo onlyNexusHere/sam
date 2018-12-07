@@ -144,6 +144,7 @@ class SamControl:
                 self.arduino_modules[mod.identifier] = mod
 
         self.debug_run(print, "Debug imported modules")
+        self.debug_run(print, "mods in arduino mods: " + str(self.arduino_modules.keys()))
 
     def find_arduino(self):
         self.debug_run(print, "Finding Arduino USB")
@@ -206,6 +207,7 @@ class SamControl:
                     self.debug_run(print, mod.name + " removed from on_wait.")
                     self.broken_module_on_wait.append(mod.name)
 
+
     def _process_arduino_message(self, response):
         arduino_says = "".encode('utf-8')
         try:
@@ -242,12 +244,12 @@ class SamControl:
         :return:
         """
         if self.arduino is not None:
-            self.debug_run(print, "Sending arduino message: " + message)
+            # self.debug_run(print, "Sending arduino message: " + message)
 
             self.arduino.write(message.encode("utf-8"))
             self.log_to_file("Sending to arduino: " + message)
 
-            self.debug_run(print, "sent arduino message")
+            # self.debug_run(print, "sent arduino message")
         else:
             print("Arduino is not connected!")
 
@@ -288,7 +290,8 @@ class SamControl:
         self.quit_program = True
 
     def __getitem__(self, item):
-        return self.arduino_modules.get(item.strip().lower(), SamModule.SamModule())
+        # self.debug_run(print, "Requesting mod " + item.strip().lower())
+        return {**self.arduino_modules, **self.local_modules}.get(item.strip().lower())
 
     class Sam_Control_Error(Exception):
         """Base error class"""
