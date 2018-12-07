@@ -14,22 +14,25 @@ class Ping(SamModule):
         self.send_id = "p"
 
     def message_received(self, message):
-        pass
+        dist = int(message)
+        # if dist > 24:
+        #     # it's far away
+        #     return
+        # elif dist < 6:
+        #     # oh shit
+        #     self.sam['motor'].stop()
+        # else:
+        #     if prev_dist <= dist:  # it's getting farther
+        #         return
+        #     elif prev_dist > dist: # it's getting closer
+        #         self.sam['motor'].slow(10, 10)
+        print(dist)
 
     def on_wait(self):
-        self.send("")
-        dist = response_from_arduino
+        self.send(" ")
 
-        if dist > 24:
-            # it's far away
-            return
-        elif dist < 6:
-            # oh shit
-            self.sam['motor'].stop()
-        else:
-            if prev_dist <= dist:  # it's getting farther
-                return
-            elif prev_dist > dist: # it's getting closer
-                self.sam['motor'].slow(10, 10)
+       
+
+        print(dist)
 
 
