@@ -271,6 +271,7 @@ class StdinTools(SamModule):
                         if (y-self.r2_starty) <= -17.5:
                             self.follow('r2')
                             self.write_to_stdout("ending r2")
+
     def _init_curses(self):
         self.stdscr = curses.initscr()
         curses.noecho()

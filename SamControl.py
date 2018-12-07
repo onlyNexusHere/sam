@@ -207,7 +207,6 @@ class SamControl:
                     self.debug_run(print, mod.name + " removed from on_wait.")
                     self.broken_module_on_wait.append(mod.name)
 
-
     def _process_arduino_message(self, response):
         arduino_says = "".encode('utf-8')
         try:

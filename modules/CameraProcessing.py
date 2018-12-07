@@ -12,13 +12,18 @@ class CameraProcessing(SamModule):
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind(('127.0.0.1', 5005))
-        self.sam.listening_to[sock] = self.message_received
+        self.sam.listening_to[sock] = self._process_socket
+
+    def _process_socket(self, soc):
+        data = soc.recv(1024)
+        if data:
+            self.message_received(data.decode("utf-8", 'ignore').strip())
 
     def stdin_request(self, message):
         pass
 
     def message_received(self, message):
-       pass
+        self.write_to_stdout(message)
 
     def write_to_stdout(self, string_to_write):
         pass
