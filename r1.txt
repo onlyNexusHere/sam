@@ -1,0 +1,8 @@
+
+request motor straight 160
+request motor wait 5 turn 120 200
+request motor then wait 2 straight 160
+request motor then wait 3 turn -160 -160
+request motor then wait 3 turn -120 -200
+request motor then wait 2 turn -160 -160
+request motor then wait 5 stop
