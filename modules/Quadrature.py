@@ -37,6 +37,7 @@ class Quadrature(SamModule):
                 self.current_location = (x, y, heading)
 
                 if self.waiting_for_location:
+                    # If the location was requested to print out the location, print it.
                     self.write_to_stdout("Current location is " + str(x) + " " + str(y) + " " + str(heading))
                     self.waiting_for_location = False
 
@@ -47,10 +48,16 @@ class Quadrature(SamModule):
         if message.strip() == "get location" or message.strip() == "location" or message.strip() == "get":
             # self.send(" ")
             self.waiting_for_location = True
+            # Next time a packet is received, the location will be printed
+
+        elif message.strip() == "reset":
+            self.send("reset")
 
     def on_wait(self):
-        time_to_check = datetime.now()
-        if (time_to_check.microsecond < 20000) or (time_to_check.microsecond > 40000 and (time_to_check.microsecond < 60000))or (time_to_check.microsecond > 80000 and (time_to_check.microsecond < 100000)):
-            self.send(" ")
+
+        if self.arduino is not None:
+            time_to_check = datetime.now()
+            if (time_to_check.microsecond < 20000) or (time_to_check.microsecond > 40000 and (time_to_check.microsecond < 60000))or (time_to_check.microsecond > 80000 and (time_to_check.microsecond < 100000)):
+                self.send(" ")
 
 

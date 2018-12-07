@@ -3,6 +3,7 @@ import time
 import sys
 import traceback
 import serial.tools.list_ports
+import curses
 
 
 class StdinTools(SamModule):
@@ -21,13 +22,33 @@ class StdinTools(SamModule):
     r2_past_1 = False
     r2_starty = 0.0
 
+    # Variables for curses
+    cur_key = ""
+    quit = False
+    stdscr = None
+
+    ml = 0
+    mr = 0
+    # Art by Max Strandberg
+    car = r"""
+    ____
+ __/  |_\_
+|  _     _``-.
+'-(_)---(_)--'"""
+    car_location = 0
+
+
     def __init__(self, kargs):
         super().__init__(module_name="StdinTools", is_local=True, identi=">", **kargs)
 
+        self.sam.listening_to[sys.stdin] = self._process_stdin
+
         self.stdin_cmds = {"modules": (lambda str_args: self.show_mods(),
                                        "View the modules"),
+
                            "set": (lambda str_args: self.set_var(str_args),
                                    "Use command to set certain SAM variables, such as 'set arduino /dev/usb000'"),
+
                            "request": (lambda str_args: self.request_module(str_args),
                                        "Use this command to talk to the modules. 'request <mod_name> txt'"),
 
@@ -45,6 +66,9 @@ class StdinTools(SamModule):
 
                            "findarduino": (lambda str_args: self.find_arduino(),
                                            "Re-find the arduino"),
+
+                           "curses": (lambda str_args: self.run_curses(),
+                                           "Interactive robot control"),
 
                            "debug": (lambda str_args: self.toggle_debug(str_args),
                                      "Change debugging to true or false"),
@@ -70,6 +94,16 @@ class StdinTools(SamModule):
                            "exit": (lambda str_args: self.sam.request_quit(),
                                     "Same as quit")
                            }
+
+    def _process_stdin(self, response):
+        str_rsv = sys.stdin.readline()
+
+        self.debug_run(print, "got message: " + str_rsv)
+
+        try:
+            self.message_received(str_rsv)
+        except Exception as e:
+            print("Exception found in stdin module for message received --> "+str(e.__doc__)+"\n" + str(e))
 
     def message_received(self, message):
         if message.strip() == "":
@@ -179,7 +213,8 @@ class StdinTools(SamModule):
             self.r1 = not self.r1
             if self.r1:
                 self.sam['camera'].stdin_request('start')
-                self.write_to_stdout("starting r1")
+
+                self.write_to_stdout("Starting r1")
             else:
                 self.sam['camera'].stdin_request('stop')
                 self.sam['motor'].stdin_request('stop')
@@ -193,6 +228,7 @@ class StdinTools(SamModule):
                 self.sam['motor'].stdin_request('stop')
 
     def on_wait(self):
+
         # self.debug_run(self.write_to_stdout, "starting ir")
         x, y, h = self.sam['ir'].current_location
         # self.debug_run(self.write_to_stdout, "in ir")
@@ -235,5 +271,84 @@ class StdinTools(SamModule):
                         if (y-self.r2_starty) <= -17.5:
                             self.follow('r2')
                             self.write_to_stdout("ending r2")
+    def _init_curses(self):
+        self.stdscr = curses.initscr()
+        curses.noecho()
+        self.stdscr.keypad(True)
+        curses.curs_set(False)
+        self.stdscr.nodelay(True)
+
+    def _end_curses(self):
+        curses.nocbreak()
+        self.stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+        self.quit = True
+
+    def draw(self, stdscr):
+        # Clear screen
+
+        self.cur_key = self.stdscr.getch()
+
+        curses.flushinp()
+
+        self.stdscr.clear()
+
+        title = "INTERACTIVE MODE"
+        subtitle = "Press 'q' to quit."
+        subtitle_1 = "Press arrow keys and space bar to control robot."
+        speed_l = "Left wheel: " + str(self.ml)
+        speed_r = "Right wheel: " + str(self.mr)
+
+        self.stdscr.addstr(0, int((curses.COLS-1)/2)-int(len(title)/2), title, curses.A_STANDOUT)
+        self.stdscr.addstr(2, int((curses.COLS-1)/2)-int(len(subtitle)/2), subtitle)
+        self.stdscr.addstr(4, int((curses.COLS-1)/2)-int(len(subtitle_1)/2), subtitle_1)
+
+        self.stdscr.addstr(6, 0, str(curses.LINES - 1) + ", " + str(curses.COLS - 1))
+
+        self.stdscr.addstr(10, 0, str(self.cur_key))
+
+        self.stdscr.addstr(11, 0, speed_l)
+        self.stdscr.addstr(12, 0, speed_r)
+
+        for y, line in enumerate(self.car.splitlines(), curses.LINES-5):
+            # self.stdscr.addstr(20,0, self.car)
+            self.stdscr.addstr(y, int(self.car_location)%(curses.COLS - 15), line)
+
+        self.car_location += (self.ml + self.mr)/100
+
+        if self.cur_key == ord('q'):
+            self._end_curses()
+            print("end")
+        elif self.cur_key == curses.KEY_LEFT:
+            self.ml += 20
+        elif self.cur_key == curses.KEY_RIGHT:
+            self.mr += 20
+        elif self.cur_key == curses.KEY_UP:
+            self.ml += 20
+            self.mr += 20
+        elif self.cur_key == curses.KEY_DOWN:
+            self.ml -= 20
+            self.mr -= 20
+        elif self.cur_key == ord(' '):
+            if self.ml == 0 and self.mr == 0:
+                self.ml = 60
+                self.mr = 60
+            else:
+                self.ml = 0
+                self.mr = 0
+
+        # Adjust the actual speed of the robot
+        a_l, a_r = self.sam['motor'].current_speed
+        if a_l != self.ml or a_r != self.mr:
+            self.sam['motor'].send(str(self.ml) + " " + str(self.mr))
+
+        time.sleep(0.1)
+
+    def run_curses(self):
+        self._init_curses()
+        while not self.quit:
+            curses.wrapper(self.draw)
+
 
 
