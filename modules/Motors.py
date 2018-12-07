@@ -59,27 +59,6 @@ class Motors(SamModule):
                 return
             else:
                 self.send(message_parts[1] + " " + message_parts[2])
-            #
-            # elif message_parts[1].lower() == "left":
-            #     self.send("turn left")
-            #
-            # else:
-            #     self.write_to_stdout("Cannot turn " + message_parts[1].lower())
-
-        # elif message_parts[0].lower() == "adjust":
-        #
-        #     if len(message_parts)<2:
-        #         self.write_to_stdout("Need direction to turn")
-        #         return
-        #
-        #     elif message_parts[1].lower() == "right":
-        #         self.send("adjust right")
-        #
-        #     elif message_parts[1].lower() == "left":
-        #         self.send("adjust left")
-        #
-        #     else:
-        #         self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
         elif message_parts[0].lower() == "stop":
             self.send("0 0")
@@ -121,30 +100,6 @@ class Motors(SamModule):
         elif message_parts[0].lower() == "r2":
             self.sam.send("y")
 
-        # elif len(message_parts) > 3 and message_parts[0] == "to":
-        #     x = 0.0
-        #     y = 0.0
-        #     heading = 0.0
-        #     try:
-        #         x = float(message_parts[1])
-        #         y = float(message_parts[2])
-        #         heading = float(message_parts[3])
-        #     except ValueError:
-        #         print("need float number")
-        #         return
-        #
-        #     curr_x, curr_y, curr_h = self.sam['ir'].current_location
-        #     if heading -
-        #     if heading < curr_h:
-        #         # adjust right
-        #         pass
-        #     else heading > curr_h:
-        #         # adjust left
-        #
-
-        # 6.375 in wheel base
-
-
     def on_wait(self):
 
         now = datetime.now()
@@ -166,6 +121,23 @@ class Motors(SamModule):
             if speeds[0].isdigit() and speeds[1].isdigit():
                 self.current_speed = (speeds[0], speeds[1])
         super(Motors, self).send(msg)
+
+    def sendlr(self, ml, mr):
+        self.ml = ml
+        self.mr = mr
+        self.send(ml, mr)
+
+    def stop(self):
+        self.ml = 0
+        self.mr = 0
+        self.sendlr(self.ml, self.mr)
+
+    def slow(self, dml, dmr):
+        self.ml = self.ml - dml
+        self.mr = self.mr - dmr
+        self.sendlr(self.ml, self.mr)
+
+
 
 
 
