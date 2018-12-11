@@ -161,6 +161,8 @@ class StdinTools(SamModule):
         else:
             to_print = to_print + "\tArduino is not detected." + "\n"
 
+        to_print = to_print + "\t Speed is: " + str(self.sam['motor'].current_speed) + "\n"
+
         to_print = to_print + "\tDebugging is " + str(self.sam.debug) + "\n"
 
         to_print = to_print + "\tBroken modules: " + str(self.sam.broken_module_on_wait)

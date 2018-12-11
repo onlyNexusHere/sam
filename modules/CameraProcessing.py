@@ -20,15 +20,29 @@ class CameraProcessing(SamModule):
             self.message_received(data.decode("utf-8", 'ignore').strip())
 
     def stdin_request(self, message):
-        pass
+        if message == "go":
+            self.is_following_lane = True
+
+        elif message == "stop":
+            self.is_following_lane = False
 
     def message_received(self, message):
         msg_parts = message.strip().split(" ")
+        s_1 = 0
+        s_2 = 0
         if len(msg_parts) != 2:
             self.debug_run(self.write_to_stdout, "Need exactly two numbers")
+            return
+        try:
+            s_1 = int(msg_parts[0])
+            s_2 = int(msg_parts[1])
+        except ValueError:
+            self.debug_run(self.write_to_stdout, "Need numbers")
+            return
 
-        self.sam['motor'].stdin_request("turn " + message.strip())
-        self.debug_run(self.write_to_stdout, "change:" + message)
+        if self.is_following_lane:
+            self.sam['motor'].stdin_request("turn " + str(self.sam['motor'].current_speed[0] + s_1) + " " + str(self.sam['motor'].current_speed[1] + s_2))
+            self.debug_run(self.write_to_stdout, "change:" + message)
 
     def write_to_stdout(self, string_to_write):
         pass
