@@ -9,7 +9,7 @@ import os
 
 
 port = '/dev/ttyACM0'
-ser = serial.Serial(port, 115200, timeout=2)
+ser = serial.Serial(port, 250000, timeout=2)
 
 X_RESOLUTION = 1280
 Y_RESOLUTION = 960
@@ -37,11 +37,11 @@ if not os.path.isdir(folder):
 
 for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=True):
     # Grab the raw NumPy array representing the image
+
     img = frame.array
     key = cv2.waitKey(1) & 0xFF
 
     # cv2.imwrite('0.png', img)
-
 
     # Clear the stream so it is ready to receive the next frame
     rawCapture.truncate(0)
@@ -50,7 +50,11 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
         print('= = = = =')
         print('frame: ' + str(i))
 
+        s = time.time()
+
         center, mid, command, ratio = detect(img)
+
+        print(time.time() - s)
 
         print(command, ratio)
         print([center, mid])
@@ -58,35 +62,49 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
         sta = [command, ratio, center, mid]
         # cv2.imwrite(folder + '/' + str(i) + '_' + str(sta) + '.png', img[int(img.shape[0] / 2):int(img.shape[0]), :, :])
 
-        ml = mr = 150
+        ml = mr = 180
 
         diff = center - mid
 
-        # rat = np.abs(diff) / (center / 2)
-
-        change_left = 25
-        change_right = 27
+        rat = np.abs(diff) / (center / 2)
 
         stay = 100
 
-        # if command == 'stop':
-        #     print('Stop')
-        #     speed(0, 0)
+        if command == 'stop':
+            print('Stop')
+            speed(0, 0)
 
         if np.abs(diff) <= stay:
-            print('Stay on center')
-            if diff > 0:
-                speed(ml-1, mr + 2)
+            if np.abs(diff) > 15:
+                if diff > 0:
+                    print('leftttttttttttt')
+                    speed(ml - np.abs(diff) * 0.1, mr + np.abs(diff) * 0.1)
+                else:
+                    print('righttttttttttt')
+                    speed(ml + np.abs(diff) * 0.1, mr - np.abs(diff) * 0.1)
             else:
-                speed(ml + 2, mr-1)
+                print('Stay on center')
+                speed(ml, mr)
+
+
+
+        # if np.abs(diff) <= stay:
+        #     if diff > 0:
+        #         print('leftttttttttttt')
+        #         speed(ml - diff * 0.5, mr + diff * 0.5)
+        #     else:
+        #         print('righttttttttttt')
+        #         speed(ml + diff * 0.5, mr - diff * 0.5)
+
+
 
         elif diff > stay:
             print('Turn left')
-            speed(ml - 30, mr + 35)
+            speed(ml - 70, mr + 25)
 
         elif diff < -stay:
             print('Turn right')
-            speed(ml+35, mr-30)
+            speed(ml + 25, mr - 70)
 
     i += 1
 
