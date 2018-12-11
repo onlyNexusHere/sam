@@ -342,7 +342,7 @@ class StdinTools(SamModule):
         # Adjust the actual speed of the robot
         a_l, a_r = self.sam['motor'].current_speed
         if a_l != self.ml or a_r != self.mr:
-            self.sam['motor'].send(str(self.ml) + " " + str(self.mr))
+            self.sam['motor'].stdin_request("turn " + str(self.ml) + " " + str(self.mr))
 
         time.sleep(0.1)
 

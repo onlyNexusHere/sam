@@ -59,27 +59,6 @@ class Motors(SamModule):
                 return
             else:
                 self.send(message_parts[1] + " " + message_parts[2])
-            #
-            # elif message_parts[1].lower() == "left":
-            #     self.send("turn left")
-            #
-            # else:
-            #     self.write_to_stdout("Cannot turn " + message_parts[1].lower())
-
-        # elif message_parts[0].lower() == "adjust":
-        #
-        #     if len(message_parts)<2:
-        #         self.write_to_stdout("Need direction to turn")
-        #         return
-        #
-        #     elif message_parts[1].lower() == "right":
-        #         self.send("adjust right")
-        #
-        #     elif message_parts[1].lower() == "left":
-        #         self.send("adjust left")
-        #
-        #     else:
-        #         self.write_to_stdout("Cannot turn " + message_parts[1].lower())
 
         elif message_parts[0].lower() == "stop":
             self.send("0 0")
