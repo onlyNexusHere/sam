@@ -88,6 +88,7 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
                 speed(-1,2)
             else:
                 #speed(ml + 2, mr-1)
+                speed(2,-1)
 
         elif diff > stay:
             print('Turn left')
@@ -96,7 +97,7 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
         elif diff < -stay:
             print('Turn right')
             #speed(ml+35, mr-30)
-            speed(35,-30)
+            speed(35, -30)
     i += 1
 
 
