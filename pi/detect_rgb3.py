@@ -1,7 +1,4 @@
 import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
-import time
 import cv2
 
 
@@ -70,6 +67,7 @@ def detect(img):
         mid = [-1, -1]
 
     return int(w/2), mid[1], command, [y_ratio, w_ratio, r_ratio]
+
 
 # for i in range(9):
 #     img = np.array(Image.open('1028/test_img/path_' + str(i) + '.jpg'))

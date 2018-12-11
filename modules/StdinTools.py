@@ -161,6 +161,8 @@ class StdinTools(SamModule):
         else:
             to_print = to_print + "\tArduino is not detected." + "\n"
 
+        to_print = to_print + "\t Speed is: " + str(self.sam['motor'].current_speed) + "\n"
+
         to_print = to_print + "\tDebugging is " + str(self.sam.debug) + "\n"
 
         to_print = to_print + "\tBroken modules: " + str(self.sam.broken_module_on_wait)
@@ -271,6 +273,7 @@ class StdinTools(SamModule):
                         if (y-self.r2_starty) <= -17.5:
                             self.follow('r2')
                             self.write_to_stdout("ending r2")
+
     def _init_curses(self):
         self.stdscr = curses.initscr()
         curses.noecho()
@@ -341,7 +344,7 @@ class StdinTools(SamModule):
         # Adjust the actual speed of the robot
         a_l, a_r = self.sam['motor'].current_speed
         if a_l != self.ml or a_r != self.mr:
-            self.sam['motor'].send(str(self.ml) + " " + str(self.mr))
+            self.sam['motor'].stdin_request("turn " + str(self.ml) + " " + str(self.mr))
 
         time.sleep(0.1)
 

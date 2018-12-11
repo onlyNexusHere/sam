@@ -1,11 +1,15 @@
+/* KEY
+// m s1 s2 => set motors to speends s1 and s2 respectively (s1, s2 should be ints)
+// i => Requests the arduino to send quadrature data over serial
+// r => Resets quadrature to 0,0
+// x => left_routine
+// y => right_routine
+*/
+
+
 #include <math.h>
 #include "EnableInterrupt/EnableInterrupt.h"
 #include "DualMC33926MotorShield.h"
-
-//#define CIRCUMFERENCE = 2.75 * pi
-//#define RESOLUTION = 32 
-//resolution = divisions * 2
-// SEGMENT_LEN = CIRCUMFERENCE/RESOLUTION = 2.75*pi/32
 #define SEGMENT_LEN 0.26998
 #define WHEELBASE 6.375
 
@@ -29,56 +33,6 @@ void stopIfFault()
   }
 } 
 
-
-void left_routine() {
-//    md.setM1Speed(160);
-//    int r_val = 155;
-//    md.setM2Speed(r_val);
-//    Serial.println("Straight Start");
-//    while(posn[0] < 43) { //30 inches from start - how far to go before turn
-//      Serial.print("Straight");
-//      Serial.println(posn[0]);
-//      continue;
-//    }
-//    Serial.println("Straight Finished");
-    do_left_turn();
-//    md.setM1Speed(160);
-//    md.setM2Speed(r_val);
-//    double start_y = posn[1];
-//    Serial.println("HERE");
-//    while((start_y - posn[1]) > -17.5){ // 14 inches to end line
-//      Serial.println(start_y - posn[1]);
-//      continue;
-//    }
-//    md.setM1Speed(0);
-//    md.setM2Speed(0);
-}
-
-void right_routine() {
-//    int l_val = 160;
-//    int r_val = 155;
-//    md.setM1Speed(l_val);
-//    
-//    md.setM2Speed(r_val);
-//    Serial.println("Straight Start");
-//    while(posn[0] < 20.5) { //30 inches from start - how far to go before turn
-//      Serial.print("Straight");
-//      Serial.println(posn[0]);
-//      continue;
-//    }
-//    Serial.println("Straight Finished");
-    do_right_turn();
-//    md.setM1Speed(l_val);
-//    md.setM2Speed(r_val);
-//    double start_y = posn[1];
-//    Serial.println("HERE");
-//    while((start_y - posn[1]) < 42.5){ // 14 inches to end line
-//      Serial.println(start_y - posn[1]);
-//      continue;
-//    }
-//    md.setM1Speed(0);
-//    md.setM2Speed(0);
-}
 
 void encoder_isr_left() {
   // pins 2 and 5
@@ -116,6 +70,12 @@ void encoder_isr_right() {
     posn[1] = posn[1] + dx*sin(heading);
 }
 
+// Resets the encoder position to 0,0
+void resetEncoder(){
+  posn[0] = 0.;
+  posn[1] = 0.;
+}
+
 void setup() {
     // all your normal setup code
     Serial.begin(115200);
@@ -139,8 +99,8 @@ String m[12];
 int i = 0;
 
 // Can receive the following commands from pi:
-// 1. "m 1 100 200" => m: motor, 1/0: on/off, 100: left motor to 100, 200: right motor 200
-// 2. "ir" => returns "ir 1 2 3\n" where 1: x, 2: y, 3: heading
+// 1. "m 100 200" =>  100: left motor to 100, 200: right motor 200
+// 2. "i" => returns "ir 1 2 3\n" where 1: x, 2: y, 3: heading
 long timeout = 0;
 void loop(){
 
@@ -160,8 +120,6 @@ void loop(){
       }
       Serial.flush();
 
-
-
     if(m[0].equals("m")){
        md.setSpeeds(m[1].toInt(), m[2].toInt());
     }
@@ -177,78 +135,13 @@ void loop(){
         Serial.println(x);
     }
 
-    else if(m[0].equals("x")){
-      left_routine();
+    // Send r to reset the quadrature to 0,0
+    else if(m[0].equals("r")){
+      resetEncoder();
     }
-    else if(m[0].equals("y")){
-      right_routine();
-    }
-
-
-
       
     }
-    
-    // If setting motor value 
-
-
-    
-
-
-
-
-
-  //do_right_turn();
-  //do_left_turn();
-  //print_posn();
-  //Serial.println(getPosition());
-  //Serial.print("Left: ");
-  //Serial.println(enc_count_left);
-  //Serial.print("Right: ");
-  //Serial.println(enc_count_right);
-  //delay(2000);
-  //print_pwm_map();
 }
-
-
-
-void do_right_turn() {
-  double dtheta = 0;
-  double theta0 = heading;
-  while (dtheta < 1.57) {
-    Serial.println("TURN");
-    dtheta = theta0 - heading;
-    md.setM1Speed(360);
-    md.setM2Speed(r_pwm_to_val(120));
-  }
-  Serial.println("STOP");
-  md.setM1Speed(0);
-  md.setM2Speed(0);
-}
-
-void do_left_turn() {
-  double dtheta = 0;
-  double theta0 = heading;
-  while(dtheta > -1.57) {
-    Serial.println("TURN");
-    dtheta = theta0 - heading;
-    md.setM1Speed(200);
-    md.setM2Speed(r_pwm_to_val(300));
-  }
-  Serial.println("STOP");
-  md.setM1Speed(0);
-  md.setM2Speed(0);
-
-}
-
-int r_pwm_to_val(int pwm) {
-  if (pwm % 20) {
-    return -1;
-  }
-  int idx = (pwm + 400) / 20;
-  return pwm * motor_lookup[idx];
-}
-
 
 // Calculates the distance between the starting position of the robot and the current position
 double distance(){
