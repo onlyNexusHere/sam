@@ -15,8 +15,8 @@ MESSAGE = ""
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 
-port = '/dev/ttyACM0'
-ser = serial.Serial(port, 115200, timeout=2)
+# port = '/dev/ttyACM0'
+# ser = serial.Serial(port, 115200, timeout=2)
 
 X_RESOLUTION = 1280
 Y_RESOLUTION = 960
