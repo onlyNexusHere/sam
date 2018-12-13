@@ -1,11 +1,25 @@
 import networkx as nx
+import random
 
 
 class SamNetwork:
 
     sam_map = None
 
+    # Path planning current variables, these are nodes in the graph
+    current_node = None
+    next_node = None
+    end_node = None
+
+    # This is a set of end nodes, for if we get a set path to go on.
+    path_to_follow = list()
+
+    # Variable for if we want the robot to run randomly.
+    # If the path_to_follow is empty, it will generate a random node to go to.
+    generate_random_when_path_empty = False
+
     def __init__(self):
+                    # GRAPH
         self.sam_map = nx.DiGraph()
         self.sam_map.add_node(1, location=(0, 0, 0))
         self.sam_map.add_node(2, location=(0, 0, 0))
@@ -19,7 +33,7 @@ class SamNetwork:
         self.sam_map.add_node(10, location=(0, 0, 0))
         self.sam_map.add_node(11, location=(0, 0, 0))
         self.sam_map.add_node(12, location=(0, 0, 0))
-
+        # self-made nodes to add simplicity.
         self.sam_map.add_node(100, location=(0, 0, 0))
         self.sam_map.add_node(200, location=(0, 0, 0))
         self.sam_map.add_node(300, location=(0, 0, 0))
@@ -69,6 +83,7 @@ class SamNetwork:
         self.sam_map.add_edge(12, 900, func=self.right_turn, max_sd=10)
         self.sam_map.add_edge(12, 500, func=self.left_turn, max_sd=10)
 
+        # adding the edge from the self-made nodes to the real nodes.
         self.sam_map.add_edge(100, 1, func=self.lane_follow, max_sd=20)
         self.sam_map.add_edge(200, 2, func=self.lane_follow, max_sd=20)
         self.sam_map.add_edge(300, 3, func=self.lane_follow, max_sd=20)
@@ -83,14 +98,98 @@ class SamNetwork:
         self.sam_map.add_edge(1200, 12, func=self.lane_follow, max_sd=20)
 
     # States as functions:
+    # They have the function calls for what exactly to do.
+    # If pi control ping, need to send a request to motors and when to finish and when to timeout
     def lane_follow(self):
+        # follow state until red line
         pass
 
     def right_turn(self):
+        # follow state until location and heading
         pass
 
     def left_turn(self):
+        # follow state until location and heading
         pass
 
     def straight_turn(self):
+        # follow sate until location and heading
         pass
+
+    # Path functions for the robot:
+    def set_current_node(self, node):
+        n = self.get_node(node)
+        if n is not None:
+            self.current_node = n
+
+    # Set a new goal node.
+    # Saves end node back onto the path
+    def set_end_node(self, node):
+        n = self.get_node(node)
+        if n is not None:
+            self.path_to_follow = [int(self.end_node)] + self.path_to_follow
+            self.end_node = n
+
+    # Set a whole new path
+    # This function resets the path, then adds to it
+    def set_path(self, nodes_list):
+        self.path_to_follow = list()
+        for node in nodes_list:
+            self.add_to_path(node)
+
+    # Add to the current set of nodes in the path
+    def add_to_path(self, node):
+        n = self.get_node(node)
+        if n is not None:
+            self.path_to_follow.append(n)
+
+    def random_true(self):
+        self.generate_random_when_path_empty = True
+
+    def random_false(self):
+        self.generate_random_when_path_empty = False
+
+    def set_next_node(self):
+        # bfs, as we don't have length attributes or accurate locations
+
+        if self.current_node == self.end_node:
+
+            if self.path_to_follow == list() and not self.generate_random_when_path_empty:
+                print("Hit end of path!!")
+                # TODO raise event
+                return
+            elif self.path_to_follow == list():
+                self.path_to_follow = [random.randint(1, 12)]
+
+            self.end_node = self.path_to_follow[0]
+            self.path_to_follow = self.path_to_follow[1:]
+
+        path = nx.shortest_path(self.sam_map, self.current_node, self.end_node)
+        self.next_node = path[0]
+
+    def get_state_for_edge(self, node1=None, node2=None):
+        if node1 is not None and node2 is not None:
+            return self.sam_map.get_edge_data(node1, node2)
+        else:
+            self.sam_map.get_edge_data(self.current_node, self.next_node)
+
+    def show_current_vars_set(self):
+        to_print = "\nCurrently at: " + str(self.current_node)
+        to_print = to_print + "\nNext node is: " + str(self.next_node)
+        to_print = to_print + "\nUpcoming path is: " + str(self.path_to_follow)
+        to_print = to_print + "\nRandom path generation: " + str(self.generate_random_when_path_empty)
+
+        print(to_print)
+
+    def get_node(self, node):
+        node_to_int = None
+        try:
+            node_to_int = int(node)
+        except ValueError:
+            print("Cannot assign non-integer")
+            return
+
+        if node_to_int in self.sam_map:
+            return node_to_int
+        else:
+            return None

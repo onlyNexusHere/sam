@@ -1,4 +1,4 @@
-// This has been destroyed by merges, but will remain here for reference.
+# This has been destroyed by merges, but will remain here for reference.
 
 import time
 import picamera
