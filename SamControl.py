@@ -5,7 +5,7 @@ import select
 import traceback
 import serial.tools.list_ports
 import serial.serialutil
-from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature, SamModule
+from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature, sam_network, SamModule
 if sys.platform != 'darwin':
     from modules import CameraProcessing
 
@@ -127,7 +127,9 @@ class SamControl:
                 ArduinoDebug.ArduinoDebug(args_for_mods),
                 Ping.Ping(args_for_mods),
                 Motors.Motors(args_for_mods),
-                Quadrature.Quadrature(args_for_mods)]
+                Quadrature.Quadrature(args_for_mods),
+                sam_network.SamModule(args_for_mods)]
+
         if sys.platform != "darwin":
             mods.append(CameraProcessing.CameraProcessing(args_for_mods))
 

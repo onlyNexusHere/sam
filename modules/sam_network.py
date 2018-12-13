@@ -1,8 +1,9 @@
+from .SamModule import SamModule
 import networkx as nx
 import random
 
 
-class SamNetwork:
+class SamNetwork(SamModule):
 
     sam_map = None
 
@@ -18,7 +19,9 @@ class SamNetwork:
     # If the path_to_follow is empty, it will generate a random node to go to.
     generate_random_when_path_empty = False
 
-    def __init__(self):
+    def __init__(self, kargs=None):
+        super().__init__(module_name="Map", is_local=True, identi='map', **kargs)
+
                     # GRAPH
         self.sam_map = nx.DiGraph()
         self.sam_map.add_node(1, location=(0, 0, 0))
@@ -148,10 +151,10 @@ class SamNetwork:
         if n is not None:
             self.path_to_follow.append(n)
 
-    def random_true(self):
+    def set_random_true(self):
         self.generate_random_when_path_empty = True
 
-    def random_false(self):
+    def set_random_false(self):
         self.generate_random_when_path_empty = False
 
     def update_next_node(self):
@@ -221,3 +224,28 @@ class SamNetwork:
             return node_to_int
         else:
             return None
+
+    def stdin_request(self, message):
+
+        msg_parts = message.strip().split(" ")
+
+        if len(msg_parts) < 2:
+            return
+        if msg_parts[0] == "random":
+            if msg_parts[1] == 'true':
+                self.set_random_true()
+                return
+            elif msg_parts[1] == 'false':
+                self.set_random_false()
+                return
+
+        if len(msg_parts) < 3:
+            return
+
+        if msg_parts[0] == "set":
+            if msg_parts[1] == 'current':
+                self.set_current_node(msg_parts[2])
+            elif msg_parts[1] == 'end':
+                self.set_end_node(msg_parts[2])
+            elif msg_parts[1] == 'path':
+                self.set_end_node(msg_parts[2:])
