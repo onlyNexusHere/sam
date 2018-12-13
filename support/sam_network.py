@@ -102,44 +102,49 @@ class SamNetwork:
     # If pi control ping, need to send a request to motors and when to finish and when to timeout
     def lane_follow(self):
         # follow state until red line
-        pass
+        print("following lane")
 
     def right_turn(self):
         # follow state until location and heading
-        pass
+        print("turning right")
 
     def left_turn(self):
         # follow state until location and heading
-        pass
+        print("turning left")
 
     def straight_turn(self):
         # follow sate until location and heading
-        pass
+        print("continuing straight")
 
     # Path functions for the robot:
     def set_current_node(self, node):
-        n = self.get_node(node)
+        n = self._get_node(node)
         if n is not None:
             self.current_node = n
 
     # Set a new goal node.
     # Saves end node back onto the path
     def set_end_node(self, node):
-        n = self.get_node(node)
+        n = self._get_node(node)
         if n is not None:
-            self.path_to_follow = [int(self.end_node)] + self.path_to_follow
+            if self.next_node is not None:
+                self.path_to_follow = [int(self.end_node)] + self.path_to_follow
             self.end_node = n
 
     # Set a whole new path
     # This function resets the path, then adds to it
     def set_path(self, nodes_list):
         self.path_to_follow = list()
+
+        if type(nodes_list) is int or type(nodes_list) is str:
+            self.add_to_path(nodes_list)
+
         for node in nodes_list:
             self.add_to_path(node)
 
     # Add to the current set of nodes in the path
     def add_to_path(self, node):
-        n = self.get_node(node)
+        n = self._get_node(node)
         if n is not None:
             self.path_to_follow.append(n)
 
@@ -149,10 +154,10 @@ class SamNetwork:
     def random_false(self):
         self.generate_random_when_path_empty = False
 
-    def set_next_node(self):
+    def update_next_node(self):
         # bfs, as we don't have length attributes or accurate locations
 
-        if self.current_node == self.end_node:
+        if self.current_node == self.end_node or self.end_node is None:
 
             if self.path_to_follow == list() and not self.generate_random_when_path_empty:
                 print("Hit end of path!!")
@@ -165,23 +170,46 @@ class SamNetwork:
             self.path_to_follow = self.path_to_follow[1:]
 
         path = nx.shortest_path(self.sam_map, self.current_node, self.end_node)
-        self.next_node = path[0]
+        if len(path) < 2:
+            print("Path of one or none, cannot make path from " + str(self.current_node) + " to " + str(self.end_node))
+        self.next_node = path[1]
+
+    def test_move_to_next(self):
+        if self.current_node == self.next_node or self.next_node is None:
+            self.update_next_node()
+
+        if self.current_node is not self.next_node:
+            if self.next_node in self.sam_map[self.current_node]:
+                my_func = self.get_state_for_edge(self.current_node, self.next_node)
+                if my_func is not None:
+                    my_func()
+                    print("Now at " + str(self.next_node))
+                    self.current_node = int(self.next_node)
+                else:
+                    print("my_func was none")
+            else:
+                print("something went very wrong")
 
     def get_state_for_edge(self, node1=None, node2=None):
         if node1 is not None and node2 is not None:
-            return self.sam_map.get_edge_data(node1, node2)
+            return self.sam_map.get_edge_data(node1, node2)['func']
         else:
-            self.sam_map.get_edge_data(self.current_node, self.next_node)
+            self.sam_map.get_edge_data(self.current_node, self.next_node)['func']
 
+    # Supporting functions
+
+    # Printing out current path information
     def show_current_vars_set(self):
         to_print = "\nCurrently at: " + str(self.current_node)
         to_print = to_print + "\nNext node is: " + str(self.next_node)
+        to_print = to_print + "\nEnd node is: " + str(self.end_node)
         to_print = to_print + "\nUpcoming path is: " + str(self.path_to_follow)
         to_print = to_print + "\nRandom path generation: " + str(self.generate_random_when_path_empty)
-
+        to_print = to_print + "\n"
         print(to_print)
 
-    def get_node(self, node):
+    # Converting to an int if needed and making sure it is in the graph
+    def _get_node(self, node):
         node_to_int = None
         try:
             node_to_int = int(node)
