@@ -19,7 +19,7 @@ class SamNetwork(SamModule):
     # If the path_to_follow is empty, it will generate a random node to go to.
     generate_random_when_path_empty = False
 
-    def __init__(self, kargs=None):
+    def __init__(self, kargs):
         super().__init__(module_name="Map", is_local=True, identi='map', **kargs)
 
                     # GRAPH
