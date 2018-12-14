@@ -7,6 +7,20 @@ class CameraProcessing(SamModule):
 
     is_following_lane = False
 
+    previous = 0
+
+    # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
+    # https://robotic-controls.com/learn/programming/pd-feedback-control-introduction
+
+    # Get there faster => Smaller Kp
+    # Less Overshoot => Smaller Kp, larger Kd
+    # Less Vibration => Larger Kd
+
+    # Kp => Increase to make larger corrections
+    # Kd => Increase to make damping greater
+    Kp = 0.01547 #0.01547
+    Kd = 0.0123  #0.0123
+
     def __init__(self, kargs):
         super().__init__(module_name="CameraProcessing", is_local=True, identi="camera", **kargs)
 
@@ -28,32 +42,41 @@ class CameraProcessing(SamModule):
             self.is_following_lane = False
 
     def message_received(self, message):
+        if self.is_following_lane:
 
-        msg_parts = message.strip().split(" ")
-        if len(msg_parts) != 4:
-            self.debug_run(self.write_to_stdout, "4 ")
+            msg_parts = message.strip().split(" ")
+            if len(msg_parts) != 4:
+                self.debug_run(self.write_to_stdout, "4 ")
+            try:
+                center = int(msg_parts[0])
+                mid = int(msg_parts[1])
+                command = msg_parts[2]
+                ratio = int(msg_parts[3])
+            except ValueError:
+                self.debug_run(self.write_to_stdout, "Something in this was not the correct type: " + message)
+                return
+            # WHAT WHY
+            center = 617 #620
+            diff = center - mid
 
-        center = msg_parts[0]
-        mid = msg_parts[1]
-        command = msg_parts[2]
-        ratio = msg_parts[3]
+            output = -(self.Kp * diff) - (self.Kd * (diff-self.previous))
 
-        # msg_parts = message.strip().split(" ")
-        # s_1 = 0
-        # s_2 = 0
-        # if len(msg_parts) != 2:
-        #     self.debug_run(self.write_to_stdout, "Need exactly two numbers")
-        #     return
-        # try:
-        #     s_1 = int(msg_parts[0])
-        #     s_2 = int(msg_parts[1])
-        # except ValueError:
-        #     self.debug_run(self.write_to_stdout, "Need numbers")
-        #     return
-        #
-        # if self.is_following_lane:
-        #     self.sam['motor'].stdin_request("turn " + str(self.sam['motor'].current_speed[0] + s_1) + " " + str(self.sam['motor'].current_speed[1] + s_2))
-        #     self.debug_run(self.write_to_stdout, "change:" + message)
+            # Hit read line
+            if command == 'stop':
+                self.debug_run(self.write_to_stdout, 'Stop')
+                self.sam['motor'].stdin_request('stop')
+                self.is_following_lane = False
+                self.sam['map'].message_received("ready")
+                #break
+
+            self.debug_run(self.write_to_stdout, "Output is: " + str(output))
+
+
+            # speed(ml + output, mr - output)
+            ml, mr = self.sam['motor'].current_speed
+            self.sam['motor'].stdin_request("turn " + str(ml+output) + " " + str(mr - output))
+
+            self.previous = diff
 
     def write_to_stdout(self, string_to_write):
         pass

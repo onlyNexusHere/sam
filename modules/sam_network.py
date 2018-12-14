@@ -19,6 +19,9 @@ class SamNetwork(SamModule):
     # If the path_to_follow is empty, it will generate a random node to go to.
     generate_random_when_path_empty = False
 
+    # If we are running our state machine and following the map, this will be true
+    run_path = False
+
     def __init__(self, kargs):
         super().__init__(module_name="Map", is_local=True, identi="map", **kargs)
 
@@ -105,11 +108,14 @@ class SamNetwork(SamModule):
     # If pi control ping, need to send a request to motors and when to finish and when to timeout
     def lane_follow(self):
         # follow state until red line
-        print("following lane")
+        self.debug_run(self.write_to_stdout, "following lane")
+        self.sam['motor'].stdin_request("start")
+        self.sam['camera'].stdin_request("go")
 
     def right_turn(self):
         # follow state until location and headingq
-        print("turning right")
+        self.debug_run(self.write_to_stdout, "turning right")
+        self.sam['motor'].stdin_request("start")
 
     def left_turn(self):
         # follow state until location and heading
@@ -163,8 +169,8 @@ class SamNetwork(SamModule):
         if self.current_node == self.end_node or self.end_node is None:
 
             if self.path_to_follow == list() and not self.generate_random_when_path_empty:
-                print("Hit end of path!!")
-                # TODO raise event
+                self.write_to_stdout("Hit end of path!!")
+                self.run_path = False
                 return
             elif self.path_to_follow == list():
                 self.path_to_follow = [random.randint(1, 12)]
@@ -227,6 +233,24 @@ class SamNetwork(SamModule):
 
     def stdin_request(self, message):
 
+        if message.strip() == "status":
+            self.show_current_vars_set()
+            return
+
+        elif message.strip() == "start":
+            if self.current_node is None:
+                self.write_to_stdout("Cannot start path without a current node set.")
+            elif (self.end_node is None and self.path_to_follow is list()) or \
+                    (self.current_node == self.end_node and self.path_to_follow is list()):
+
+                self.write_to_stdout("Cannot start path without a current node set.")
+            else:
+                self.run_path = True
+            return
+        elif message.strip() == "stop":
+            self.run_path = False
+            return
+
         msg_parts = message.strip().split(" ")
 
         if len(msg_parts) < 2:
@@ -254,4 +278,19 @@ class SamNetwork(SamModule):
         if message.strip() == "ready":
             self.current_node = self.next_node
 
-        # TODO add for following the path
+            if not self.run_path:
+                self.sam['motor'].stdin_request('stop')
+
+    def on_wait(self):
+        if self.run_path:
+            self.update_next_node()
+            if self.run_path:   # may have been changed if end of path hit
+                if self.next_node in self.sam_map[self.current_node]:
+                    my_func = self.get_state_for_edge(self.current_node, self.next_node)
+                    if my_func is not None:
+                        my_func()
+                    else:
+                        self.write_to_stdout("my_func was empty, something went very wrong")
+                else:
+                    self.write_to_stdout("something went very wrong")
+
