@@ -101,7 +101,7 @@ int i = 0;
 long timeout = 0;
 unsigned long previousMillis = 0;
 const long interval = 2000;
-void loop(){
+void loop() {
   if (Serial.available() > 0) {
     String string = Serial.readString();
     
@@ -116,14 +116,15 @@ void loop(){
       i = i + 1;
       ptr = strtok(NULL, " ");
     }
+
     Serial.flush();
 
-    if(m[0].equals("m")){
+    if(m[0].equals("m") || m[0].equals("m\n")){
        setSpeedsWrap(m[1].toInt(), m[2].toInt());
     }
 
     //If PI requesting Quadrature data
-    else if (m[0].equals("i")){
+    else if (m[0].equals("i") || m[0].equals("i\n")){
         Serial.flush();
         String pos = getPosition();
 
@@ -133,23 +134,23 @@ void loop(){
     }
 
     // Send r to reset the quadrature to 0,0
-    else if(m[0].equals("r")) {
+    else if(m[0].equals("r") || m[0].equals("r\n")) {
       resetEncoder();
     }
 
-    else if(m[0].equals("k")) {
+    else if(m[0].equals("k") || m[0].equals("k\n")) {
       m1Speed = 0;
       m2Speed = 0;
       setSpeedsWrap(0, 0);
     }
 
-    else if(m[0].equals("a")) { // left turn routine 
+    else if(m[0].equals("a") || m[0].equals("a\n")) { // left turn routine 
       left_routine();
     }
-    else if(m[0].equals("d")) { // right turn routine
+    else if(m[0].equals("d") || m[0].equals("d\n")) { // right turn routine
       right_routine();
     }
-    else if(m[0].equals("w")) { // straight turn routine
+    else if(m[0].equals("w") || m[0].equals("w\n")) { // straight turn routine
       straight_routine();
     }
   }
