@@ -61,7 +61,7 @@ class CameraProcessing(SamModule):
 
             if command == "green":
                 self.waiting_for_green = False
-                self.sam['camera'].message_received("ready")    # Tells map module we can move to next state
+                self.sam['map'].message_received("ready")    # Tells map module we can move to next state
 
         if self.is_following_lane:                              # If we are in the state of following a lane...
 

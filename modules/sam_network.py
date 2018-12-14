@@ -1,6 +1,7 @@
 from .SamModule import SamModule
 import networkx as nx
 import random
+import sys
 
 
 class SamNetwork(SamModule):
@@ -113,7 +114,8 @@ class SamNetwork(SamModule):
         # follow state until red line
         self.debug_run(self.write_to_stdout, "following lane")
         self.sam['motor'].stdin_request("start")
-        self.sam['camera'].stdin_request("go")
+        if sys.platform != 'darwin':
+            self.sam['camera'].stdin_request("go")
 
     def right_turn(self):
         self.debug_run(self.write_to_stdout, "turning right")
@@ -154,6 +156,8 @@ class SamNetwork(SamModule):
         for node in nodes_list:
             self.add_to_path(node)
 
+        self.write_to_stdout("The whole path is:")
+
     # Add to the current set of nodes in the path
     def add_to_path(self, node):
         n = self._get_node(node)
@@ -182,8 +186,11 @@ class SamNetwork(SamModule):
             self.end_node = self.path_to_follow[0]
             self.path_to_follow = self.path_to_follow[1:]
 
-            self.write_to_stdout("We are going to a new node, the path is: " +
-                                 str(nx.shortest_path(self.sam_map, self.current_node, self.end_node)))
+            self.write_to_stdout("We are going to a new node, the path is: \n\t" +
+                                 " --> ".join([str(node)
+                                      for node in nx.shortest_path(self.sam_map, self.current_node, self.end_node)
+                                      if int(node) < 100
+                                      ]))
 
         path = nx.shortest_path(self.sam_map, self.current_node, self.end_node)
         if len(path) < 2:
@@ -263,6 +270,16 @@ class SamNetwork(SamModule):
             return
         elif message.strip() == "stop":
             self.run_path = False
+            self.sam['motor'].stdin_request("stop")
+            return
+
+        elif message.strip() == "reset":
+            self.run_path = False
+            self.ran_func = False
+            self.current_node = None
+            self.path_to_follow = list()
+            self.next_node = None
+            self.end_node = None
             return
 
         msg_parts = message.strip().split(" ")
