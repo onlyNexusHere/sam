@@ -36,37 +36,43 @@ def detect(img):
 
     if r_ratio >= r_thresh:
         command = 'stop'
-        mid = [0, 0]
+        mid = 0
 
     elif y_ratio < y_thresh:
-        white_pix_r, white_pix_c = np.where(mask_white > 0)
-        if len(white_pix_r) == 0 or len(white_pix_c) == 0:
-            mid = [int(w/2), int(w/2)]
+        _, white_pix_c = np.where(mask_white > 0)
+        if len(white_pix_c) == 0:
+            mid = int(w/2)
             command = 'straight'
         else:
-            mid = [int(np.median(white_pix_r)), int(np.median(white_pix_c)/2)]
+            mid = int(np.median(white_pix_c)/2)
             command = 'turn left'
 
     elif y_ratio >= y_thresh and w_ratio < w_thresh:
-        yellow_pix_r, yellow_pix_c = np.where(mask_yellow > 0)
-        myc = np.median(yellow_pix_c)
-        mid = [int(np.median(yellow_pix_r)), int(myc+((w-myc)/2))]
-        command = 'turn right'
+        _, yellow_pix_c = np.where(mask_yellow > 0)
+        if len(yellow_pix_c) == 0:
+            mid = int(w/2)
+            command = 'straight'
+        else:
+            myc = np.median(yellow_pix_c)
+            mid = int(myc+((w-myc)/2))
+            command = 'turn right'
 
-    elif y_ratio >= y_thresh and y_ratio >= y_thresh:
-        white_pix_r, white_pix_c = np.where(mask_white > 0)
-        mwr = np.median(white_pix_r)
-        mwc = np.median(white_pix_c)
-        yellow_pix_r, yellow_pix_c = np.where(mask_yellow > 0)
-        myr = np.median(yellow_pix_r)
-        myc = np.median(yellow_pix_c)
-        mid = [int(max(mwr, myr)), int(myc + ((mwc - myc) / 2))]
-        command = 'straight'
+    elif y_ratio >= y_thresh and w_ratio >= w_thresh:
+        _, white_pix_c = np.where(mask_white > 0)
+        _, yellow_pix_c = np.where(mask_yellow > 0)
+        if len(white_pix_c) == 0 or len(yellow_pix_c) == 0:
+            mid = int(w / 2)
+            command = 'straight'
+        else:
+            mwc = np.median(white_pix_c)
+            myc = np.median(yellow_pix_c)
+            mid = int(myc + ((mwc - myc) / 2))
+            command = 'straight'
 
     else:
-        mid = [-1, -1]
+        mid = -1
 
-    return int(w/2), mid[1], command, [y_ratio, w_ratio, r_ratio]
+    return int(w/2), mid, command, [y_ratio, w_ratio, r_ratio]
 
 
 # for i in range(9):
