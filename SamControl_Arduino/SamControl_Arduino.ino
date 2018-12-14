@@ -217,14 +217,14 @@ String getPosition(){
 }
 
 void left_routine() {
-  go_straight(10);
+  go_straight(11);
   do_left_turn();
   setSpeedsWrap(0, 0);
   Serial.println("map ready");
 }
 
 void right_routine() {
-  go_straight(10);
+  go_straight(11);
   do_right_turn();
   setSpeedsWrap(0, 0);
   Serial.println("map ready");
@@ -239,6 +239,8 @@ void go_straight(double distance) {
   resetEncoder();
   setSpeedsWrap(164, 162);
   while(posn[0] < distance) { // Intersection is about 20 inches long
+    Serial.print("debug");
+    Serial.println(distance);
     delay(10);
   }
   setSpeedsWrap(0, 0);
@@ -247,9 +249,11 @@ void go_straight(double distance) {
 void do_right_turn() {
   double dtheta = 0;
   double theta0 = heading;
-  setSpeedsWrap(210, 70);
+  setSpeedsWrap(230, 70);
   while (dtheta < 1.57) {
     dtheta = theta0 - heading;
+    Serial.print("debug ");
+    Serial.println(dtheta);
     delay(10);
   }
   setSpeedsWrap(0, 0);
@@ -261,6 +265,8 @@ void do_left_turn() {
   setSpeedsWrap(150, 240);
   while(dtheta > -1.57) {
     dtheta = theta0 - heading;
+    Serial.print("debug");
+    Serial.println(dtheta);
     delay(10);
   }
   setSpeedsWrap(0, 0);
