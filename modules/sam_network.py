@@ -113,17 +113,17 @@ class SamNetwork(SamModule):
         self.sam['camera'].stdin_request("go")
 
     def right_turn(self):
-        # follow state until location and headingq
         self.debug_run(self.write_to_stdout, "turning right")
-        self.sam['motor'].stdin_request("start")
+        self.sam['motor'].stdin_request("d")
 
     def left_turn(self):
         # follow state until location and heading
-        print("turning left")
+        self.debug_run(self.write_to_stdout, "turning right")
+        self.sam['motor'].stdin_request("a")
 
     def straight_turn(self):
-        # follow sate until location and heading
-        print("continuing straight")
+        self.debug_run(self.write_to_stdout, "continuing straight")
+        self.sam['motor'].stdin_request("w")
 
     # Path functions for the robot:
     def set_current_node(self, node):
