@@ -20,7 +20,7 @@ class SamNetwork(SamModule):
     generate_random_when_path_empty = False
 
     def __init__(self, kargs):
-        super().__init__(module_name="Map", is_local=True, identi='map', **kargs)
+        super().__init__(module_name="Map", is_local=True, identi="map", **kargs)
 
                     # GRAPH
         self.sam_map = nx.DiGraph()
@@ -108,7 +108,7 @@ class SamNetwork(SamModule):
         print("following lane")
 
     def right_turn(self):
-        # follow state until location and heading
+        # follow state until location and headingq
         print("turning right")
 
     def left_turn(self):
@@ -249,3 +249,9 @@ class SamNetwork(SamModule):
                 self.set_end_node(msg_parts[2])
             elif msg_parts[1] == 'path':
                 self.set_end_node(msg_parts[2:])
+
+    def message_received(self, message):
+        if message.strip() == "ready":
+            self.current_node = self.next_node
+
+        # TODO add for following the path
