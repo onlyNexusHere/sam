@@ -246,7 +246,7 @@ void go_straight(double distance) {
 void do_right_turn() {
   double dtheta = 0;
   double theta0 = heading;
-  setSpeedsWrap(203, 125);
+  setSpeedsWrap(210, 70);
   while (dtheta < 1.57) {
     dtheta = theta0 - heading;
     delay(10);
@@ -257,10 +257,12 @@ void do_right_turn() {
 void do_left_turn() {
   double dtheta = 0;
   double theta0 = heading;
-  setSpeedsWrap(150, 178);
+  setSpeedsWrap(150, 240);
   while(dtheta > -1.57) {
     dtheta = theta0 - heading;
     delay(10);
   }
   setSpeedsWrap(0, 0);
 }
+
+
