@@ -94,11 +94,12 @@ class Motors(SamModule):
 
                 self.promise.append((new_time, " ".join(message_parts[1:])))
 
-        elif message_parts[0].lower() == "r1":
-            self.sam.send("x")
-
-        elif message_parts[0].lower() == "r2":
-            self.sam.send("y")
+        elif message_parts[0].lower() == "a":
+            self.sam.send("a")
+        elif message_parts[0].lower() == "d":
+            self.sam.send("d")
+        elif message_parts[0].lower() == "w":
+            self.sam.send("w")
 
         # elif len(message_parts) > 3 and message_parts[0] == "to":
         #     x = 0.0

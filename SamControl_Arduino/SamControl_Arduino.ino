@@ -142,6 +142,16 @@ void loop(){
       m2Speed = 0;
       setSpeedsWrap(0, 0);
     }
+
+    else if(m[0].equals("a")) { // left turn routine 
+      left_routine();
+    }
+    else if(m[0].equals("d")) { // right turn routine
+      right_routine();
+    }
+    else if(m[0].equals("w")) { // straight turn routine
+      straight_routine();
+    }
   }
 
   unsigned long currentMillis = millis();
@@ -203,6 +213,54 @@ double distance(){
 // "ir 1 2 3\n" where 1: x, 2: y, 3: heading
 String getPosition(){
   return "ir " + String(posn[0]) + " "+ String(posn[1]) + " " + String(heading) + "\n";
+}
+
+void left_routine() {
+  go_straight(6);
+  do_left_turn();
+  setSpeedsWrap(0, 0);
+  Serial.println("map ready");
+}
+
+void right_routine() {
+  go_straight(6);
+  do_right_turn();
+  setSpeedsWrap(0, 0);
+  Serial.println("map ready");
+}
+
+void straight_routine() {
+  go_straight(26);
+  Serial.println("map ready");
+}
+
+void go_straight(double distance) {
+  resetEncoder();
+  setSpeedsWrap(160, 155);
+  while(posn[0] < distance) { // Intersection is about 20 inches long
+    continue; 
+  }
+  setSpeedsWrap(0, 0);
+}
+
+void do_right_turn() {
+  double dtheta = 0;
+  double theta0 = heading;
+  while (dtheta < 1.57) {
+    dtheta = theta0 - heading;
+    setSpeedsWrap(360, r_pwm_to_val(120));
+  }
+  setSpeedsWrap(0, 0);
+}
+
+void do_left_turn() {
+  double dtheta = 0;
+  double theta0 = heading;
+  while(dtheta > -1.57) {
+    dtheta = theta0 - heading;
+   setSpeedsWrap(200, r_pwm_to_val(300));
+  }
+  setSpeedsWrap(0, 0);
 }
 
 
