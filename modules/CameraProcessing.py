@@ -8,6 +8,8 @@ class CameraProcessing(SamModule):
     is_following_lane = False
     waiting_for_green = False
 
+    need_location = None #(x,y)
+
     previous = 0
 
     # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
@@ -87,6 +89,12 @@ class CameraProcessing(SamModule):
                 self.is_following_lane = False
                 self.waiting_for_green = True                   # Following lanes always end in red,
                                                                 # so we stop following lane and wait for green
+                return
+
+            if self.need_location is not None: # and matched location....
+                self.is_following_lane = False
+                self.need_location = None
+                self.sam['camera'].message_received("ready")
                 return
 
             self.debug_run(self.write_to_stdout, "Output is: " + str(output))
