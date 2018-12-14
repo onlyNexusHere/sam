@@ -157,9 +157,11 @@ class SamNetwork(SamModule):
             self.add_to_path(node)
 
         if self.current_node is not None:
-            self.write_to_stdout("Will follow the path: " + " --> ".join([" --> ".join([str(n) for n in nx.shortest_path(self.sam_map, a, b)])
-                                        for a,b in
-                                        list(zip([self.current_node] + self.path_to_follow[:-1], self.path_to_follow))]))
+            self.write_to_stdout("Will follow the path: " + " --> ".join(
+                [" --> ".join([str(n)
+                               for n in nx.shortest_path(self.sam_map, a, b) if n < 100])
+                        for a,b in
+                                list(zip([self.current_node] + self.path_to_follow[:-1], self.path_to_follow))]))
 
     # Add to the current set of nodes in the path
     def add_to_path(self, node):
