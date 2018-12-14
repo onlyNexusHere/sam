@@ -80,8 +80,8 @@ class SamNetwork(SamModule):
         self.sam_map.add_edge(9, 100, func=self.right_turn, max_sd=10)
         self.sam_map.add_edge(9, 600, func=self.straight_turn, max_sd=10)
 
-        self.sam_map.add_edge(10, 500, func=self.left_turn, max_sd=10)
-        self.sam_map.add_edge(10, 200, func=self.straight_turn, max_sd=10)
+        self.sam_map.add_edge(10, 500, func=self.straight_turn, max_sd=10)
+        self.sam_map.add_edge(10, 200, func=self.left_turn, max_sd=10)
 
         self.sam_map.add_edge(11, 200, func=self.right_turn, max_sd=10)
         self.sam_map.add_edge(11, 900, func=self.straight_turn, max_sd=10)
@@ -90,18 +90,18 @@ class SamNetwork(SamModule):
         self.sam_map.add_edge(12, 500, func=self.left_turn, max_sd=10)
 
         # adding the edge from the self-made nodes to the real nodes.
-        self.sam_map.add_edge(100, 1, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(200, 2, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(300, 3, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(400, 4, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(500, 5, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(600, 6, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(700, 7, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(800, 8, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(900, 9, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(1000, 10, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(1100, 11, func=self.lane_follow, max_sd=20)
-        self.sam_map.add_edge(1200, 12, func=self.lane_follow, max_sd=20)
+        self.sam_map.add_edge(100, 1, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(200, 2, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(300, 3, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(400, 4, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(500, 5, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(600, 6, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(700, 7, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(800, 8, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(900, 9, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(1000, 10, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(1100, 11, func=self.lane_follow, max_sd=10)
+        self.sam_map.add_edge(1200, 12, func=self.lane_follow, max_sd=10)
 
     # States as functions:
     # They have the function calls for what exactly to do.
@@ -203,7 +203,9 @@ class SamNetwork(SamModule):
         if node1 is not None and node2 is not None:
             return self.sam_map.get_edge_data(node1, node2)['func']
         else:
-            self.sam_map.get_edge_data(self.current_node, self.next_node)['func']
+            return self.sam_map.get_edge_data(self.current_node, self.next_node)['func']
+
+
 
     # Supporting functions
 

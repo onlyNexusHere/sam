@@ -264,10 +264,3 @@ void do_left_turn() {
   }
   setSpeedsWrap(0, 0);
 }
-
-
-
-
-
-
-
