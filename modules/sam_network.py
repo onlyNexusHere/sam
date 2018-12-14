@@ -1,6 +1,7 @@
 from .SamModule import SamModule
 import networkx as nx
 import random
+import sys
 
 
 class SamNetwork(SamModule):
@@ -21,6 +22,9 @@ class SamNetwork(SamModule):
 
     # If we are running our state machine and following the map, this will be true
     run_path = False
+
+    # making sure we say to move only once.
+    ran_func = False
 
     def __init__(self, kargs):
         super().__init__(module_name="Map", is_local=True, identi="map", **kargs)
@@ -110,7 +114,8 @@ class SamNetwork(SamModule):
         # follow state until red line
         self.debug_run(self.write_to_stdout, "following lane")
         self.sam['motor'].stdin_request("start")
-        self.sam['camera'].stdin_request("go")
+        if sys.platform != 'darwin':
+            self.sam['camera'].stdin_request("go")
 
     def right_turn(self):
         self.debug_run(self.write_to_stdout, "turning right")
@@ -151,6 +156,13 @@ class SamNetwork(SamModule):
         for node in nodes_list:
             self.add_to_path(node)
 
+        if self.current_node is not None:
+            self.write_to_stdout("Will follow the path: " + " --> ".join(
+                [" --> ".join([str(n)
+                               for n in nx.shortest_path(self.sam_map, a, b) if n < 100])
+                        for a,b in
+                                list(zip([self.current_node] + self.path_to_follow[:-1], self.path_to_follow))]))
+
     # Add to the current set of nodes in the path
     def add_to_path(self, node):
         n = self._get_node(node)
@@ -166,6 +178,7 @@ class SamNetwork(SamModule):
     def update_next_node(self):
         # bfs, as we don't have length attributes or accurate locations
 
+        # end node was hit, get next node on the path to navigate to
         if self.current_node == self.end_node or self.end_node is None:
 
             if self.path_to_follow == list() and not self.generate_random_when_path_empty:
@@ -177,6 +190,12 @@ class SamNetwork(SamModule):
 
             self.end_node = self.path_to_follow[0]
             self.path_to_follow = self.path_to_follow[1:]
+
+            self.write_to_stdout("We are going to a new node, the path is: \n\t" +
+                                 " --> ".join([str(node)
+                                      for node in nx.shortest_path(self.sam_map, self.current_node, self.end_node)
+                                      if int(node) < 100
+                                      ]))
 
         path = nx.shortest_path(self.sam_map, self.current_node, self.end_node)
         if len(path) < 2:
@@ -239,6 +258,11 @@ class SamNetwork(SamModule):
             self.show_current_vars_set()
             return
 
+        if message.strip() == "bypass":
+            self.current_node = self.next_node
+            self.ran_func = False
+            return
+
         elif message.strip() == "start":
             if self.current_node is None:
                 self.write_to_stdout("Cannot start path without a current node set.")
@@ -251,6 +275,16 @@ class SamNetwork(SamModule):
             return
         elif message.strip() == "stop":
             self.run_path = False
+            self.sam['motor'].stdin_request("stop")
+            return
+
+        elif message.strip() == "reset":
+            self.run_path = False
+            self.ran_func = False
+            self.current_node = None
+            self.path_to_follow = list()
+            self.next_node = None
+            self.end_node = None
             return
 
         msg_parts = message.strip().split(" ")
@@ -265,6 +299,9 @@ class SamNetwork(SamModule):
                 self.set_random_false()
                 return
 
+        if msg_parts[0] == "add":
+            self.add_to_path(msg_parts[1])
+
         if len(msg_parts) < 3:
             return
 
@@ -274,12 +311,12 @@ class SamNetwork(SamModule):
             elif msg_parts[1] == 'end':
                 self.set_end_node(msg_parts[2])
             elif msg_parts[1] == 'path':
-                self.set_end_node(msg_parts[2:])
+                self.set_path(msg_parts[2:])
 
     def message_received(self, message):
         if message.strip() == "ready":
             self.current_node = self.next_node
-
+            self.ran_func = False
             if not self.run_path:
                 self.sam['motor'].stdin_request('stop')
 
@@ -287,12 +324,12 @@ class SamNetwork(SamModule):
         if self.run_path:
             self.update_next_node()
             if self.run_path:   # may have been changed if end of path hit
-                if self.next_node in self.sam_map[self.current_node]:
+                if not self.ran_func and (self.next_node in self.sam_map[self.current_node]):
                     my_func = self.get_state_for_edge(self.current_node, self.next_node)
                     if my_func is not None:
                         my_func()
+                        self.ran_func = True
                     else:
                         self.write_to_stdout("my_func was empty, something went very wrong")
-                else:
-                    self.write_to_stdout("something went very wrong")
+
 
