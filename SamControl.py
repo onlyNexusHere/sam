@@ -5,7 +5,7 @@ import select
 import traceback
 import serial.tools.list_ports
 import serial.serialutil
-from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature, SamModule
+from modules import StdinTools, ArduinoDebug, Ping, Motors, Quadrature, sam_network, SamModule
 if sys.platform != 'darwin':
     from modules import CameraProcessing
 
@@ -26,17 +26,30 @@ class SamControl:
     debug = None
 
     # This is the dictionary that holds modules.
-    # Modules need...
     local_modules = {}
     arduino_modules = {}
 
-    # list of module names that are filtered out of on_wait
-    broken_module_on_wait = list()
-
-    quit_program = False
-
+    # This is the master list for sockets to listen to
+    # if there are changes.
     # Map, file_number -> func(response)
     listening_to = {}
+
+    # list of module names that are filtered out of on_wait
+    # This stops robot from failing. Robot must be restarted
+    # to clear this list.
+    broken_module_on_wait = list()
+
+    # Events:
+    #           list of things we are waiting for
+    #           once we see the event, events removed
+    #           from waiting to events_fired.
+    # list( (name, func_to_fire) )
+    waiting_on_events = list()
+    # list( (id, name, result_info) )
+    events_fired = list()
+
+    # Variable to change if requesting to end SamControl.
+    quit_program = False
 
     def __init__(self, log_file=None, arduino_location=None, debug=False):
         if log_file is not None:
@@ -114,7 +127,9 @@ class SamControl:
                 ArduinoDebug.ArduinoDebug(args_for_mods),
                 Ping.Ping(args_for_mods),
                 Motors.Motors(args_for_mods),
-                Quadrature.Quadrature(args_for_mods)]
+                Quadrature.Quadrature(args_for_mods),
+                sam_network.SamModule(args_for_mods)]
+
         if sys.platform != "darwin":
             mods.append(CameraProcessing.CameraProcessing(args_for_mods))
 
