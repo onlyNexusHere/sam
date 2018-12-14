@@ -91,11 +91,11 @@ class CameraProcessing(SamModule):
                                                                 # so we stop following lane and wait for green
                 return
 
-            if self.need_location is not None: # and matched location....
-                self.is_following_lane = False
-                self.need_location = None
-                self.sam['camera'].message_received("ready")
-                return
+            # if self.need_location is not None: # and matched location....
+            #     self.is_following_lane = False
+            #     self.need_location = None
+            #     self.sam['camera'].message_received("ready")
+            #     return
 
             self.debug_run(self.write_to_stdout, "Output is: " + str(output))
 
