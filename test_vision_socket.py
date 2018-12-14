@@ -2,7 +2,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
-from detect_rgb4 import detect
+from detect_rgb5 import detect
 import serial
 import numpy as np
 import os
@@ -17,18 +17,19 @@ UDP_PORT = 5005
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 
-X_RESOLUTION = 1280
-Y_RESOLUTION = 960
+X_RESOLUTION = 960
+Y_RESOLUTION = 720
 
 # Initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (X_RESOLUTION, Y_RESOLUTION)
-camera.framerate = 5
+camera.framerate = 10
 rawCapture = PiRGBArray(camera, size=(X_RESOLUTION, Y_RESOLUTION))
 
 # Allow camera to warmup
 time.sleep(0.1)
 i = 0
+
 previous = 0
 
 
@@ -43,10 +44,9 @@ def PWMToVelocity(leftPWM, rightPWM):
 def speed(left, right):
 
     l, r = PWMToVelocity(left,right)
-
+    print(str(l) + "      " + str(r))
     motor_control = "m " + str(int(l)) + " " + str(int(r))
     #ser.write(motor_control.encode())
-    #sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
 
 test = 0
@@ -69,8 +69,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     key = cv2.waitKey(1) & 0xFF
 
-    ml = mr = 15 #cm/s
-
+    ml = mr = 10 #cm/s
     if i != 0:
 
         start = time.time()
@@ -81,53 +80,62 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
         sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
-        # center = 617 #620
+        # center = 510
         # diff = center - mid
 
-        # #cv2.imwrite(folder + '/' + str(command) + '_' + str(ratio) + '.jpg', img)
-
-
-        # # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
-        # # https://robotic-controls.com/learn/programming/pd-feedback-control-introduction
-
-        # # Get there faster => Smaller Kp
-        # # Less Overshoot => Smaller Kp, larger Kd
-        # # Less Vibration => Larger Kd
-
-        # # Kp => Increase to make larger corrections
-        # # Kd => Increase to make damping greater
-        # Kp = 0.01547 #0.01547
-        # Kd = 0.0123  #0.0123
-
-        # output = -(Kp * diff) - (Kd * (diff-previous))
+        # #cv2.imwrite(folder + '/'+ str(command) + "hfhf" + '.jpg', img)
 
         # if command == 'stop':
-        #     print('Stop')
-        #     speed(0, 0)
-        #     #break
+        #     motor_control = "k"
+        #     ser.write(motor_control.encode())
+
+        # elif command == 'green':
+        #     speed(ml, mr)
+        #     print('run PDC')
+
+        #     # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
+        #     # https://robotic-controls.com/learn/programming/pd-feedback-control-introduction
+
+        #     # Get there faster => Smaller Kp
+        #     # Less Overshoot => Smaller Kp, larger Kd
+        #     # Less Vibration => Larger Kd
+
+        #     # Kp => Increase to make larger corrections
+        #     # Kd => Increase to make damping greater
 
 
-        # print("Output is: " + str(output))
+        # else:
 
 
-        # speed(ml + output, mr - output)
 
-        # # if output > 0:
-        # #     speed(ml-output, mr+output)
-        # # else:
-        # #     speed(ml + output, mr - output)
 
-        # previous = diff
+        #     Kp = 0.025#0.02547 #0.01547
+        #     Kd = 0.013#0.0123  #0.0123
+
+        #     output = -(Kp * diff) - (Kd * (diff-previous))
+
+        #     print("Output is: " + str(output))
+
+
+        #     speed(ml + output, mr - output)
+
+        #     # if output > 0:
+        #     #     speed(ml-output, mr+output)
+        #     # else:
+        #     #     speed(ml + output, mr - output)
+
+        #     previous = diff
+
 
         # end = time.time()
-
 
         # print('= = = = =')
         # print('frame: ' + str(i))
         # print([command, ratio])
-        # print([center, mid, mid - center])
+        # # print([center, mid])
         # print(end - start)
 
     rawCapture.truncate(0)
 
     i = i + 1
+
