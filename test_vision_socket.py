@@ -46,7 +46,7 @@ def speed(left, right):
 
     motor_control = "m " + str(int(l)) + " " + str(int(r))
     #ser.write(motor_control.encode())
-    sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+    #sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
 
 test = 0
@@ -77,52 +77,56 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
         center, mid, command, ratio = detect(img)
 
-        center = 617 #620
-        diff = center - mid
+        MESSAGE = "camera " + str(center) + " " +str(mid) + " " + str(command) + " " + str(ratio)+"\n"
 
-        #cv2.imwrite(folder + '/' + str(command) + '_' + str(ratio) + '.jpg', img)
+        sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
+        # center = 617 #620
+        # diff = center - mid
 
-        # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
-        # https://robotic-controls.com/learn/programming/pd-feedback-control-introduction
-
-        # Get there faster => Smaller Kp
-        # Less Overshoot => Smaller Kp, larger Kd
-        # Less Vibration => Larger Kd
-
-        # Kp => Increase to make larger corrections
-        # Kd => Increase to make damping greater
-        Kp = 0.01547 #0.01547
-        Kd = 0.0123  #0.0123
-
-        output = -(Kp * diff) - (Kd * (diff-previous))
-
-        if command == 'stop':
-            print('Stop')
-            speed(0, 0)
-            #break
+        # #cv2.imwrite(folder + '/' + str(command) + '_' + str(ratio) + '.jpg', img)
 
 
-        print("Output is: " + str(output))
+        # # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
+        # # https://robotic-controls.com/learn/programming/pd-feedback-control-introduction
+
+        # # Get there faster => Smaller Kp
+        # # Less Overshoot => Smaller Kp, larger Kd
+        # # Less Vibration => Larger Kd
+
+        # # Kp => Increase to make larger corrections
+        # # Kd => Increase to make damping greater
+        # Kp = 0.01547 #0.01547
+        # Kd = 0.0123  #0.0123
+
+        # output = -(Kp * diff) - (Kd * (diff-previous))
+
+        # if command == 'stop':
+        #     print('Stop')
+        #     speed(0, 0)
+        #     #break
 
 
-        speed(ml + output, mr - output)
-
-        # if output > 0:
-        #     speed(ml-output, mr+output)
-        # else:
-        #     speed(ml + output, mr - output)
-
-        previous = diff
-
-        end = time.time()
+        # print("Output is: " + str(output))
 
 
-        print('= = = = =')
-        print('frame: ' + str(i))
-        print([command, ratio])
-        print([center, mid, mid - center])
-        print(end - start)
+        # speed(ml + output, mr - output)
+
+        # # if output > 0:
+        # #     speed(ml-output, mr+output)
+        # # else:
+        # #     speed(ml + output, mr - output)
+
+        # previous = diff
+
+        # end = time.time()
+
+
+        # print('= = = = =')
+        # print('frame: ' + str(i))
+        # print([command, ratio])
+        # print([center, mid, mid - center])
+        # print(end - start)
 
     rawCapture.truncate(0)
 
