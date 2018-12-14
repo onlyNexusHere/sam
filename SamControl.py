@@ -128,7 +128,7 @@ class SamControl:
                 Ping.Ping(args_for_mods),
                 Motors.Motors(args_for_mods),
                 Quadrature.Quadrature(args_for_mods),
-                sam_network.SamModule(args_for_mods)]
+                sam_network.SamNetwork(args_for_mods)]
 
         if sys.platform != "darwin":
             mods.append(CameraProcessing.CameraProcessing(args_for_mods))
@@ -307,13 +307,6 @@ class SamControl:
         # self.debug_run(print, "Requesting mod " + item.strip().lower())
         return {**self.arduino_modules, **self.local_modules}.get(item.strip().lower())
 
-    class Sam_Control_Error(Exception):
-        """Base error class"""
-        pass
-
-    class Arduino_Error(Sam_Control_Error):
-        pass
-
 
 if __name__ == "__main__":
 
@@ -336,6 +329,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("Sam has failed --> " + e.__doc__)
         print(str(e))
-        print(e.with_traceback())
+        traceback.print_tb(e.__traceback__)
         sam.exit()
 

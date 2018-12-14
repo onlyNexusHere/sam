@@ -37,7 +37,6 @@ class StdinTools(SamModule):
 '-(_)---(_)--'"""
     car_location = 0
 
-
     def __init__(self, kargs):
         super().__init__(module_name="StdinTools", is_local=True, identi=">", **kargs)
 
