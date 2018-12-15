@@ -262,6 +262,7 @@ class SamNetwork(SamModule):
         if message.strip() == "bypass":
             self.current_node = self.next_node
             self.ran_func = False
+            self.message_received("ready")
             return
 
         elif message.strip() == "start":
