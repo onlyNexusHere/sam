@@ -2,139 +2,144 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
-from detect_rgb import detect
+from detect_rgb5 import detect
 import serial
 import numpy as np
 import os
 import socket
 
+port = '/dev/ttyACM0'
+ser = serial.Serial(port, 115200, timeout=2)
+
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
-MESSAGE = ""
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 
-# port = '/dev/ttyACM0'
-# ser = serial.Serial(port, 115200, timeout=2)
-
-X_RESOLUTION = 1280
-Y_RESOLUTION = 960
+X_RESOLUTION = 960
+Y_RESOLUTION = 720
 
 # Initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (X_RESOLUTION, Y_RESOLUTION)
-camera.framerate = 5
+camera.framerate = 10
 rawCapture = PiRGBArray(camera, size=(X_RESOLUTION, Y_RESOLUTION))
 
 # Allow camera to warmup
 time.sleep(0.1)
 i = 0
 
+previous = 0
+
+
+#VelocityRight = (PWM+0.5181)/0.006
+#VelocityLeft = (PWM+0.4988)/0.0058
+
+
+def PWMToVelocity(leftPWM, rightPWM):
+
+    return (leftPWM+10.974)/0.1278, (rightPWM+11.398)/0.1317
 
 def speed(left, right):
-    motor_control = "m " + str(int(left)) + " " + str(int(right))
+
+    l, r = PWMToVelocity(left,right)
+    print(str(l) + "      " + str(r))
+    motor_control = "m " + str(int(l)) + " " + str(int(r))
     #ser.write(motor_control.encode())
-    sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
 
 test = 0
-folder = 'test_' + str(test)
+folder = 'test/' + str(test)
+
+if not os.path.isdir('test'):
+    os.mkdir('test')
+
 if not os.path.isdir(folder):
     os.mkdir(folder)
 
-for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=True):
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     # Grab the raw NumPy array representing the image
+
     img = frame.array
+
+    img = img[int(img.shape[0]/2):img.shape[0], :, :]
+    #img = img[int(img.shape[0] / 3):img.shape[0] * 2 / 3, :, :]
+    h, w, _ = img.shape
+
     key = cv2.waitKey(1) & 0xFF
 
-    # cv2.imwrite('0.png', img)
-
-
-    # Clear the stream so it is ready to receive the next frame
-    rawCapture.truncate(0)
-
+    ml = mr = 10 #cm/s
     if i != 0:
-        print('= = = = =')
-        print('frame: ' + str(i))
+
+        start = time.time()
 
         center, mid, command, ratio = detect(img)
 
-        print(command, ratio)
-        print([center, mid])
+        MESSAGE = "camera " + str(center) + " " +str(mid) + " " + str(command) + " " + str(ratio)+"\n"
 
-        sta = [command, ratio, center, mid]
-        # cv2.imwrite(folder + '/' + str(i) + '_' + str(sta) + '.png', img[int(img.shape[0] / 2):int(img.shape[0]), :, :])
+        sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
-        ml = mr = 150
+        # center = 510
+        # diff = center - mid
 
-        diff = center - mid
-
-        # rat = np.abs(diff) / (center / 2)
-
-        change_left = 25
-        change_right = 27
-
-        stay = 100
+        # #cv2.imwrite(folder + '/'+ str(command) + "hfhf" + '.jpg', img)
 
         # if command == 'stop':
-        #     print('Stop')
-        #     speed(0, 0)
+        #     motor_control = "k"
+        #     ser.write(motor_control.encode())
 
-        if np.abs(diff) <= stay:
-            print('Stay on center')
-            if diff > 0:
-                #speed(ml-1, mr + 2)
-                speed(-1,2)
-            else:
-                #speed(ml + 2, mr-1)
-                speed(2,-1)
+        # elif command == 'green':
+        #     speed(ml, mr)
+        #     print('run PDC')
 
-        elif diff > stay:
-            print('Turn left')
-            #speed(ml - 30, mr + 35)
-            speed(-30,35)
-        elif diff < -stay:
-            print('Turn right')
-            #speed(ml+35, mr-30)
-            speed(35, -30)
-    i += 1
+        #     # Tune pd: https://robotics.stackexchange.com/questions/167/what-are-good-strategies-for-tuning-pid-loops
+        #     # https://robotic-controls.com/learn/programming/pd-feedback-control-introduction
+
+        #     # Get there faster => Smaller Kp
+        #     # Less Overshoot => Smaller Kp, larger Kd
+        #     # Less Vibration => Larger Kd
+
+        #     # Kp => Increase to make larger corrections
+        #     # Kd => Increase to make damping greater
+
+
+        # else:
 
 
 
 
-    # if command == 'straight':
-    #
-    #     if 0 < center < mid[1] - 160 * 2:
-    #         motor_control = "m 151 150"
-    #         ser.write(motor_control.encode())
-    #     elif mid[1] + 160 * 2 < center < mid[1] * 2:
-    #         motor_control = "m 150 151"
-    #         ser.write(motor_control.encode())
-    #     else:
-    #         motor_control = "m 150 150"
-    #         ser.write(motor_control.encode())
-    #
-    # elif command == 'turn left':
-    #     print(":" + command + ":")
-    #     motor_control = "m 0 0"
-    #     ser.write(motor_control.encode())
-    #     break
-    #
-    # elif command == 'turn right':
-    #     print(":" + command + ":")
-    #     motor_control = "m 0 0"
-    #     ser.write(motor_control.encode())
-    #     break
-    #
-    # else:
-    #     break
-    #     print(":" + command + ":")
-    #     motor_control = "m 0 0"
-    #     ser.write(motor_control.encode())
+        #     Kp = 0.025#0.02547 #0.01547
+        #     Kd = 0.013#0.0123  #0.0123
 
-    # if i == 30:
-    #     break
+        #     output = -(Kp * diff) - (Kd * (diff-previous))
+
+        #     print("Output is: " + str(output))
+
+
+        #     speed(ml + output, mr - output)
+
+        #     # if output > 0:
+        #     #     speed(ml-output, mr+output)
+        #     # else:
+        #     #     speed(ml + output, mr - output)
+
+        #     previous = diff
+
+
+        # end = time.time()
+
+        # print('= = = = =')
+        # print('frame: ' + str(i))
+        # print([command, ratio])
+        # # print([center, mid])
+        # print(end - start)
+
+    rawCapture.truncate(0)
+
+    i = i + 1
+
+   #     break
 
     # i += 1
 
