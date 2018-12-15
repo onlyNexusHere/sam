@@ -315,6 +315,7 @@ class SamNetwork(SamModule):
 
     def message_received(self, message):
         if message.strip() == "ready":
+            print("ready")
             self.current_node = self.next_node
             self.ran_func = False
             if not self.run_path:
