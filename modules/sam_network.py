@@ -198,7 +198,7 @@ class SamNetwork(SamModule):
                                       ]))
 
         path = nx.shortest_path(self.sam_map, self.current_node, self.end_node)
-        print("updating next one")
+        # print("updating next one")
         if len(path) < 2:
             print("Path of one or none, cannot make path from " + str(self.current_node) + " to " + str(self.end_node))
         self.next_node = path[1]
@@ -325,7 +325,7 @@ class SamNetwork(SamModule):
     def on_wait(self):
         if self.run_path:
             self.update_next_node()
-            print("ok we keep going")
+            # print("ok we keep going")
             if self.run_path:   # may have been changed if end of path hit
                 if not self.ran_func and (self.next_node in self.sam_map[self.current_node]):
                     my_func = self.get_state_for_edge(self.current_node, self.next_node)
