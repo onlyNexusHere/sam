@@ -79,7 +79,7 @@ def detect(img):
             _, white_pix_c = np.where(mask_white > 0)
 
             if len(white_pix_c) == 0:
-                print('111111')
+                # print('111111')
                 command = 'unknown'
                 return center, 510, command, ratio
             else:
@@ -94,7 +94,7 @@ def detect(img):
 
             if len(yellow_pix_c) == 0:
                 command = 'unknown'
-                print('22222222')
+                # print('22222222')
                 return center, 510, command, ratio
             else:
                 command = 'right'
@@ -131,7 +131,7 @@ def detect(img):
 
         # no white detected, no yellow detected
         else:
-            print('4444444')
+            # print('4444444')
             command = 'unknown'
             return center, center, command, ratio
 
