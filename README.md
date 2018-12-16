@@ -2,6 +2,33 @@
 This is the program that will from the sam robot. 
 It is modular for the components on the robot.
 
+
+The code will compile on a Mac machine as well as a Raspberry Pi B. For full functionality, it must be run on a Pi, connected to an Arduino Uno and a camera. On the arduino, we have a ping sensor, two motors for wheels, quadratures, and a motor shield.
+
+The code for the arduion is located within SamControl_Arduino/SamControl_Arduino.ino.
+
+
+- To run the main program:
+
+python SamControl.py
+
+Flags are also supported, such as --arduino "arduino location", --help, --debug, and --logging-file "File Location". 
+
+Once the program is started, use the command line interface for basic commands. Type "help" to see the options.
+
+Each module also has it's own commands, but you will have to look through the code to figure out what they are. To send a command to a module type: "request module_id command" where module id is the identi variable assigned to that module. For example, "request motor straight" will make the robot motors start moving forward. "request ir" should give you the current x, y, and heading of the robot (if there is an arduino to give back information). "request map status" will give you information on the programmed route: if you have a current location set on the map createed within sam control, and if you set a path, and if the robot is currently trying to navigate the path.
+
+
+- To run the camera file:
+
+python test_vision_socket.py
+
+This file can only be run on a Pi, and it will gather information about a road and send the information to socket 5005, which will be picked up by the pi. We ran this program in the background.
+
+
+
+DEVELOPMENT:
+
 If you would like to add a module: 
 
 - make a class in the modules folder and extend the class SamModule.
