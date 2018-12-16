@@ -2,7 +2,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
-from detect_rgb5 import detect
+from support.detect_rgb5 import detect
 import serial
 import numpy as np
 import os
